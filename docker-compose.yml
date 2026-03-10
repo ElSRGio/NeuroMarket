@@ -1,0 +1,78 @@
+version: '3.8'
+# NeuroMarket 2.0 — Docker Compose
+# Levanta: PostgreSQL + Python Engine + Node.js API + React Frontend
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: neuromarket_db
+    environment:
+      POSTGRES_DB: neuromarket_v2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: neuromarket2024
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  engine:
+    build: ./engine
+    container_name: neuromarket_engine
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: neuromarket_v2
+      DB_USER: postgres
+      DB_PASSWORD: neuromarket2024
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./engine:/app
+
+  server-api:
+    build: ./server-api
+    container_name: neuromarket_api
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: neuromarket_v2
+      DB_USER: postgres
+      DB_PASSWORD: neuromarket2024
+      JWT_SECRET: neuromarket_jwt_secret_2024
+      PYTHON_ENGINE_URL: http://engine:5000
+      PORT: 3000
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      engine:
+        condition: service_started
+    volumes:
+      - ./server-api:/app
+      - /app/node_modules
+
+  web-portal:
+    build: ./web-portal
+    container_name: neuromarket_frontend
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server-api
+    volumes:
+      - ./web-portal:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:

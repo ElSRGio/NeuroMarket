@@ -7,6 +7,7 @@ from ..core.tam_som_engine import TAMSOMEngine
 from ..core.roi_projector import ROIProjector
 from ..core.monte_carlo import MonteCarloSimulator
 from ..core.svee_detector import SVEEDetector
+from ..core.apify_connector import ApifyConnector
 
 bp = Blueprint("neuromarket", __name__, url_prefix="/api/engine")
 
@@ -136,3 +137,18 @@ def _score_rating(score):
 
 def register_routes(app):
     app.register_blueprint(bp)
+
+
+@bp.get("/social-density")
+def get_social_density():
+    """
+    Calcula densidad_digital real usando Apify (o estimación mock si no hay API key).
+    Query params: municipio, estado, sector
+    """
+    municipio = request.args.get("municipio", "Libres")
+    estado = request.args.get("estado", "Puebla")
+    sector = request.args.get("sector", "general")
+
+    connector = ApifyConnector()
+    result = connector.get_social_density(municipio, estado, sector)
+    return jsonify(result)

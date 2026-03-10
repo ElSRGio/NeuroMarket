@@ -54,7 +54,35 @@ export default function NewAnalysisPage() {
     }))
   }
 
-  async function handleSubmit(e) {
+  const [socialLoading, setSocialLoading] = useState(false)
+  const [socialStatus, setSocialStatus] = useState('')
+
+  async function fetchSocialData() {
+    if (!form.municipio) return
+    setSocialLoading(true)
+    setSocialStatus('')
+    try {
+      const res = await fetch(
+        `/api/engine/social-density?municipio=${encodeURIComponent(form.municipio)}&estado=${encodeURIComponent(form.estado)}&sector=${encodeURIComponent(form.sector)}`
+      )
+      const data = await res.json()
+      if (data.densidad_digital !== undefined) {
+        set('densidad_digital', String(data.densidad_digital))
+        const isMock = data.fuente === 'mock_inegi'
+        setSocialStatus(isMock
+          ? `📊 Estimación INEGI: ${data.densidad_digital}/100 (configura APIFY_API_TOKEN para datos reales)`
+          : `✅ Datos reales de redes sociales: ${data.densidad_digital}/100`
+        )
+        if (data.menciones_estimadas_12m) {
+          setForm(f => ({ ...f, densidad_digital: String(data.densidad_digital) }))
+        }
+      }
+    } catch {
+      setSocialStatus('❌ No se pudo conectar con el motor de análisis')
+    } finally {
+      setSocialLoading(false)
+    }
+  }
     e.preventDefault()
     setError('')
     setLoading(true)
@@ -164,8 +192,25 @@ export default function NewAnalysisPage() {
 
           {/* IRL */}
           <section className="card space-y-4">
-            <h2 className="font-bold text-white text-lg">Índice de Realidad Local (IRL)</h2>
-            <p className="text-gray-400 text-sm">Valores del 0 al 100 para tu municipio</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-bold text-white text-lg">Índice de Realidad Local (IRL)</h2>
+                <p className="text-gray-400 text-sm">Valores del 0 al 100 para tu municipio</p>
+              </div>
+              <button
+                type="button"
+                onClick={fetchSocialData}
+                disabled={socialLoading || !form.municipio}
+                className="text-xs bg-brand-blue/20 hover:bg-brand-blue/30 border border-brand-blue/40 text-brand-blue px-3 py-2 rounded-lg disabled:opacity-50 transition-colors"
+              >
+                {socialLoading ? '⏳ Analizando...' : '📡 Auto-rellenar con datos sociales'}
+              </button>
+            </div>
+            {socialStatus && (
+              <div className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-xs text-gray-300">
+                {socialStatus}
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-4">
               {[
                 ['densidad_digital','Densidad Digital'],['validacion_fisica','Validación Física'],

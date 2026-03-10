@@ -83,6 +83,8 @@ export default function NewAnalysisPage() {
       setSocialLoading(false)
     }
   }
+
+  async function handleSubmit(e) {
     e.preventDefault()
     setError('')
     setLoading(true)

@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
 import NewAnalysisPage from './pages/NewAnalysisPage.jsx'
 import AnalysisResultPage from './pages/AnalysisResultPage.jsx'
+import PresentationPage from './pages/PresentationPage.jsx'
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/analysis/new" element={<NewAnalysisPage />} />
       <Route path="/analysis/:id" element={<AnalysisResultPage />} />
+      <Route path="/presentation" element={<PresentationPage />} />
     </Routes>
   )
 }

@@ -33,6 +33,13 @@ export default function AnalysisResultPage() {
           <Link to="/dashboard" className="text-gray-400 hover:text-white text-sm">← Dashboard</Link>
           <span className="font-bold text-white">Resultado del análisis</span>
         </div>
+        <a
+          href={`/api/v2/reports/${id}/pdf`}
+          download
+          className="flex items-center gap-2 px-4 py-2 bg-brand-blue hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          📄 Exportar PDF
+        </a>
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-10 space-y-8">

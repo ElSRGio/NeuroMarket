@@ -1,11 +1,33 @@
 /**
- * Reports Routes — /api/v2/reports (placeholder)
+ * Reports Routes — /api/v2/reports
  */
 const router = require("express").Router();
 const auth = require("../middleware/auth.middleware");
+const Analysis = require("../models/analysis.model");
+const { generatePDF } = require("../services/pdf.service");
 
-router.get("/", auth, (req, res) => {
-  res.json({ message: "Reports endpoint — coming in Phase 3" });
+// GET /api/v2/reports/:id/pdf — Download PDF report for an analysis
+router.get("/:id/pdf", auth, async (req, res) => {
+  try {
+    const analysis = await Analysis.findOne({
+      where: { id: req.params.id, user_id: req.user.id },
+    });
+    if (!analysis) return res.status(404).json({ error: "Análisis no encontrado" });
+
+    const pdfBuffer = await generatePDF(analysis.toJSON());
+
+    const safeName = (analysis.business_name || "reporte")
+      .replace(/[^a-z0-9]/gi, "_")
+      .toLowerCase();
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="neuromarket_${safeName}.pdf"`);
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error("[PDF]", err.message);
+    res.status(500).json({ error: "Error generando el PDF: " + err.message });
+  }
 });
 
 module.exports = router;
+

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+
+  <!-- Ruta del .jar generado por NetBeans -->
+  <jar>.\dist\NeuroMarketAdmin.jar</jar>
+
+  <!-- Nombre del .exe de salida -->
+  <outfile>.\dist\NeuroMarketAdmin.exe</outfile>
+
+  <errTitle>NeuroMarket Admin</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>https://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+
+  <!-- Ícono (opcional — descomenta y pon la ruta si tienes un .ico) -->
+  <!-- <icon>.\src\neuromarketadmin\icon.ico</icon> -->
+
+  <jre>
+    <!-- Versión mínima de Java requerida -->
+    <path></path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>11</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+  </jre>
+
+  <!-- Metadatos del .exe (aparecen en Propiedades del archivo) -->
+  <versionInfo>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0.0</txtFileVersion>
+    <fileDescription>NeuroMarket Admin — Panel de Control de Datos</fileDescription>
+    <copyright>NeuroMarket 2.0 — Ingeniería en Sistemas 2026</copyright>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0.0</txtProductVersion>
+    <productName>NeuroMarket Admin</productName>
+    <companyName>NeuroMarket</companyName>
+    <internalName>NeuroMarketAdmin</internalName>
+    <originalFilename>NeuroMarketAdmin.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>

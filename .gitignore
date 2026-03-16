@@ -10,3 +10,5 @@ uploads/
 logs/
 venv/
 .venv/
+/NeuroMarketAdmin/nbproject/private/
+/NeuroMarketAdmin/build/

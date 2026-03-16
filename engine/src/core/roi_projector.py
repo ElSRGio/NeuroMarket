@@ -53,6 +53,9 @@ class ROIProjector:
             "roi_porcentaje": round(roi, 2),
             "break_even_meses": round(break_even, 1) if break_even else None,
             "inversion_inicial": inversion_inicial,
+            "ingreso_base": ingreso_base,
+            "margen_utilidad": margen_utilidad,
+            "costos_fijos": costos_fijos,
             "viabilidad": self._interpret_roi(roi),
         }
 

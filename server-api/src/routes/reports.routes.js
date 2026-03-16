@@ -3,11 +3,12 @@
  */
 const router = require("express").Router();
 const auth = require("../middleware/auth.middleware");
+const { requirePdfAccess } = require("../middleware/plan.middleware");
 const Analysis = require("../models/analysis.model");
 const { generatePDF } = require("../services/pdf.service");
 
-// GET /api/v2/reports/:id/pdf — Download PDF report for an analysis
-router.get("/:id/pdf", auth, async (req, res) => {
+// GET /api/v2/reports/:id/pdf — Pro/Enterprise only
+router.get("/:id/pdf", auth, requirePdfAccess, async (req, res) => {
   try {
     const analysis = await Analysis.findOne({
       where: { id: req.params.id, user_id: req.user.id },

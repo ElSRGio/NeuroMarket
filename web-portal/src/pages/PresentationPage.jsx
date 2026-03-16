@@ -12,6 +12,8 @@ const SLIDES = [
     subtitle: "Consultora Estratégica de Inversión Hiperlocal",
     content: null,
     type: "cover",
+    team: ["Giovanni H.", "Pamela R.", "Ximena V."],
+    semester: "Ingeniería en Sistemas · 2026",
   },
   {
     id: 2,
@@ -30,9 +32,9 @@ const SLIDES = [
     subtitle: "Motor de Análisis de Viabilidad en 3 capas",
     type: "architecture",
     layers: [
-      { name: "Frontend React 19", role: "Interfaz ejecutiva donde el usuario ingresa su negocio y ve el análisis", color: "brand-blue", icon: "⚛️" },
-      { name: "Node.js API", role: "Orquestador: maneja autenticación JWT, guarda análisis en PostgreSQL", color: "brand-green", icon: "🟢" },
-      { name: "Python Engine", role: "Motor matemático: calcula IRL, TAM/SOM, ROI, Monte Carlo (10,000 iteraciones)", color: "yellow-400", icon: "🐍" },
+      { name: "Frontend React 19", role: "Interfaz ejecutiva: formulario de análisis, dashboard de scores, reportes PDF y página de planes", color: "brand-blue", icon: "⚛️" },
+      { name: "Node.js API (Orquestador)", role: "Autenticación JWT, lógica de planes (Basic/Pro/Enterprise), persistencia en PostgreSQL", color: "brand-green", icon: "🟢" },
+      { name: "Python Engine (Flask)", role: "Motor matemático: IRL, TAM/SOM, ROI estructural, Monte Carlo 10,000 iter., SVEE, Apify", color: "yellow-400", icon: "🐍" },
     ],
   },
   {
@@ -42,7 +44,7 @@ const SLIDES = [
     type: "formula",
     formula: "IRL = 0.30×DD + 0.25×VF + 0.20×NB + 0.15×IE + 0.10×CP",
     variables: [
-      { symbol: "DD", name: "Densidad Digital", desc: "Presencia en redes sociales (obtenida con Apify)" },
+      { symbol: "DD", name: "Densidad Digital", desc: "Presencia en redes sociales (obtenida con Apify en tiempo real)" },
       { symbol: "VF", name: "Validación Física", desc: "Negocios similares activos en Google Maps" },
       { symbol: "NB", name: "Nivel de Bancarización", desc: "Acceso a servicios financieros (datos INEGI)" },
       { symbol: "IE", name: "Índice de Empleo", desc: "Empleo formal registrado en el IMSS" },
@@ -60,7 +62,7 @@ const SLIDES = [
       { label: "Realista (P50)", roi: "311%", color: "yellow-400", desc: "El escenario más probable" },
       { label: "Optimista (P90)", roi: "344%", color: "brand-green", desc: "El 10% mejor de los escenarios" },
     ],
-    insight: "En lugar de dar un ROI único (que puede ser falso), damos una distribución de probabilidad. Así el inversionista conoce el rango real de resultados.",
+    insight: "En lugar de dar un ROI único (que puede ser falso), damos una distribución de probabilidad. El inversionista conoce el rango real de resultados.",
   },
   {
     id: 6,
@@ -74,10 +76,41 @@ const SLIDES = [
       { step: "4", text: "Se calcula la Densidad Digital (DD) real del sector en ese municipio" },
       { step: "5", text: "DD alimenta el IRL → análisis más preciso y localizado" },
     ],
-    result: "Resultado para Libres/Restaurante: DD = 30.2/100 (más informal de lo estimado)",
+    result: "Resultado real para Libres/Restaurante: DD = 30.2/100 (más informal de lo estimado por INEGI)",
   },
   {
     id: 7,
+    title: "Modelo de Negocio SaaS",
+    subtitle: "Sistema de planes con restricciones por middleware en Node.js",
+    type: "plans",
+    plans: [
+      {
+        name: "Basic",
+        price: "Gratis",
+        badge: "bg-gray-700 text-gray-300",
+        features: ["6 análisis de viabilidad", "Score IRL + Nicho", "Dashboard ejecutivo"],
+        locked: ["Exportación PDF", "Análisis ilimitados"],
+      },
+      {
+        name: "Pro",
+        price: "$299 MXN/mes",
+        badge: "bg-blue-600 text-white",
+        highlight: true,
+        features: ["Análisis ilimitados", "Reporte PDF ejecutivo", "Datos Apify en tiempo real", "Monte Carlo + SVEE"],
+        locked: [],
+      },
+      {
+        name: "Enterprise",
+        price: "Contactar",
+        badge: "bg-green-700 text-white",
+        features: ["Todo Pro +", "Multi-usuario", "API access", "SLA garantizado"],
+        locked: [],
+      },
+    ],
+    insight: "El middleware plan.middleware.js en Node.js bloquea endpoints según plan_type del JWT — sin lógica en el frontend.",
+  },
+  {
+    id: 8,
     title: "Tecnologías Utilizadas",
     subtitle: "Stack full-stack de nivel profesional",
     type: "tech",
@@ -90,21 +123,22 @@ const SLIDES = [
       { name: "Node.js + Express", category: "Backend API", color: "green" },
       { name: "JWT + bcryptjs", category: "Autenticación", color: "red" },
       { name: "Sequelize ORM", category: "Base de datos", color: "blue" },
-      { name: "PostgreSQL 18", category: "DB", color: "indigo" },
+      { name: "PostgreSQL 16", category: "DB relacional", color: "indigo" },
       { name: "Python 3.13 + Flask", category: "Motor analítico", color: "yellow" },
       { name: "NumPy + SciPy", category: "Cálculo científico", color: "orange" },
       { name: "Apify", category: "Web scraping", color: "green" },
+      { name: "Puppeteer", category: "Generación PDF", color: "teal" },
     ],
   },
   {
-    id: 8,
+    id: 9,
     title: "Impacto y Escalabilidad",
     subtitle: "De Libres, Puebla → a todo México",
     type: "impact",
     phases: [
-      { phase: "Fase 1", location: "Libres, Puebla", status: "✅ Completo", desc: "Validación del modelo IRL con datos reales de Apify + INEGI" },
-      { phase: "Fase 2", location: "Región Puebla", status: "🔜 Siguiente", desc: "Expansión a 5 municipios cercanos: Oriental, Cholula, Tehuacán..." },
-      { phase: "Fase 3", location: "Nacional", status: "📋 Planeado", desc: "Cualquier economía intermedia de México (arquitectura modular)" },
+      { phase: "Fase 1–9", location: "Libres, Puebla", status: "✅ Completo", desc: "Stack completo: IRL, Monte Carlo, Apify, PDF, sistema de planes. 2 análisis reales en DB." },
+      { phase: "Fase 10", location: "Región Puebla", status: "🔜 Siguiente", desc: "Expansión a 5 municipios: Oriental, Cholula, Tehuacán, Atlixco, San Martín." },
+      { phase: "Fase 11", location: "Nacional", status: "📋 Planeado", desc: "Cualquier economía intermedia de México (arquitectura modular + INEGI nacional)." },
     ],
   },
 ]
@@ -168,10 +202,19 @@ function SlideRenderer({ slide }) {
       <div className="text-8xl">⬡</div>
       <h1 className="text-5xl font-black text-white">{slide.title}</h1>
       <p className="text-xl text-brand-blue font-medium">{slide.subtitle}</p>
-      <div className="flex justify-center gap-6 mt-8 text-sm text-gray-500">
+      <div className="flex justify-center gap-6 mt-4 text-sm text-gray-500">
         <span>Python · Node.js · React 19</span>
         <span>·</span>
         <span>PostgreSQL · Apify · INEGI</span>
+      </div>
+      <div className="mt-6 pt-6 border-t border-white/10 flex flex-col items-center gap-2">
+        <p className="text-gray-500 text-sm">Equipo de desarrollo</p>
+        <div className="flex gap-4">
+          {slide.team.map((name, i) => (
+            <span key={i} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-gray-300 text-sm">{name}</span>
+          ))}
+        </div>
+        <p className="text-gray-600 text-xs mt-1">{slide.semester}</p>
       </div>
     </div>
   )
@@ -286,6 +329,33 @@ function SlideRenderer({ slide }) {
             </div>
           </div>
         ))}
+      </div>
+    </SlideWrapper>
+  )
+
+  if (slide.type === 'plans') return (
+    <SlideWrapper slide={slide}>
+      <div className="grid grid-cols-3 gap-4 mb-4">
+        {slide.plans.map((plan, i) => (
+          <div key={i} className={`rounded-xl p-5 border flex flex-col ${plan.highlight ? 'bg-blue-900/30 border-brand-blue ring-1 ring-brand-blue' : 'bg-white/5 border-white/10'}`}>
+            {plan.highlight && (
+              <span className="text-xs text-brand-blue font-bold mb-2">★ RECOMENDADO</span>
+            )}
+            <span className={`text-xs font-bold px-2 py-0.5 rounded w-fit ${plan.badge}`}>{plan.name}</span>
+            <p className="text-white font-black text-xl mt-2 mb-3">{plan.price}</p>
+            <ul className="space-y-1 flex-1">
+              {plan.features.map((f, j) => (
+                <li key={j} className="text-xs text-gray-300 flex items-center gap-1.5"><span className="text-brand-green">✓</span>{f}</li>
+              ))}
+              {plan.locked.map((f, j) => (
+                <li key={j} className="text-xs text-gray-600 flex items-center gap-1.5"><span>✗</span>{f}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div className="bg-brand-blue/10 border border-brand-blue/30 rounded-lg p-4 text-blue-200 text-sm">
+        🔐 {slide.insight}
       </div>
     </SlideWrapper>
   )

@@ -19,6 +19,7 @@ const Analysis = sequelize.define("Analysis", {
     type: DataTypes.ENUM("pending", "processing", "completed", "failed"),
     defaultValue: "pending",
   },
+  deleted_at: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
 }, {
   tableName: "analyses",
   underscored: true,

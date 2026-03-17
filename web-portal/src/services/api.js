@@ -3,8 +3,12 @@
  */
 import axios from 'axios'
 
+const rawApiUrl = import.meta.env.VITE_API_URL || ''
+const normalizedApiUrl = rawApiUrl.replace(/\/$/, '')
+const baseURL = import.meta.env.DEV ? '' : normalizedApiUrl
+
 const api = axios.create({
-  baseURL: '',   // relative URLs — Vite proxy forwards to localhost:3000
+  baseURL,
   timeout: 30000,
 })
 

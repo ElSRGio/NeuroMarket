@@ -1,14 +1,23 @@
 """
 Flask Application Factory
 """
+import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from .routes import register_routes
 
 
+def _allowed_origins():
+    env_origins = os.getenv("ALLOWED_ORIGINS") or os.getenv("FRONTEND_URL") or ""
+    parsed = [o.strip() for o in env_origins.split(",") if o.strip()]
+    if parsed:
+        return parsed
+    return ["http://localhost:3000", "http://localhost:5173"]
+
+
 def create_app():
     app = Flask(__name__)
-    CORS(app, origins=["http://localhost:3000", "http://localhost:5173"])
+    CORS(app, origins=_allowed_origins())
 
     register_routes(app)
 

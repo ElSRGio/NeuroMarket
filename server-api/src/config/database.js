@@ -5,18 +5,28 @@
 const { Sequelize } = require("sequelize");
 
 const isProduction = process.env.NODE_ENV === "production";
+const sslOptions = isProduction ? { ssl: { require: true, rejectUnauthorized: false } } : {};
 
 let sequelize;
 
 if (process.env.DATABASE_URL) {
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: "postgres",
-    logging: false,
-    pool: { max: 10, min: 0, acquire: 30000, idle: 10000 },
-    dialectOptions: isProduction
-      ? { ssl: { require: true, rejectUnauthorized: false } }
-      : {},
-  });
+  // Parsear manualmente la URL para evitar que Sequelize use el string completo como host
+  const rawUrl = process.env.DATABASE_URL.replace(/^postgresql:\/\//, "postgres://");
+  const dbUrl = new URL(rawUrl);
+
+  sequelize = new Sequelize(
+    decodeURIComponent(dbUrl.pathname.slice(1)), // nombre de la DB (sin el / inicial)
+    decodeURIComponent(dbUrl.username),
+    decodeURIComponent(dbUrl.password),
+    {
+      host: dbUrl.hostname,
+      port: parseInt(dbUrl.port) || 5432,
+      dialect: "postgres",
+      logging: false,
+      pool: { max: 10, min: 0, acquire: 30000, idle: 10000 },
+      dialectOptions: sslOptions,
+    }
+  );
 } else {
   sequelize = new Sequelize(
     process.env.DB_NAME || "neuromarket_v2",
@@ -28,9 +38,7 @@ if (process.env.DATABASE_URL) {
       dialect: "postgres",
       logging: false,
       pool: { max: 10, min: 0, acquire: 30000, idle: 10000 },
-      dialectOptions: isProduction
-        ? { ssl: { require: true, rejectUnauthorized: false } }
-        : {},
+      dialectOptions: sslOptions,
     }
   );
 }

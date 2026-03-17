@@ -9,6 +9,10 @@ export const investmentService = {
   analyze: (payload) => api.post('/api/v2/investment/analyze', payload),
   getHistory: () => api.get('/api/v2/investment/history'),
   getOne: (id) => api.get(`/api/v2/investment/${id}`),
+  downloadReportPdf: (id) => api.get(`/api/v2/reports/${id}/pdf`, {
+    responseType: 'blob',
+    headers: { Accept: 'application/pdf' },
+  }),
   getCredits: () => api.get('/api/v2/investment/credits'),
   getTrash: () => api.get('/api/v2/investment/trash'),
   softDelete: (id) => api.delete(`/api/v2/investment/${id}`),

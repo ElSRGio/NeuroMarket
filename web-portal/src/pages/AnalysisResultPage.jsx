@@ -12,6 +12,7 @@ export default function AnalysisResultPage() {
   const { id } = useParams()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [downloadingPdf, setDownloadingPdf] = useState(false)
   const { user } = useAuthStore()
   const isPro = user?.plan_type === 'pro' || user?.plan_type === 'enterprise'
   const [simInversion, setSimInversion] = useState(null)
@@ -26,6 +27,36 @@ export default function AnalysisResultPage() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [id])
+
+  const handleDownloadPdf = async () => {
+    try {
+      setDownloadingPdf(true)
+      const response = await investmentService.downloadReportPdf(id)
+      const contentType = response.headers?.['content-type'] || ''
+      if (!contentType.includes('application/pdf')) {
+        throw new Error('El servidor no devolvió un PDF válido')
+      }
+
+      const blob = new Blob([response.data], { type: 'application/pdf' })
+      const url = URL.createObjectURL(blob)
+      const disposition = response.headers?.['content-disposition'] || ''
+      const match = disposition.match(/filename=\"?([^\";]+)\"?/i)
+      const fileName = match?.[1] || `neuromarket_${id}.pdf`
+
+      const link = document.createElement('a')
+      link.href = url
+      link.download = fileName
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      const msg = error?.response?.data?.error || error?.message || 'No se pudo exportar el PDF'
+      alert(msg)
+    } finally {
+      setDownloadingPdf(false)
+    }
+  }
 
   if (loading) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-400 text-sm">Cargando resultado...</div>
@@ -61,12 +92,15 @@ export default function AnalysisResultPage() {
             <span className="text-sm font-semibold text-gray-900">Resultado del analisis</span>
           </div>
           {isPro ? (
-            <a href={`/api/v2/reports/${id}/pdf`} download
+            <button
+              type="button"
+              onClick={handleDownloadPdf}
+              disabled={downloadingPdf}
               className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg text-white transition-colors"
-              style={{ backgroundColor: '#22c55e' }}
+              style={{ backgroundColor: downloadingPdf ? '#86efac' : '#22c55e' }}
             >
-              Exportar PDF
-            </a>
+              {downloadingPdf ? 'Exportando...' : 'Exportar PDF'}
+            </button>
           ) : (
             <Link to="/upgrade"
               className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-500 text-sm font-medium rounded-lg transition-colors"

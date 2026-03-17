@@ -5,6 +5,16 @@ import AppNav from '../components/AppNav.jsx'
 
 const DEFAULT_IDM = [0.85, 0.90, 1.00, 1.00, 1.10, 0.95, 1.00, 1.00, 1.15, 1.00, 1.20, 1.30]
 
+const SOCIAL_DENSITY_FALLBACK = {
+  libres: 42,
+  oriental: 45,
+  serdan: 52,
+  acajete: 55,
+  tehuacan: 72,
+  cholula: 78,
+  puebla: 85,
+}
+
 const INPUT = 'w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors'
 const INPUT_DARK = 'w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors'
 
@@ -56,6 +66,7 @@ export default function NewAnalysisPage() {
     setSocialStatus('')
     try {
       const res = await fetch(`/api/engine/social-density?municipio=${encodeURIComponent(form.municipio)}&estado=${encodeURIComponent(form.estado)}&sector=${encodeURIComponent(form.sector)}`)
+      if (!res.ok) throw new Error(`status ${res.status}`)
       const data = await res.json()
       if (data.densidad_digital !== undefined) {
         set('densidad_digital', String(data.densidad_digital))
@@ -64,7 +75,12 @@ export default function NewAnalysisPage() {
           : `Datos reales de redes sociales: ${data.densidad_digital}/100`
         )
       }
-    } catch { setSocialStatus('No se pudo conectar con el motor') }
+    } catch {
+      const municipioKey = form.municipio.toLowerCase().replace(/\s+/g, '')
+      const estimatedDensity = SOCIAL_DENSITY_FALLBACK[municipioKey] ?? 50
+      set('densidad_digital', String(estimatedDensity))
+      setSocialStatus(`Estimación local activada: ${estimatedDensity}/100`)
+    }
     finally { setSocialLoading(false) }
   }
 

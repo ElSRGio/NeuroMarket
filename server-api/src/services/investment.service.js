@@ -3,6 +3,7 @@
  */
 const axios = require("axios");
 const Analysis = require("../models/analysis.model");
+const { runFallbackAnalysis } = require("./analysis-fallback.service");
 
 const ENGINE_URL = process.env.PYTHON_ENGINE_URL || "http://localhost:5000";
 
@@ -31,6 +32,22 @@ async function runFullAnalysis(userId, payload) {
 
     return { analysis_id: analysis.id, ...data };
   } catch (err) {
+    const statusCode = err.response?.status;
+    if (statusCode === 429 || !statusCode || statusCode >= 500) {
+      const fallbackData = runFallbackAnalysis(payload);
+      await analysis.update({
+        result: fallbackData,
+        viability_score: fallbackData.viability_score,
+        status: "completed",
+      });
+
+      return {
+        analysis_id: analysis.id,
+        ...fallbackData,
+        warning: "Se usó el motor de respaldo por disponibilidad temporal del engine principal.",
+      };
+    }
+
     await analysis.update({ status: "failed" });
     throw Object.assign(
       new Error(`Engine error: ${err.response?.data?.message || err.message}`),

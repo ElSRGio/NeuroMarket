@@ -12,6 +12,16 @@ const { Op } = require("sequelize");
 const PORT = process.env.PORT || 3000;
 const TRASH_DAYS = 30;
 
+async function ensureUserProfileColumns() {
+  await sequelize.query(`
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS age INTEGER,
+    ADD COLUMN IF NOT EXISTS preferred_niches VARCHAR(255),
+    ADD COLUMN IF NOT EXISTS average_investment NUMERIC(12,2),
+    ADD COLUMN IF NOT EXISTS profile_image_url VARCHAR(500);
+  `);
+}
+
 async function connectWithRetry(retries = 5, delay = 3000) {
   for (let i = 1; i <= retries; i++) {
     try {
@@ -40,6 +50,7 @@ async function start() {
   }
 
   try {
+    await ensureUserProfileColumns();
     await sequelize.sync({ alter: false });
     console.log("[DB] Models synchronized");
   } catch (err) {

@@ -55,6 +55,21 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {user && (
+          <div className="mb-6 bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
+            <img
+              src={user.profile_image_url || `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name || user.email || 'User')}`}
+              alt="Perfil"
+              className="w-12 h-12 rounded-full object-cover border border-gray-200"
+            />
+            <div className="min-w-0">
+              <p className="text-sm font-black text-gray-900 truncate">{user.name}</p>
+              <p className="text-xs text-gray-500 truncate">{user.email}</p>
+              <p className="text-xs text-gray-400">Sesion iniciada · Plan {planKey}</p>
+            </div>
+          </div>
+        )}
+
         {/* Contador de creditos */}
         {limit !== null && !loading && (
           <div className="mb-6 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">

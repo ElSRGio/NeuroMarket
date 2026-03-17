@@ -55,6 +55,11 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
+            <img
+              src="https://api.dicebear.com/9.x/shapes/svg?seed=NeuroMarket"
+              alt="NeuroMarket"
+              className="w-20 h-20 mx-auto mb-3 rounded-2xl border border-gray-200 bg-white"
+            />
             <h1 className="text-3xl font-black text-gray-900 mb-2">Bienvenido de vuelta</h1>
             <p className="text-gray-500 text-sm">Inicia sesion para ver tus analisis</p>
           </div>

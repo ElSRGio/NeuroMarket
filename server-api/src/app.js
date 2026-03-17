@@ -20,7 +20,11 @@ function getAllowedOrigins() {
     .filter(Boolean);
 
   if (parsed.length > 0) return parsed;
-  return ["http://localhost:5173", "http://localhost:3000"];
+  return [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://neuromarket-web-portal.onrender.com",
+  ];
 }
 
 const allowedOrigins = getAllowedOrigins();

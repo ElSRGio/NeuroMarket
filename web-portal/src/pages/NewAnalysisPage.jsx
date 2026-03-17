@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { investmentService } from '../services/investment.service.js'
+import api, { engineUrl } from '../services/api.js'
 import AppNav from '../components/AppNav.jsx'
 
 const DEFAULT_IDM = [0.85, 0.90, 1.00, 1.00, 1.10, 0.95, 1.00, 1.00, 1.15, 1.00, 1.20, 1.30]
@@ -44,7 +45,7 @@ export default function NewAnalysisPage() {
   })
 
   useEffect(() => {
-    fetch('/api/v2/municipios').then(r => r.json()).then(({ data }) => setMunicipios(data || [])).catch(() => {})
+    api.get('/api/v2/municipios').then(({ data }) => setMunicipios(data?.data || [])).catch(() => {})
   }, [])
 
   function set(key, val) { setForm(f => ({ ...f, [key]: val })) }
@@ -65,7 +66,7 @@ export default function NewAnalysisPage() {
     setSocialLoading(true)
     setSocialStatus('')
     try {
-      const res = await fetch(`/api/engine/social-density?municipio=${encodeURIComponent(form.municipio)}&estado=${encodeURIComponent(form.estado)}&sector=${encodeURIComponent(form.sector)}`)
+      const res = await fetch(engineUrl(`/api/engine/social-density?municipio=${encodeURIComponent(form.municipio)}&estado=${encodeURIComponent(form.estado)}&sector=${encodeURIComponent(form.sector)}`))
       if (!res.ok) throw new Error(`status ${res.status}`)
       const data = await res.json()
       if (data.densidad_digital !== undefined) {

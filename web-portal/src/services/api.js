@@ -5,7 +5,13 @@ import axios from 'axios'
 
 const rawApiUrl = import.meta.env.VITE_API_URL || ''
 const normalizedApiUrl = rawApiUrl.replace(/\/$/, '')
-const baseURL = import.meta.env.DEV ? '' : normalizedApiUrl
+const fallbackApiUrl = 'https://neuromarket-api.onrender.com'
+const baseURL = import.meta.env.DEV ? '' : (normalizedApiUrl || fallbackApiUrl)
+const rawEngineUrl = import.meta.env.VITE_ENGINE_URL || ''
+const normalizedEngineUrl = rawEngineUrl.replace(/\/$/, '')
+const fallbackEngineUrl = 'https://neuromarket-engine.onrender.com'
+export const engineBaseUrl = import.meta.env.DEV ? '' : (normalizedEngineUrl || fallbackEngineUrl)
+export const engineUrl = (path) => `${engineBaseUrl}${path}`
 
 const api = axios.create({
   baseURL,

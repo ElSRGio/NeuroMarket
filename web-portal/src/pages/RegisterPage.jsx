@@ -18,7 +18,15 @@ function HexLogo() {
 }
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ name: '', email: '', password: '' })
+  const [form, setForm] = useState({
+    name: '',
+    age: '',
+    email: '',
+    preferred_niches: '',
+    average_investment: '',
+    profile_image_url: '',
+    password: '',
+  })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { setAuth } = useAuthStore()
@@ -55,7 +63,7 @@ export default function RegisterPage() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-black text-gray-900 mb-2">Crea tu cuenta gratis</h1>
-            <p className="text-gray-500 text-sm">Empieza a analizar tu inversion hoy mismo</p>
+            <p className="text-gray-500 text-sm">Completa tu perfil para recomendaciones mas precisas</p>
           </div>
 
           <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
@@ -72,6 +80,26 @@ export default function RegisterPage() {
                   placeholder="Tu nombre"
                 />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Edad</label>
+                  <input
+                    type="number" min="16" max="100" value={form.age}
+                    onChange={e => setForm(f => ({ ...f, age: e.target.value }))}
+                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                    placeholder="24"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Inversion promedio ($)</label>
+                  <input
+                    type="number" min="0" step="100" value={form.average_investment}
+                    onChange={e => setForm(f => ({ ...f, average_investment: e.target.value }))}
+                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                    placeholder="50000"
+                  />
+                </div>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
                 <input
@@ -80,6 +108,32 @@ export default function RegisterPage() {
                   className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
                   placeholder="tu@email.com"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Nichos de preferencia</label>
+                <input
+                  type="text" value={form.preferred_niches}
+                  onChange={e => setForm(f => ({ ...f, preferred_niches: e.target.value }))}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="Ej: Restaurantes, retail, salud"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Imagen de perfil (URL)</label>
+                <input
+                  type="url" value={form.profile_image_url}
+                  onChange={e => setForm(f => ({ ...f, profile_image_url: e.target.value }))}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                  placeholder="https://..."
+                />
+                {form.profile_image_url && (
+                  <img
+                    src={form.profile_image_url}
+                    alt="Preview perfil"
+                    className="mt-3 w-14 h-14 rounded-full object-cover border border-gray-200"
+                    onError={(e) => { e.currentTarget.style.display = 'none' }}
+                  />
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Contrasena</label>

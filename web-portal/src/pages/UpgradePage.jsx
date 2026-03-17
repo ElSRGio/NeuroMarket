@@ -201,15 +201,15 @@ export default function UpgradePage() {
             <Link to="/login" className="text-sm text-gray-600 hover:text-gray-900 border border-gray-300 px-4 py-2 rounded-md transition-colors">
               Iniciar sesion
             </Link>
-            <Link to="/analysis/new" className="text-sm font-semibold px-4 py-2 rounded-md transition-colors text-white" style={{ backgroundColor: '#22c55e' }}>
-              Comienza
+            <Link to="/register" className="text-sm font-semibold px-4 py-2 rounded-md transition-colors text-white" style={{ backgroundColor: '#22c55e' }}>
+              Registrate
             </Link>
           </div>
 
           {/* Mobile: botón Comienza + hamburguesa */}
           <div className="flex md:hidden items-center gap-2">
-            <Link to="/analysis/new" className="text-xs font-semibold px-3 py-2 rounded-md text-white" style={{ backgroundColor: '#22c55e' }}>
-              Comienza
+            <Link to="/register" className="text-xs font-semibold px-3 py-2 rounded-md text-white" style={{ backgroundColor: '#22c55e' }}>
+              Registrate
             </Link>
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-md text-gray-600 hover:bg-gray-100 transition-colors">
               {mobileMenuOpen ? (

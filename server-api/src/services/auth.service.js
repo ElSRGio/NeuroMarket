@@ -5,12 +5,20 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 
-async function register({ name, email, password }) {
+async function register({ name, email, password, age, preferred_niches, average_investment, profile_image_url }) {
   const existing = await User.findOne({ where: { email } });
   if (existing) throw Object.assign(new Error("El email ya está registrado"), { status: 409 });
 
   const password_hash = await bcrypt.hash(password, 12);
-  const user = await User.create({ name, email, password_hash });
+  const user = await User.create({
+    name,
+    email,
+    age: age || null,
+    preferred_niches: preferred_niches || null,
+    average_investment: average_investment || null,
+    profile_image_url: profile_image_url || null,
+    password_hash,
+  });
 
   const token = _signToken(user);
   return { user: _safeUser(user), token };
@@ -36,7 +44,16 @@ function _signToken(user) {
 }
 
 function _safeUser(user) {
-  return { id: user.id, name: user.name, email: user.email, plan_type: user.plan_type };
+  return {
+    id: user.id,
+    name: user.name,
+    age: user.age,
+    email: user.email,
+    preferred_niches: user.preferred_niches,
+    average_investment: user.average_investment,
+    profile_image_url: user.profile_image_url,
+    plan_type: user.plan_type,
+  };
 }
 
 module.exports = { register, login };

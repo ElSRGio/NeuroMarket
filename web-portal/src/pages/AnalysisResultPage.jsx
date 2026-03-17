@@ -51,7 +51,20 @@ export default function AnalysisResultPage() {
       link.remove()
       URL.revokeObjectURL(url)
     } catch (error) {
-      const msg = error?.response?.data?.error || error?.message || 'No se pudo exportar el PDF'
+      let msg = error?.message || 'No se pudo exportar el PDF'
+
+      if (error?.response?.data instanceof Blob) {
+        try {
+          const text = await error.response.data.text()
+          const parsed = JSON.parse(text)
+          msg = parsed?.error || msg
+        } catch {
+          msg = error?.message || msg
+        }
+      } else if (error?.response?.data?.error) {
+        msg = error.response.data.error
+      }
+
       alert(msg)
     } finally {
       setDownloadingPdf(false)

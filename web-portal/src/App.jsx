@@ -8,6 +8,7 @@ import AnalysisResultPage from './pages/AnalysisResultPage.jsx'
 import PresentationPage from './pages/PresentationPage.jsx'
 import UpgradePage from './pages/UpgradePage.jsx'
 import TrashPage from './pages/TrashPage.jsx'
+import AdminDashboardPage from './pages/AdminDashboardPage.jsx'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
       <Route path="/analysis/:id" element={<AnalysisResultPage />} />
       <Route path="/presentation" element={<PresentationPage />} />
       <Route path="/upgrade" element={<UpgradePage />} />
+      <Route path="/admin" element={<AdminDashboardPage />} />
       <Route path="/trash" element={<TrashPage />} />
     </Routes>
   )

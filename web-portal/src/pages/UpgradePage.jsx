@@ -481,10 +481,11 @@ export default function UpgradePage() {
                 2026 NeuroMarket 2.0. Proyecto academico - Ingenieria en Sistemas, Libres, Puebla.
               </span>
             </div>
-            <div className="flex gap-4 text-gray-400 text-lg">
+            <div className="flex gap-4 text-gray-400 text-lg items-center">
               <span className="cursor-pointer hover:text-gray-600">🐦</span>
               <span className="cursor-pointer hover:text-gray-600">📘</span>
               <span className="cursor-pointer hover:text-gray-600">💼</span>
+              <Link to="/admin" className="text-xs ml-4 text-gray-400 hover:text-gray-600 transition-colors">Admin Login</Link>
             </div>
           </div>
         </div>

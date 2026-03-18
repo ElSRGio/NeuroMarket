@@ -16,7 +16,11 @@ async function registerUser(req, res, next) {
     return res.status(400).json({ error: msg });
   }
   try {
-    const result = await register(req.body);
+    const data = { ...req.body };
+    if (req.file) {
+      data.profile_image_url = `/uploads/${req.file.filename}`;
+    }
+    const result = await register(data);
     res.status(201).json(result);
   } catch (err) { next(err); }
 }

@@ -20,13 +20,14 @@ function HexLogo() {
 export default function RegisterPage() {
   const [form, setForm] = useState({
     name: '',
+    last_name: '',
     age: '',
     email: '',
     preferred_niches: '',
     average_investment: '',
-    profile_image_url: '',
     password: '',
   })
+  const [profileImage, setProfileImage] = useState(null);
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { setAuth } = useAuthStore()
@@ -37,7 +38,17 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
     try {
-      const { data } = await authService.register(form)
+      const formData = new FormData()
+      formData.append("name", form.name)
+      formData.append("last_name", form.last_name)
+      formData.append("email", form.email)
+      formData.append("password", form.password)
+      if (form.age) formData.append("age", form.age)
+      if (form.preferred_niches) formData.append("preferred_niches", form.preferred_niches)
+      if (form.average_investment) formData.append("average_investment", form.average_investment)
+      if (profileImage) formData.append("profile_image", profileImage)
+
+      const { data } = await authService.register(formData)
       setAuth(data.user, data.token)
       navigate('/dashboard')
     } catch (err) {
@@ -71,14 +82,25 @@ export default function RegisterPage() {
               <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm">{error}</div>
             )}
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Nombre completo</label>
-                <input
-                  type="text" required value={form.name}
-                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                  placeholder="Tu nombre"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Nombre (s)</label>
+                  <input
+                    type="text" required value={form.name}
+                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                    placeholder="Tus nombres"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Apellidos</label>
+                  <input
+                    type="text" required value={form.last_name}
+                    onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))}
+                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                    placeholder="Tus apellidos"
+                  />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -119,21 +141,13 @@ export default function RegisterPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Imagen de perfil (URL)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Imagen de perfil</label>
                 <input
-                  type="url" value={form.profile_image_url}
-                  onChange={e => setForm(f => ({ ...f, profile_image_url: e.target.value }))}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                  placeholder="https://..."
+                  type="file"
+                  accept="image/*"
+                  onChange={e => setProfileImage(e.target.files[0])}
+                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
                 />
-                {form.profile_image_url && (
-                  <img
-                    src={form.profile_image_url}
-                    alt="Preview perfil"
-                    className="mt-3 w-14 h-14 rounded-full object-cover border border-gray-200"
-                    onError={(e) => { e.currentTarget.style.display = 'none' }}
-                  />
-                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Contrasena</label>

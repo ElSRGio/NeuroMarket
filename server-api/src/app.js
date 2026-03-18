@@ -6,9 +6,11 @@ const cors = require("cors");
 const helmet = require("helmet");
 
 const authRoutes = require("./routes/auth.routes");
+const adminRoutes = require("./routes/admin.routes");
 const investmentRoutes = require("./routes/investment.routes");
 const reportsRoutes = require("./routes/reports.routes");
 const municipiosRoutes = require("./routes/municipios.routes");
+const path = require("path");
 
 const app = express();
 
@@ -48,7 +50,11 @@ app.get("/health", (req, res) => {
 });
 
 // Routes
+// Start uploads folder statically
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 app.use("/api/v2/auth", authRoutes);
+app.use("/api/v2/admin", adminRoutes);
 app.use("/api/v2/investment", investmentRoutes);
 app.use("/api/v2/municipios", municipiosRoutes);
 app.use("/api/v2/reports", reportsRoutes);

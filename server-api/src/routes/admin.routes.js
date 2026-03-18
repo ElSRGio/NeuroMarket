@@ -2,7 +2,10 @@ const router = require("express").Router();
 const requireAuth = require("../middleware/auth.middleware");
 const { 
   getAllUsers, 
-  updateUserPlan
+  updateUserPlan,
+  updateUser,
+  deleteUser,
+  getDeletedUsersLog,
 } = require("../controllers/admin.controller");
 
 // Simple optional admin check
@@ -17,6 +20,9 @@ const requireAdmin = (req, res, next) => {
 router.use(requireAuth, requireAdmin);
 
 router.get("/users", getAllUsers);
+router.get("/users/deleted-log", getDeletedUsersLog);
+router.put("/users/:id", updateUser);
 router.put("/users/:id/plan", updateUserPlan);
+router.delete("/users/:id", deleteUser);
 
 module.exports = router;

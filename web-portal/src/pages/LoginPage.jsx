@@ -31,7 +31,11 @@ export default function LoginPage() {
     try {
       const { data } = await authService.login(form)
       setAuth(data.user, data.token)
-      navigate('/dashboard')
+      if (data.user.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err) {
       setError(err.response?.data?.error || 'Error al iniciar sesion')
     } finally {

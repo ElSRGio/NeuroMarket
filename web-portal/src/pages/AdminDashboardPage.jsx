@@ -11,11 +11,15 @@ export default function AdminDashboardPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') {
-      // Allow temp admin login simulation or redirect?
-      // Since it's a requirement to view users, let's assume valid login
+    if (!user) {
+      navigate('/login');
+    } else if (user.role !== 'admin') {
+      setError('No tienes permisos de administrador. Inicia sesión con una cuenta de admin.');
+      setLoading(false);
+    } else {
+      loadUsers();
     }
-  }, [user]);
+  }, [user, navigate]);
 
   const loadUsers = async () => {
     try {
@@ -29,9 +33,7 @@ export default function AdminDashboardPage() {
     }
   };
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
+  // Se remueve el useEffect viejo que llamaba a loadUsers sin validación
 
   const handlePlanChange = async (id, newPlan) => {
     try {

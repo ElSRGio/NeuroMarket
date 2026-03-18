@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { investmentService } from '../services/investment.service.js'
+import api from '../services/api.js'
 import { useAuthStore } from '../store/auth.store.js'
 import AppNav from '../components/AppNav.jsx'
 
@@ -17,6 +18,12 @@ export default function DashboardPage() {
   const used = credits?.used ?? analyses.length
   const atLimit = limit !== null && used >= limit
   const sessionStartedAt = localStorage.getItem('nm_session_started_at')
+
+  const profileImageSrc = user?.profile_image_url
+    ? (user.profile_image_url.startsWith('http')
+      ? user.profile_image_url
+      : `${api.defaults.baseURL || ''}${user.profile_image_url}`)
+    : `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user?.name || user?.email || 'User')}`
 
   useEffect(() => {
     Promise.all([
@@ -59,9 +66,12 @@ export default function DashboardPage() {
         {user && (
           <Link to="/profile" className="mb-6 bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center gap-3 hover:border-green-300 transition-colors">
             <img
-              src={user.profile_image_url || `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name || user.email || 'User')}`}
+              src={profileImageSrc}
               alt="Perfil"
               className="w-12 h-12 rounded-full object-cover border border-gray-200"
+              onError={(e) => {
+                e.currentTarget.src = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name || user.email || 'User')}`
+              }}
             />
             <div className="min-w-0">
               <p className="text-sm font-black text-gray-900 truncate">{user.name}</p>

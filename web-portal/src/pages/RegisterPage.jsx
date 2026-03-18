@@ -3,6 +3,19 @@ import { Link, useNavigate } from 'react-router-dom'
 import { authService } from '../services/investment.service.js'
 import { useAuthStore } from '../store/auth.store.js'
 
+const NICHE_OPTIONS = [
+  'Restaurantes',
+  'Retail',
+  'Salud',
+  'Educación',
+  'Tecnología',
+  'Servicios',
+  'Belleza',
+  'Fitness',
+  'Turismo',
+  'Entretenimiento',
+]
+
 function HexLogo() {
   return (
     <svg width={40} height={40} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,6 +40,7 @@ export default function RegisterPage() {
     average_investment: '',
     password: '',
   })
+  const [selectedNiches, setSelectedNiches] = useState([])
   const [profileImage, setProfileImage] = useState(null);
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -44,7 +58,7 @@ export default function RegisterPage() {
       formData.append("email", form.email)
       formData.append("password", form.password)
       if (form.age) formData.append("age", form.age)
-      if (form.preferred_niches) formData.append("preferred_niches", form.preferred_niches)
+      if (selectedNiches.length > 0) formData.append("preferred_niches", selectedNiches.join(', '))
       if (form.average_investment) formData.append("average_investment", form.average_investment)
       if (profileImage) formData.append("profile_image", profileImage)
 
@@ -133,11 +147,31 @@ export default function RegisterPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Nichos de preferencia</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {NICHE_OPTIONS.map((niche) => {
+                    const active = selectedNiches.includes(niche)
+                    return (
+                      <button
+                        key={niche}
+                        type="button"
+                        onClick={() => setSelectedNiches((prev) => active ? prev.filter((n) => n !== niche) : [...prev, niche])}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                          active
+                            ? 'bg-green-600 text-white border-green-600'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-green-500 hover:text-green-700'
+                        }`}
+                      >
+                        {niche}
+                      </button>
+                    )
+                  })}
+                </div>
                 <input
-                  type="text" value={form.preferred_niches}
-                  onChange={e => setForm(f => ({ ...f, preferred_niches: e.target.value }))}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                  placeholder="Ej: Restaurantes, retail, salud"
+                  type="text"
+                  value={selectedNiches.join(', ')}
+                  readOnly
+                  className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-gray-700 text-sm"
+                  placeholder="Selecciona uno o más nichos"
                 />
               </div>
               <div>

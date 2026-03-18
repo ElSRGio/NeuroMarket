@@ -217,7 +217,8 @@ function calculateMonteCarlo(params = {}) {
       utilidad += (ingreso * idm * margen_utilidad) - costo
     }
     const roiBase = inversion_inicial > 0 ? (utilidad / inversion_inicial) * 100 : utilidad
-    const roi = clamp(roiBase, -100, 100)
+    // Transformación suave acotada para evitar saturación plana en 100.
+    const roi = clamp(100 * Math.tanh(roiBase / 120), -100, 100)
     roiValues.push(roi)
   }
 
@@ -228,11 +229,11 @@ function calculateMonteCarlo(params = {}) {
   const p90 = percentile(90)
   const mean_roi = roiValues.reduce((sum, value) => sum + value, 0) / roiValues.length
   const std_roi = Math.sqrt(roiValues.reduce((sum, value) => sum + ((value - mean_roi) ** 2), 0) / roiValues.length)
-  const prob_positivo = clamp((roiValues.filter((value) => value >= 100).length / roiValues.length) * 100, 0, 100)
+  const prob_positivo = clamp((roiValues.filter((value) => value >= 60).length / roiValues.length) * 100, 0, 100)
 
   let interpretacion = 'Alta incertidumbre. Reconsiderar supuestos de ingreso o capital inicial.'
-  if (prob_positivo >= 80 && p50 >= 60) interpretacion = 'Alta probabilidad de éxito. Inversión respaldada estadísticamente.'
-  else if (prob_positivo >= 65) interpretacion = 'Probabilidad favorable. Riesgo manejable con buena ejecución.'
+  if (prob_positivo >= 75 && p50 >= 60) interpretacion = 'Alta probabilidad de éxito. Inversión respaldada estadísticamente.'
+  else if (prob_positivo >= 60) interpretacion = 'Probabilidad favorable. Riesgo manejable con buena ejecución.'
   else if (prob_positivo >= 45) interpretacion = 'Viabilidad moderada. Requiere estrategia sólida y control de costos.'
 
   return {

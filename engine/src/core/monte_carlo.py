@@ -66,14 +66,19 @@ class MonteCarloSimulator:
 
         utilidad_mensual = (ingresos * idm_vector * margen_utilidad) - costos
         utilidad_total = np.sum(utilidad_mensual, axis=1)
-        roi_dist = (utilidad_total / inversion_inicial * 100) if inversion_inicial > 0 else utilidad_total
+
+        # ROI bruto financiero (puede superar 100%), luego se transforma a una escala
+        # acotada [-100, 100] para reporte estable y comparable.
+        raw_roi_dist = (utilidad_total / inversion_inicial * 100) if inversion_inicial > 0 else utilidad_total
+        roi_dist = 100.0 * np.tanh(raw_roi_dist / 120.0)
         roi_dist = np.clip(roi_dist, -100, 100)
 
         p10 = float(np.percentile(roi_dist, 10))
         p50 = float(np.percentile(roi_dist, 50))
         p90 = float(np.percentile(roi_dist, 90))
         # Éxito = recuperar la inversión en el horizonte evaluado (ROI >= 100%)
-        prob_pos = float(np.clip(np.mean(roi_dist >= 100) * 100, 0, 100))
+        # Éxito = probabilidad de lograr un ROI acotado >= 60 (escenario sólido).
+        prob_pos = float(np.clip(np.mean(roi_dist >= 60) * 100, 0, 100))
 
         histogram, bin_edges = np.histogram(roi_dist, bins=20)
 
@@ -98,9 +103,9 @@ class MonteCarloSimulator:
         }
 
     def _interpret(self, prob_positivo: float, p50: float) -> str:
-        if prob_positivo >= 80 and p50 >= 60:
+        if prob_positivo >= 75 and p50 >= 60:
             return "Alta probabilidad de éxito. Inversión respaldada estadísticamente."
-        elif prob_positivo >= 65:
+        elif prob_positivo >= 60:
             return "Probabilidad favorable. Riesgo manejable con buena ejecución."
         elif prob_positivo >= 45:
             return "Viabilidad moderada. Requiere estrategia sólida y control de costos."

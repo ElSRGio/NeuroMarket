@@ -12,6 +12,9 @@ async function getAllUsers(req, res, next) {
     // If analysis model has user_id, we can manually get counts
     const usersWithStats = await Promise.all(users.map(async (user) => {
       const u = user.toJSON();
+      const lastActivity = u.updatedAt || u.updated_at || u.createdAt || u.created_at;
+      const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+      u.is_active = !!lastActivity && (Date.now() - new Date(lastActivity).getTime() <= THIRTY_DAYS_MS);
       try {
         const analysesCount = await Analysis.count({ where: { user_id: u.id } });
         u.analysesCount = analysesCount;
@@ -31,6 +34,10 @@ async function updateUserPlan(req, res, next) {
   try {
     const { id } = req.params;
     const { plan_type } = req.body;
+
+    if (!["basic", "pro", "enterprise"].includes(plan_type)) {
+      return res.status(400).json({ error: "Plan inválido" });
+    }
 
     const user = await User.findByPk(id);
     if (!user) return res.status(404).json({ error: "Usuario no encontrado" });

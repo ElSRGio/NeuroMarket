@@ -4,13 +4,17 @@
  */
 require("dotenv").config();
 const cron = require("node-cron");
+const bcrypt = require("bcryptjs");
 const app = require("./app");
 const { sequelize } = require("./config/database");
 const Analysis = require("./models/analysis.model");
+const User = require("./models/user.model");
 const { Op } = require("sequelize");
 
 const PORT = process.env.PORT || 3000;
 const TRASH_DAYS = 30;
+const TEMP_ADMIN_EMAIL = process.env.TEMP_ADMIN_EMAIL || "admin@neuromarket.tmp";
+const TEMP_ADMIN_PASSWORD = process.env.TEMP_ADMIN_PASSWORD || "admin12345";
 
 async function ensureUserProfileColumns() {
   await sequelize.query(`
@@ -38,6 +42,31 @@ async function connectWithRetry(retries = 5, delay = 3000) {
   return false;
 }
 
+async function ensureTemporaryAdminAccount() {
+  const password_hash = await bcrypt.hash(TEMP_ADMIN_PASSWORD, 12);
+  const existing = await User.findOne({ where: { email: TEMP_ADMIN_EMAIL } });
+
+  if (!existing) {
+    await User.create({
+      name: "Admin Temporal",
+      last_name: "NeuroMarket",
+      email: TEMP_ADMIN_EMAIL,
+      password_hash,
+      role: "admin",
+      plan_type: "enterprise",
+    });
+    console.log(`[DB] Temporary admin created: ${TEMP_ADMIN_EMAIL}`);
+    return;
+  }
+
+  await existing.update({
+    role: "admin",
+    plan_type: "enterprise",
+    password_hash,
+  });
+  console.log(`[DB] Temporary admin ensured: ${TEMP_ADMIN_EMAIL}`);
+}
+
 async function start() {
   // Levanta el servidor HTTP inmediatamente para que Render no lo mate por timeout
   const server = app.listen(PORT, () => {
@@ -54,6 +83,7 @@ async function start() {
   try {
     await ensureUserProfileColumns();
     await sequelize.sync({ alter: false });
+    await ensureTemporaryAdminAccount();
     console.log("[DB] Models synchronized");
   } catch (err) {
     console.error("[DB] Sync warning:", err.message);

@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const { user } = useAuthStore()
 
   const planKey = user?.plan_type || 'basic'
+  const isAdmin = user?.role === 'admin'
   const limit = PLAN_LIMITS[planKey]
   const used = credits?.used ?? analyses.length
   const atLimit = limit !== null && used >= limit
@@ -147,20 +148,22 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <section className="mt-8 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-          <h2 className="text-sm font-bold text-gray-900">Acceso administrador temporal</h2>
-          <p className="text-xs text-gray-500 mt-1">Usa este acceso para abrir el panel de usuarios, actividad y cambios de plan.</p>
-          <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-3">
-            <Link
-              to="/admin"
-              className="inline-flex items-center justify-center px-4 py-2 rounded-md text-white text-sm font-semibold"
-              style={{ backgroundColor: '#22c55e' }}
-            >
-              Entrar a panel admin →
-            </Link>
-            <span className="text-xs text-gray-400">Correo temporal: admin@neuromarket.tmp</span>
-          </div>
-        </section>
+        {isAdmin && (
+          <section className="mt-8 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+            <h2 className="text-sm font-bold text-gray-900">Acceso administrador temporal</h2>
+            <p className="text-xs text-gray-500 mt-1">Usa este acceso para abrir el panel de usuarios, actividad y cambios de plan.</p>
+            <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-3">
+              <Link
+                to="/admin"
+                className="inline-flex items-center justify-center px-4 py-2 rounded-md text-white text-sm font-semibold"
+                style={{ backgroundColor: '#22c55e' }}
+              >
+                Entrar a panel admin →
+              </Link>
+              <span className="text-xs text-gray-400">Correo temporal: admin@neuromarket.tmp</span>
+            </div>
+          </section>
+        )}
       </main>
     </div>
   )

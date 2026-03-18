@@ -84,7 +84,9 @@ export default function AdminDashboardPage() {
                         )}
                         <div>
                           {u.name} {u.last_name || ''}
-                          <div className="text-xs text-green-600">Activo</div>
+                          <div className={`text-xs ${u.is_active ? 'text-green-600' : 'text-gray-400'}`}>
+                            {u.is_active ? 'Activo' : 'Inactivo'}
+                          </div>
                         </div>
                       </div>
                     </td>

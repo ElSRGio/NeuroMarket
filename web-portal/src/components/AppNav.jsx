@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/auth.store.js'
+import api from '../services/api.js'
 
 function HexLogo({ size = 30 }) {
   return (
@@ -31,6 +32,11 @@ export default function AppNav({ showNewAnalysis = true }) {
 
   const planKey = user?.plan_type || 'basic'
   const badge = PLAN_BADGE[planKey] || PLAN_BADGE.basic
+  const avatarSrc = user?.profile_image_url
+    ? (user.profile_image_url.startsWith('http')
+      ? user.profile_image_url
+      : `${api.defaults.baseURL || ''}${user.profile_image_url}`)
+    : `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user?.name || user?.email || 'User')}`
 
   function handleLogout() {
     logout()
@@ -79,9 +85,14 @@ export default function AppNav({ showNewAnalysis = true }) {
               onClick={() => setProfileOpen((v) => !v)}
               className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50"
             >
-              <span className="w-7 h-7 rounded-full bg-gray-100 border border-gray-300 text-xs font-bold text-gray-700 flex items-center justify-center">
-                {(user.name || user.email || 'U').charAt(0).toUpperCase()}
-              </span>
+              <img
+                src={avatarSrc}
+                alt="Perfil"
+                className="w-7 h-7 rounded-full object-cover border border-gray-300"
+                onError={(e) => {
+                  e.currentTarget.src = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name || user.email || 'User')}`
+                }}
+              />
               <span className="text-sm text-gray-700 font-medium">{user.name || 'Perfil'}</span>
             </button>
           )}

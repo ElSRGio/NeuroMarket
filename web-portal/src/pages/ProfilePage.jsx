@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppNav from '../components/AppNav.jsx'
 import { authService } from '../services/investment.service.js'
 import { useAuthStore } from '../store/auth.store.js'
+import api from '../services/api.js'
 
 const INPUT = 'w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
   const { user, token, setAuth } = useAuthStore()
+  const fileInputRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -23,6 +25,21 @@ export default function ProfilePage() {
     average_investment: '',
     profile_image_url: '',
   })
+
+  const resolvedImageSrc = useMemo(() => {
+    if (profileImage) return URL.createObjectURL(profileImage)
+    if (form.profile_image_url) {
+      if (form.profile_image_url.startsWith('http')) return form.profile_image_url
+      return `${api.defaults.baseURL || ''}${form.profile_image_url}`
+    }
+    return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(form.name || form.email || 'User')}`
+  }, [profileImage, form.profile_image_url, form.name, form.email])
+
+  useEffect(() => {
+    return () => {
+      if (profileImage) URL.revokeObjectURL(resolvedImageSrc)
+    }
+  }, [profileImage, resolvedImageSrc])
 
   useEffect(() => {
     if (!token) {
@@ -88,6 +105,39 @@ export default function ProfilePage() {
             {error && <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">{error}</div>}
             {ok && <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">{ok}</div>}
 
+            <div className="bg-gray-900 text-white rounded-2xl p-6 text-center relative overflow-hidden">
+              <div className="absolute inset-0 opacity-30" style={{ background: 'radial-gradient(circle at top, #374151 0%, transparent 60%)' }} />
+              <div className="relative">
+                <div className="relative w-28 h-28 mx-auto mb-3">
+                  <img
+                    src={resolvedImageSrc}
+                    alt="Perfil"
+                    className="w-28 h-28 rounded-full object-cover border-4 border-white/70"
+                    onError={(e) => {
+                      e.currentTarget.src = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(form.name || form.email || 'User')}`
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full border border-white/50 bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700"
+                    title="Cambiar foto"
+                  >
+                    📷
+                  </button>
+                </div>
+                <p className="text-2xl font-black">¡Hola, {form.name || 'Usuario'}!</p>
+                <p className="text-sm text-gray-300 mt-1">{form.email}</p>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="mt-4 border border-white/40 rounded-full px-4 py-2 text-sm font-semibold hover:bg-white/10"
+                >
+                  Cambiar foto de perfil
+                </button>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Nombre</label>
@@ -120,6 +170,7 @@ export default function ProfilePage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Foto de perfil (archivo)</label>
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 onChange={e => setProfileImage(e.target.files?.[0] || null)}

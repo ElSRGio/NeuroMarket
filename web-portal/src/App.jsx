@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import LandingPage from './pages/LandingPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
@@ -9,8 +10,20 @@ import PresentationPage from './pages/PresentationPage.jsx'
 import UpgradePage from './pages/UpgradePage.jsx'
 import TrashPage from './pages/TrashPage.jsx'
 import AdminDashboardPage from './pages/AdminDashboardPage.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
+import { authService } from './services/investment.service.js'
+import { useAuthStore } from './store/auth.store.js'
 
 export default function App() {
+  const { token, user, setUser, logout } = useAuthStore()
+
+  useEffect(() => {
+    if (!token || user) return
+    authService.me()
+      .then(({ data }) => setUser(data))
+      .catch(() => logout())
+  }, [token, user, setUser, logout])
+
   return (
     <Routes>
       <Route path="/" element={<UpgradePage />} />
@@ -23,6 +36,7 @@ export default function App() {
       <Route path="/presentation" element={<PresentationPage />} />
       <Route path="/upgrade" element={<UpgradePage />} />
       <Route path="/admin" element={<AdminDashboardPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
       <Route path="/trash" element={<TrashPage />} />
     </Routes>
   )

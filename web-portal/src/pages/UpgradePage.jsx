@@ -1,6 +1,7 @@
   // web-portal/src/pages/UpgradePage.jsx
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../store/auth.store.js'
 
 const NAV_DROPDOWN = {
   'Por que NeuroMarket': [
@@ -117,8 +118,10 @@ const FAQS = [
 
 export default function UpgradePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const [quickName, setQuickName] = useState('')
   const navigate = useNavigate()
+  const { user, logout } = useAuthStore()
 
   function handleQuickAnalysis(e) {
     e.preventDefault()
@@ -198,19 +201,51 @@ export default function UpgradePage() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/login" className="text-sm text-gray-600 hover:text-gray-900 border border-gray-300 px-4 py-2 rounded-md transition-colors">
-              Iniciar sesion
-            </Link>
-            <Link to="/register" className="text-sm font-semibold px-4 py-2 rounded-md transition-colors text-white" style={{ backgroundColor: '#22c55e' }}>
-              Registrate
-            </Link>
+            {!user ? (
+              <>
+                <Link to="/login" className="text-sm text-gray-600 hover:text-gray-900 border border-gray-300 px-4 py-2 rounded-md transition-colors">
+                  Iniciar sesion
+                </Link>
+                <Link to="/register" className="text-sm font-semibold px-4 py-2 rounded-md transition-colors text-white" style={{ backgroundColor: '#22c55e' }}>
+                  Registrate
+                </Link>
+              </>
+            ) : (
+              <div className="relative">
+                <button
+                  onClick={() => setProfileOpen(v => !v)}
+                  className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50"
+                >
+                  <span className="w-7 h-7 rounded-full bg-gray-100 border border-gray-300 text-xs font-bold text-gray-700 flex items-center justify-center">
+                    {(user.name || user.email || 'U').charAt(0).toUpperCase()}
+                  </span>
+                  <span className="text-sm text-gray-700 font-medium">{user.name || 'Perfil'}</span>
+                </button>
+                {profileOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                    <Link to="/profile" onClick={() => setProfileOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg">
+                      Ver mi perfil
+                    </Link>
+                    <button onClick={() => { logout(); navigate('/'); }} className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg">
+                      Cerrar sesión
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile: botón Comienza + hamburguesa */}
           <div className="flex md:hidden items-center gap-2">
-            <Link to="/register" className="text-xs font-semibold px-3 py-2 rounded-md text-white" style={{ backgroundColor: '#22c55e' }}>
-              Registrate
-            </Link>
+            {!user ? (
+              <Link to="/register" className="text-xs font-semibold px-3 py-2 rounded-md text-white" style={{ backgroundColor: '#22c55e' }}>
+                Registrate
+              </Link>
+            ) : (
+              <button onClick={() => navigate('/profile')} className="text-xs font-semibold px-3 py-2 rounded-md text-white" style={{ backgroundColor: '#22c55e' }}>
+                Mi perfil
+              </button>
+            )}
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-md text-gray-600 hover:bg-gray-100 transition-colors">
               {mobileMenuOpen ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -249,9 +284,20 @@ export default function UpgradePage() {
               <Link to="/presentation" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Demo</Link>
               <span className="block px-3 py-2 text-sm font-bold text-gray-900">Precios</span>
               <div className="border-t border-gray-100 my-2"/>
-              <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block w-full text-center py-2.5 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                Iniciar sesion
-              </Link>
+              {!user ? (
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block w-full text-center py-2.5 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                  Iniciar sesion
+                </Link>
+              ) : (
+                <div className="space-y-2">
+                  <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block w-full text-center py-2.5 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    Ver mi perfil
+                  </Link>
+                  <button onClick={() => { logout(); setMobileMenuOpen(false); navigate('/'); }} className="block w-full text-center py-2.5 text-sm border border-red-200 rounded-md text-red-600 hover:bg-red-50">
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

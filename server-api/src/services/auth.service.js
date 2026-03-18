@@ -37,6 +37,40 @@ async function login({ email, password }) {
   return { user: _safeUser(user), token };
 }
 
+async function getProfile(userId) {
+  const user = await User.findByPk(userId);
+  if (!user) throw Object.assign(new Error("Usuario no encontrado"), { status: 404 });
+  return _safeUser(user);
+}
+
+async function updateProfile(userId, payload) {
+  const user = await User.findByPk(userId);
+  if (!user) throw Object.assign(new Error("Usuario no encontrado"), { status: 404 });
+
+  const {
+    name,
+    last_name,
+    age,
+    preferred_niches,
+    average_investment,
+    profile_image_url,
+  } = payload;
+
+  if (name !== undefined) user.name = name;
+  if (last_name !== undefined) user.last_name = last_name || null;
+  if (age !== undefined) user.age = age === "" || age === null ? null : Number(age);
+  if (preferred_niches !== undefined) user.preferred_niches = preferred_niches || null;
+  if (average_investment !== undefined) {
+    user.average_investment = average_investment === "" || average_investment === null
+      ? null
+      : Number(average_investment);
+  }
+  if (profile_image_url !== undefined) user.profile_image_url = profile_image_url || null;
+
+  await user.save();
+  return _safeUser(user);
+}
+
 function _signToken(user) {
   return jwt.sign(
     { id: user.id, email: user.email, plan: user.plan_type, role: user.role },
@@ -60,4 +94,4 @@ function _safeUser(user) {
   };
 }
 
-module.exports = { register, login };
+module.exports = { register, login, getProfile, updateProfile };

@@ -3,6 +3,8 @@ import api from './api'
 export const authService = {
   register: (data) => api.post('/api/v2/auth/register', data),
   login: (data) => api.post('/api/v2/auth/login', data),
+  me: () => api.get('/api/v2/auth/me'),
+  updateMe: (data) => api.put('/api/v2/auth/me', data),
 }
 
 export const investmentService = {

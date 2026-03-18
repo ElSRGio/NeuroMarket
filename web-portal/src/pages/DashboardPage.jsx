@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const limit = PLAN_LIMITS[planKey]
   const used = credits?.used ?? analyses.length
   const atLimit = limit !== null && used >= limit
+  const sessionStartedAt = localStorage.getItem('nm_session_started_at')
 
   useEffect(() => {
     Promise.all([
@@ -56,7 +57,7 @@ export default function DashboardPage() {
         </div>
 
         {user && (
-          <div className="mb-6 bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
+          <Link to="/profile" className="mb-6 bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex items-center gap-3 hover:border-green-300 transition-colors">
             <img
               src={user.profile_image_url || `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name || user.email || 'User')}`}
               alt="Perfil"
@@ -65,9 +66,11 @@ export default function DashboardPage() {
             <div className="min-w-0">
               <p className="text-sm font-black text-gray-900 truncate">{user.name}</p>
               <p className="text-xs text-gray-500 truncate">{user.email}</p>
-              <p className="text-xs text-gray-400">Sesion iniciada · Plan {planKey}</p>
+              <p className="text-xs text-gray-400">
+                Sesión iniciada {sessionStartedAt ? `· ${new Date(sessionStartedAt).toLocaleString()}` : ''} · Plan {planKey}
+              </p>
             </div>
-          </div>
+          </Link>
         )}
 
         {/* Contador de creditos */}

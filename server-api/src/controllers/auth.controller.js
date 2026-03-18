@@ -1,7 +1,7 @@
 /**
  * Auth Controller
  */
-const { register, login } = require("../services/auth.service");
+const { register, login, getProfile, updateProfile } = require("../services/auth.service");
 const { validationResult } = require("express-validator");
 
 async function registerUser(req, res, next) {
@@ -34,4 +34,26 @@ async function loginUser(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { registerUser, loginUser };
+async function me(req, res, next) {
+  try {
+    const user = await getProfile(req.user.id);
+    res.json(user);
+  } catch (err) { next(err); }
+}
+
+async function updateMe(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: 'Datos inválidos para actualizar perfil' });
+  }
+  try {
+    const data = { ...req.body };
+    if (req.file) {
+      data.profile_image_url = `/uploads/${req.file.filename}`;
+    }
+    const user = await updateProfile(req.user.id, data);
+    res.json(user);
+  } catch (err) { next(err); }
+}
+
+module.exports = { registerUser, loginUser, me, updateMe };

@@ -3,7 +3,8 @@
  */
 const router = require("express").Router();
 const { body } = require("express-validator");
-const { registerUser, loginUser } = require("../controllers/auth.controller");
+const { registerUser, loginUser, me, updateMe } = require("../controllers/auth.controller");
+const auth = require("../middleware/auth.middleware");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -41,6 +42,19 @@ router.post("/login",
   body("email").isEmail().normalizeEmail(),
   body("password").notEmpty(),
   loginUser
+);
+
+router.get("/me", auth, me);
+
+router.put("/me",
+  auth,
+  upload.single("profile_image"),
+  body("name").optional({ values: "falsy" }).trim(),
+  body("last_name").optional({ values: "falsy" }).trim(),
+  body("age").optional({ values: "falsy" }).isInt({ min: 16, max: 100 }),
+  body("preferred_niches").optional({ values: "falsy" }).isString().isLength({ max: 255 }),
+  body("average_investment").optional({ values: "falsy" }).isFloat({ min: 0 }),
+  updateMe
 );
 
 module.exports = router;

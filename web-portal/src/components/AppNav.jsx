@@ -25,6 +25,7 @@ const PLAN_BADGE = {
 
 export default function AppNav({ showNewAnalysis = true }) {
   const [open, setOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
 
@@ -58,7 +59,7 @@ export default function AppNav({ showNewAnalysis = true }) {
         </div>
 
         {/* Desktop CTA */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-3 relative">
           {planKey === 'basic' && (
             <Link to="/upgrade" className="text-xs font-semibold text-green-600 hover:text-green-700 transition-colors">
               ↑ Actualizar plan
@@ -75,11 +76,25 @@ export default function AppNav({ showNewAnalysis = true }) {
           )}
           {user && (
             <button
-              onClick={handleLogout}
-              className="text-sm text-gray-500 hover:text-gray-800 transition-colors"
+              onClick={() => setProfileOpen((v) => !v)}
+              className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50"
             >
-              Salir
+              <span className="w-7 h-7 rounded-full bg-gray-100 border border-gray-300 text-xs font-bold text-gray-700 flex items-center justify-center">
+                {(user.name || user.email || 'U').charAt(0).toUpperCase()}
+              </span>
+              <span className="text-sm text-gray-700 font-medium">{user.name || 'Perfil'}</span>
             </button>
+          )}
+
+          {user && profileOpen && (
+            <div className="absolute right-0 top-full mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+              <Link to="/profile" onClick={() => setProfileOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg">
+                Ver mi perfil
+              </Link>
+              <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg">
+                Cerrar sesión
+              </button>
+            </div>
           )}
         </div>
 

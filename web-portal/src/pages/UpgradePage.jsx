@@ -275,6 +275,22 @@ export default function UpgradePage() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-100 bg-white px-4 pb-4">
             <div className="pt-3 space-y-1">
+              {user && (
+                <div className="mb-2 bg-gray-50 border border-gray-200 rounded-lg p-3 flex items-center gap-3">
+                  <img
+                    src={avatarSrc}
+                    alt="Perfil"
+                    className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                    onError={(e) => {
+                      e.currentTarget.src = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name || user.email || 'User')}`
+                    }}
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">{user.name || 'Usuario'}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
+                </div>
+              )}
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 pt-2 pb-1">Por que NeuroMarket</p>
               {NAV_DROPDOWN['Por que NeuroMarket'].map((item, i) => (
                 <div key={i} className="px-3 py-2 rounded-lg hover:bg-gray-50">

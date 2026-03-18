@@ -133,13 +133,32 @@ export default function AppNav({ showNewAnalysis = true }) {
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden border-t border-gray-100 bg-white px-4 pb-4 space-y-1 pt-3">
+          {user && (
+            <div className="mb-2 bg-gray-50 border border-gray-200 rounded-lg p-3 flex items-center gap-3">
+              <img
+                src={avatarSrc}
+                alt="Perfil"
+                className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                onError={(e) => {
+                  e.currentTarget.src = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name || user.email || 'User')}`
+                }}
+              />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-900 truncate">{user.name || 'Usuario'}</p>
+                <p className="text-xs text-gray-500 truncate">{user.email}</p>
+              </div>
+            </div>
+          )}
           <Link to="/dashboard" onClick={() => setOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Dashboard</Link>
           <Link to="/upgrade" onClick={() => setOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Planes y precios</Link>
           <Link to="/presentation" onClick={() => setOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Demo</Link>
           {user && (
-            <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg">
-              Cerrar sesion
-            </button>
+            <>
+              <Link to="/profile" onClick={() => setOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Ver mi perfil</Link>
+              <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg">
+                Cerrar sesion
+              </button>
+            </>
           )}
         </div>
       )}

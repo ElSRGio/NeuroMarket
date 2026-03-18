@@ -15,6 +15,7 @@ const TRASH_DAYS = 30;
 async function ensureUserProfileColumns() {
   await sequelize.query(`
     ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS last_name VARCHAR(100),
     ADD COLUMN IF NOT EXISTS age INTEGER,
     ADD COLUMN IF NOT EXISTS preferred_niches VARCHAR(255),
     ADD COLUMN IF NOT EXISTS average_investment NUMERIC(12,2),

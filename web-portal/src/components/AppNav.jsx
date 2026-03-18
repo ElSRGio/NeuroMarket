@@ -32,10 +32,11 @@ export default function AppNav({ showNewAnalysis = true }) {
 
   const planKey = user?.plan_type || 'basic'
   const badge = PLAN_BADGE[planKey] || PLAN_BADGE.basic
+  const avatarVersion = user?.updated_at ? `?v=${encodeURIComponent(new Date(user.updated_at).getTime())}` : ''
   const avatarSrc = user?.profile_image_url
     ? (user.profile_image_url.startsWith('http')
       ? user.profile_image_url
-      : `${api.defaults.baseURL || ''}${user.profile_image_url}`)
+      : `${api.defaults.baseURL || ''}${user.profile_image_url}${avatarVersion}`)
     : `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user?.name || user?.email || 'User')}`
 
   function handleLogout() {

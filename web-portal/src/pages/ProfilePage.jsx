@@ -80,6 +80,8 @@ export default function ProfilePage() {
 
       const { data: updated } = await authService.updateMe(data)
       setAuth(updated, token)
+      setForm((f) => ({ ...f, profile_image_url: updated.profile_image_url || '' }))
+      setProfileImage(null)
       setOk('Perfil actualizado correctamente')
     } catch (err) {
       setError(err.response?.data?.error || 'No se pudo actualizar tu perfil')

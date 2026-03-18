@@ -18,11 +18,12 @@ export default function DashboardPage() {
   const used = credits?.used ?? analyses.length
   const atLimit = limit !== null && used >= limit
   const sessionStartedAt = localStorage.getItem('nm_session_started_at')
+  const avatarVersion = user?.updated_at ? `?v=${encodeURIComponent(new Date(user.updated_at).getTime())}` : ''
 
   const profileImageSrc = user?.profile_image_url
     ? (user.profile_image_url.startsWith('http')
       ? user.profile_image_url
-      : `${api.defaults.baseURL || ''}${user.profile_image_url}`)
+      : `${api.defaults.baseURL || ''}${user.profile_image_url}${avatarVersion}`)
     : `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user?.name || user?.email || 'User')}`
 
   useEffect(() => {

@@ -91,6 +91,7 @@ function _safeUser(user) {
     average_investment: user.average_investment,
     profile_image_url: user.profile_image_url,
     plan_type: user.plan_type,
+    updated_at: user.updatedAt,
   };
 }
 

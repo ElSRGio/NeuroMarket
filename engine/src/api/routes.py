@@ -67,6 +67,10 @@ def simulate_monte_carlo():
         costo_esperado=data.get("costo_esperado", 0),
         inversion_inicial=data.get("inversion_inicial", 0),
         meses=data.get("meses", 12),
+        variabilidad_ingreso=data.get("variabilidad_ingreso", 0.20),
+        variabilidad_costo=data.get("variabilidad_costo", 0.15),
+        margen_utilidad=data.get("margen_utilidad", 0.30),
+        idm_array=data.get("idm_array", [1.0] * 12),
     )
     return jsonify(result)
 

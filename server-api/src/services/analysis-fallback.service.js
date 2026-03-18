@@ -173,28 +173,51 @@ function randomNormal(random, mean, stdDev) {
   return mean + z0 * stdDev
 }
 
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max)
+}
+
+function normalizeRatio(value, defaultValue, min = 0, max = 1) {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return defaultValue
+  const ratio = parsed > 1 ? parsed / 100 : parsed
+  return clamp(ratio, min, max)
+}
+
+function normalizeMonths(value, defaultValue = 12, min = 1, max = 60) {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return defaultValue
+  return clamp(Math.round(parsed), min, max)
+}
+
 function calculateMonteCarlo(params = {}) {
   const iterations = 10000
   const random = createSeededRandom(42)
   const ingreso_esperado = Number(params.ingreso_esperado) || 0
   const costo_esperado = Number(params.costo_esperado) || 0
   const inversion_inicial = Number(params.inversion_inicial) || 0
-  const meses = Number(params.meses) || 12
-  const variabilidad_ingreso = Number(params.variabilidad_ingreso) || 0.20
-  const variabilidad_costo = Number(params.variabilidad_costo) || 0.15
-  const margen_utilidad = Number(params.margen_utilidad) || 0.30
+  const meses = normalizeMonths(params.meses, 12, 1, 60)
+  const variabilidad_ingreso = normalizeRatio(params.variabilidad_ingreso, 0.20, 0.01, 0.60)
+  const variabilidad_costo = normalizeRatio(params.variabilidad_costo, 0.15, 0.01, 0.60)
+  const margen_utilidad = normalizeRatio(params.margen_utilidad, 0.30, 0.05, 0.90)
   const idm_array = Array.isArray(params.idm_array) && params.idm_array.length > 0 ? params.idm_array : new Array(12).fill(1)
   const roiValues = []
+
+  const ingresoMin = Math.max(0, ingreso_esperado * (1 - (2 * variabilidad_ingreso)))
+  const ingresoMax = Math.max(ingresoMin, ingreso_esperado * (1 + (2 * variabilidad_ingreso)))
+  const costoMin = Math.max(0, costo_esperado * (1 - (2 * variabilidad_costo)))
+  const costoMax = Math.max(costoMin, costo_esperado * (1 + (2 * variabilidad_costo)))
 
   for (let i = 0; i < iterations; i += 1) {
     let utilidad = 0
     for (let month = 0; month < meses; month += 1) {
       const idm = Number(idm_array[month % idm_array.length] || 1)
-      const ingreso = Math.max(0, randomNormal(random, ingreso_esperado, ingreso_esperado * variabilidad_ingreso))
-      const costo = Math.max(0, randomNormal(random, costo_esperado, costo_esperado * variabilidad_costo))
+      const ingreso = clamp(randomNormal(random, ingreso_esperado, ingreso_esperado * variabilidad_ingreso), ingresoMin, ingresoMax)
+      const costo = clamp(randomNormal(random, costo_esperado, costo_esperado * variabilidad_costo), costoMin, costoMax)
       utilidad += (ingreso * idm * margen_utilidad) - costo
     }
-    const roi = inversion_inicial > 0 ? (utilidad / inversion_inicial) * 100 : utilidad
+    const roiBase = inversion_inicial > 0 ? (utilidad / inversion_inicial) * 100 : utilidad
+    const roi = clamp(roiBase, -100, 100)
     roiValues.push(roi)
   }
 
@@ -205,12 +228,12 @@ function calculateMonteCarlo(params = {}) {
   const p90 = percentile(90)
   const mean_roi = roiValues.reduce((sum, value) => sum + value, 0) / roiValues.length
   const std_roi = Math.sqrt(roiValues.reduce((sum, value) => sum + ((value - mean_roi) ** 2), 0) / roiValues.length)
-  const prob_positivo = (roiValues.filter((value) => value >= 100).length / roiValues.length) * 100
+  const prob_positivo = clamp((roiValues.filter((value) => value >= 100).length / roiValues.length) * 100, 0, 100)
 
   let interpretacion = 'Alta incertidumbre. Reconsiderar supuestos de ingreso o capital inicial.'
-  if (prob_positivo >= 85 && p50 >= 100) interpretacion = 'Alta probabilidad de éxito. Inversión respaldada estadísticamente.'
-  else if (prob_positivo >= 70) interpretacion = 'Probabilidad favorable. Riesgo manejable con buena ejecución.'
-  else if (prob_positivo >= 50) interpretacion = 'Viabilidad moderada. Requiere estrategia sólida y control de costos.'
+  if (prob_positivo >= 80 && p50 >= 60) interpretacion = 'Alta probabilidad de éxito. Inversión respaldada estadísticamente.'
+  else if (prob_positivo >= 65) interpretacion = 'Probabilidad favorable. Riesgo manejable con buena ejecución.'
+  else if (prob_positivo >= 45) interpretacion = 'Viabilidad moderada. Requiere estrategia sólida y control de costos.'
 
   return {
     iterations,

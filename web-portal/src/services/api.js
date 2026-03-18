@@ -28,8 +28,12 @@ api.interceptors.response.use(
   res => res,
   err => {
     if (err.response?.status === 401) {
-      localStorage.removeItem('nm_token')
-      window.location.href = '/login'
+      // No recargar la pantalla si el error 401 provino del intento de login o registro
+      const url = err.config?.url;
+      if (url && !url.includes('/auth/login') && !url.includes('/auth/register')) {
+        localStorage.removeItem('nm_token')
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(err)
   }

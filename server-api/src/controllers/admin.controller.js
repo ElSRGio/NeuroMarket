@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 const Analysis = require("../models/analysis.model");
 const { sequelize } = require("../config/database");
+const { generatePDF } = require("../services/pdf.service");
 
 const VALID_ROLES = ["user", "admin"];
 const VALID_PLANS = ["basic", "pro", "enterprise"];
@@ -187,10 +188,158 @@ async function getDeletedUsersLog(req, res, next) {
   }
 }
 
+async function getAllReports(req, res, next) {
+  try {
+    const reports = await Analysis.findAll({
+      where: { deleted_at: null },
+      order: [["created_at", "DESC"]],
+      limit: 300,
+    });
+
+    const userIds = [...new Set(reports.map((r) => r.user_id))];
+    const users = await User.findAll({
+      where: { id: userIds },
+      attributes: ["id", "name", "last_name", "email"],
+    });
+    const usersMap = Object.fromEntries(users.map((u) => [u.id, u.toJSON()]));
+
+    const normalized = reports.map((r) => {
+      const a = r.toJSON();
+      const owner = usersMap[a.user_id] || null;
+      return {
+        id: a.id,
+        user_id: a.user_id,
+        user_name: owner ? `${owner.name || ""} ${owner.last_name || ""}`.trim() : "Usuario eliminado",
+        user_email: owner?.email || "—",
+        business_name: a.business_name,
+        sector: a.sector,
+        municipio: a.municipio,
+        estado: a.estado,
+        inversion_inicial: a.inversion_inicial,
+        viability_score: a.viability_score,
+        status: a.status,
+        created_at: a.created_at,
+        selected_options: a.params || {},
+      };
+    });
+
+    res.json(normalized);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getReportById(req, res, next) {
+  try {
+    const analysis = await Analysis.findByPk(req.params.id);
+    if (!analysis) return res.status(404).json({ error: "Reporte no encontrado" });
+
+    const owner = await User.findByPk(analysis.user_id, {
+      attributes: ["id", "name", "last_name", "email"],
+    });
+
+    const payload = analysis.toJSON();
+    payload.owner = owner ? owner.toJSON() : null;
+    res.json(payload);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function downloadReportPdfAsAdmin(req, res, next) {
+  try {
+    const analysis = await Analysis.findByPk(req.params.id);
+    if (!analysis) return res.status(404).json({ error: "Reporte no encontrado" });
+
+    const pdfBuffer = await generatePDF(analysis.toJSON());
+    const safeName = (analysis.business_name || "reporte")
+      .replace(/[^a-z0-9]/gi, "_")
+      .toLowerCase();
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="neuromarket_admin_${safeName}.pdf"`);
+    return res.send(pdfBuffer);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getUsageSummary(req, res, next) {
+  try {
+    const [totalsRows] = await sequelize.query(`
+      SELECT
+        COUNT(*)::int AS total_reports,
+        COALESCE(AVG(inversion_inicial), 0)::numeric(15,2) AS avg_inversion,
+        COALESCE(AVG(viability_score), 0)::numeric(10,2) AS avg_viability
+      FROM analyses
+      WHERE deleted_at IS NULL;
+    `);
+
+    const [topMunicipios] = await sequelize.query(`
+      SELECT municipio, COUNT(*)::int AS total
+      FROM analyses
+      WHERE deleted_at IS NULL
+      GROUP BY municipio
+      ORDER BY total DESC
+      LIMIT 10;
+    `);
+
+    const [topSectores] = await sequelize.query(`
+      SELECT sector, COUNT(*)::int AS total
+      FROM analyses
+      WHERE deleted_at IS NULL
+      GROUP BY sector
+      ORDER BY total DESC
+      LIMIT 10;
+    `);
+
+    const [topEstados] = await sequelize.query(`
+      SELECT estado, COUNT(*)::int AS total
+      FROM analyses
+      WHERE deleted_at IS NULL
+      GROUP BY estado
+      ORDER BY total DESC
+      LIMIT 10;
+    `);
+
+    const [monthlyUsage] = await sequelize.query(`
+      SELECT TO_CHAR(DATE_TRUNC('month', created_at), 'YYYY-MM') AS month,
+             COUNT(*)::int AS total
+      FROM analyses
+      WHERE deleted_at IS NULL
+      GROUP BY DATE_TRUNC('month', created_at)
+      ORDER BY DATE_TRUNC('month', created_at) DESC
+      LIMIT 12;
+    `);
+
+    const [planDistribution] = await sequelize.query(`
+      SELECT plan_type, COUNT(*)::int AS total
+      FROM users
+      GROUP BY plan_type
+      ORDER BY total DESC;
+    `);
+
+    res.json({
+      totals: totalsRows[0] || { total_reports: 0, avg_inversion: 0, avg_viability: 0 },
+      top_municipios: topMunicipios,
+      top_sectores: topSectores,
+      top_estados: topEstados,
+      monthly_usage: monthlyUsage.reverse(),
+      plan_distribution: planDistribution,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getAllUsers,
   updateUserPlan,
   updateUser,
   deleteUser,
   getDeletedUsersLog,
+  getAllReports,
+  getReportById,
+  downloadReportPdfAsAdmin,
+  getUsageSummary,
 };

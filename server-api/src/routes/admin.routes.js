@@ -6,6 +6,10 @@ const {
   updateUser,
   deleteUser,
   getDeletedUsersLog,
+  getAllReports,
+  getReportById,
+  downloadReportPdfAsAdmin,
+  getUsageSummary,
 } = require("../controllers/admin.controller");
 
 // Simple optional admin check
@@ -24,5 +28,10 @@ router.get("/users/deleted-log", getDeletedUsersLog);
 router.put("/users/:id", updateUser);
 router.put("/users/:id/plan", updateUserPlan);
 router.delete("/users/:id", deleteUser);
+
+router.get("/reports", getAllReports);
+router.get("/reports/summary", getUsageSummary);
+router.get("/reports/:id", getReportById);
+router.get("/reports/:id/pdf", downloadReportPdfAsAdmin);
 
 module.exports = router;

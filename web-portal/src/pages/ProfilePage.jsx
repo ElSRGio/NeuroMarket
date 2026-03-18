@@ -135,6 +135,9 @@ export default function ProfilePage() {
                 >
                   Cambiar foto de perfil
                 </button>
+                {profileImage && (
+                  <p className="text-xs text-gray-300 mt-2">Archivo seleccionado: {profileImage.name}</p>
+                )}
               </div>
             </div>
 
@@ -167,16 +170,13 @@ export default function ProfilePage() {
               <input className={INPUT} type="number" min="0" value={form.average_investment} onChange={e => setForm(f => ({ ...f, average_investment: e.target.value }))} />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Foto de perfil (archivo)</label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={e => setProfileImage(e.target.files?.[0] || null)}
-                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
-              />
-            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={e => setProfileImage(e.target.files?.[0] || null)}
+              className="hidden"
+            />
 
             <div className="pt-2 flex justify-end">
               <button

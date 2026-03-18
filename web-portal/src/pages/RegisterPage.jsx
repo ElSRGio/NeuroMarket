@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authService } from '../services/investment.service.js'
 import { useAuthStore } from '../store/auth.store.js'
@@ -41,11 +41,23 @@ export default function RegisterPage() {
     password: '',
   })
   const [selectedNiches, setSelectedNiches] = useState([])
-  const [profileImage, setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(null)
+  const fileInputRef = useRef(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { setAuth } = useAuthStore()
   const navigate = useNavigate()
+
+  const registerAvatarSrc = useMemo(() => {
+    if (profileImage) return URL.createObjectURL(profileImage)
+    return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(`${form.name} ${form.last_name}`.trim() || form.email || 'User')}`
+  }, [profileImage, form.name, form.last_name, form.email])
+
+  useEffect(() => {
+    return () => {
+      if (registerAvatarSrc.startsWith('blob:')) URL.revokeObjectURL(registerAvatarSrc)
+    }
+  }, [registerAvatarSrc])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -174,13 +186,45 @@ export default function RegisterPage() {
                   placeholder="Selecciona uno o más nichos"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Imagen de perfil</label>
+              <div className="bg-gray-900 text-white rounded-2xl p-5 text-center relative overflow-hidden">
+                <div className="absolute inset-0 opacity-30" style={{ background: 'radial-gradient(circle at top, #374151 0%, transparent 60%)' }} />
+                <div className="relative">
+                  <div className="relative w-24 h-24 mx-auto mb-3">
+                    <img
+                      src={registerAvatarSrc}
+                      alt="Preview perfil"
+                      className="w-24 h-24 rounded-full object-cover border-4 border-white/70"
+                      onError={(e) => {
+                        e.currentTarget.src = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(`${form.name} ${form.last_name}`.trim() || form.email || 'User')}`
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full border border-white/50 bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700"
+                      title="Cambiar foto"
+                    >
+                      📷
+                    </button>
+                  </div>
+                  <p className="text-lg font-black">Tu foto de perfil</p>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="mt-3 border border-white/40 rounded-full px-4 py-2 text-sm font-semibold hover:bg-white/10"
+                  >
+                    Elegir imagen
+                  </button>
+                  {profileImage && (
+                    <p className="text-xs text-gray-300 mt-2">Archivo: {profileImage.name}</p>
+                  )}
+                </div>
                 <input
+                  ref={fileInputRef}
                   type="file"
                   accept="image/*"
-                  onChange={e => setProfileImage(e.target.files[0])}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                  onChange={e => setProfileImage(e.target.files?.[0] || null)}
+                  className="hidden"
                 />
               </div>
               <div>

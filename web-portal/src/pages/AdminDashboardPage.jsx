@@ -104,6 +104,20 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleResetPassword = async (u) => {
+    const suggested = Math.random().toString(36).slice(-10);
+    const custom = window.prompt(`Nueva contraseña para ${u.email} (deja vacío para autogenerar):`, suggested);
+    if (custom === null) return;
+    try {
+      const { data } = await api.put(`/api/v2/admin/users/${u.id}/reset-password`, {
+        new_password: custom.trim() || undefined,
+      });
+      window.alert(`Contraseña restablecida para ${data.user_email}\nTemporal: ${data.temp_password}`);
+    } catch (err) {
+      window.alert(err.response?.data?.error || 'No se pudo restablecer contraseña');
+    }
+  };
+
   const profileImageSrc = (u) => {
     if (!u.profile_image_url) return '';
     if (u.profile_image_url.startsWith('http')) return u.profile_image_url;
@@ -253,6 +267,12 @@ export default function AdminDashboardPage() {
                         className="ml-2 px-2 py-1 text-xs rounded border border-red-300 text-red-700 hover:bg-red-50"
                       >
                         Eliminar
+                      </button>
+                      <button
+                        onClick={() => handleResetPassword(u)}
+                        className="ml-2 px-2 py-1 text-xs rounded border border-amber-300 text-amber-700 hover:bg-amber-50"
+                      >
+                        Reset pass
                       </button>
                     </td>
                   </tr>

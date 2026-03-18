@@ -10,6 +10,7 @@ const {
   getReportById,
   downloadReportPdfAsAdmin,
   getUsageSummary,
+  resetUserPassword,
 } = require("../controllers/admin.controller");
 
 // Simple optional admin check
@@ -27,6 +28,7 @@ router.get("/users", getAllUsers);
 router.get("/users/deleted-log", getDeletedUsersLog);
 router.put("/users/:id", updateUser);
 router.put("/users/:id/plan", updateUserPlan);
+router.put("/users/:id/reset-password", resetUserPassword);
 router.delete("/users/:id", deleteUser);
 
 router.get("/reports", getAllReports);

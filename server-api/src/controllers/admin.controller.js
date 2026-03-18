@@ -2,6 +2,7 @@ const User = require("../models/user.model");
 const Analysis = require("../models/analysis.model");
 const { sequelize } = require("../config/database");
 const { generatePDF } = require("../services/pdf.service");
+const bcrypt = require("bcryptjs");
 
 const VALID_ROLES = ["user", "admin"];
 const VALID_PLANS = ["basic", "pro", "enterprise"];
@@ -332,6 +333,42 @@ async function getUsageSummary(req, res, next) {
   }
 }
 
+function generateTempPassword(length = 10) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+  let out = "";
+  for (let i = 0; i < length; i += 1) {
+    out += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return out;
+}
+
+async function resetUserPassword(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { new_password } = req.body || {};
+
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const tempPassword = (new_password && String(new_password).trim()) || generateTempPassword();
+    if (tempPassword.length < 6) {
+      return res.status(400).json({ error: "La contraseña temporal debe tener al menos 6 caracteres" });
+    }
+
+    user.password_hash = await bcrypt.hash(tempPassword, 12);
+    await user.save();
+
+    return res.json({
+      message: "Contraseña restablecida correctamente",
+      temp_password: tempPassword,
+      user_id: user.id,
+      user_email: user.email,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getAllUsers,
   updateUserPlan,
@@ -342,4 +379,5 @@ module.exports = {
   getReportById,
   downloadReportPdfAsAdmin,
   getUsageSummary,
+  resetUserPassword,
 };

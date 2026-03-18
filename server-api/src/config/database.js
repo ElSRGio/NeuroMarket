@@ -5,7 +5,12 @@
 const { Sequelize } = require("sequelize");
 
 const isProduction = process.env.NODE_ENV === "production";
-const sslOptions = isProduction ? { ssl: { require: true, rejectUnauthorized: false } } : {};
+// Render's external connections require SSL. So if we detect a render.com host we FORCE SSL.
+const forceSSL = process.env.DATABASE_URL?.includes('render.com') || process.env.DB_HOST?.includes('render.com');
+
+const sslOptions = isProduction || forceSSL 
+  ? { ssl: { require: true, rejectUnauthorized: false } } 
+  : {};
 
 function parseUrl(raw) {
   const normalized = raw.replace(/^postgresql:\/\//, "postgres://");

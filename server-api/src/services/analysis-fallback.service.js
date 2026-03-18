@@ -123,7 +123,19 @@ function calculateROI(params = {}) {
 
   const utilidad_mensual_promedio = utilidad_total / 12
   const roi_porcentaje = inversion_inicial > 0 ? (utilidad_total / inversion_inicial) * 100 : 0
-  const break_even_meses = utilidad_mensual_promedio > 0 ? inversion_inicial / utilidad_mensual_promedio : null
+  let break_even_meses = null
+  if (inversion_inicial > 0) {
+    let acumulado = -inversion_inicial
+    for (let i = 0; i < 120; i += 1) {
+      const idm = idm_array[i % idm_array.length]
+      const utilidad = (ingreso_base * Number(idm || 0) * margen_utilidad) - costos_fijos
+      acumulado += utilidad
+      if (acumulado >= 0) {
+        break_even_meses = i + 1
+        break
+      }
+    }
+  }
 
   let viabilidad = 'Negativo — Revisar modelo de negocio'
   if (roi_porcentaje >= 100) viabilidad = 'Excelente — Recuperación en menos de 12 meses'
@@ -170,14 +182,17 @@ function calculateMonteCarlo(params = {}) {
   const meses = Number(params.meses) || 12
   const variabilidad_ingreso = Number(params.variabilidad_ingreso) || 0.20
   const variabilidad_costo = Number(params.variabilidad_costo) || 0.15
+  const margen_utilidad = Number(params.margen_utilidad) || 0.30
+  const idm_array = Array.isArray(params.idm_array) && params.idm_array.length > 0 ? params.idm_array : new Array(12).fill(1)
   const roiValues = []
 
   for (let i = 0; i < iterations; i += 1) {
     let utilidad = 0
     for (let month = 0; month < meses; month += 1) {
+      const idm = Number(idm_array[month % idm_array.length] || 1)
       const ingreso = Math.max(0, randomNormal(random, ingreso_esperado, ingreso_esperado * variabilidad_ingreso))
       const costo = Math.max(0, randomNormal(random, costo_esperado, costo_esperado * variabilidad_costo))
-      utilidad += ingreso - costo
+      utilidad += (ingreso * idm * margen_utilidad) - costo
     }
     const roi = inversion_inicial > 0 ? (utilidad / inversion_inicial) * 100 : utilidad
     roiValues.push(roi)
@@ -190,10 +205,10 @@ function calculateMonteCarlo(params = {}) {
   const p90 = percentile(90)
   const mean_roi = roiValues.reduce((sum, value) => sum + value, 0) / roiValues.length
   const std_roi = Math.sqrt(roiValues.reduce((sum, value) => sum + ((value - mean_roi) ** 2), 0) / roiValues.length)
-  const prob_positivo = (roiValues.filter((value) => value > 0).length / roiValues.length) * 100
+  const prob_positivo = (roiValues.filter((value) => value >= 100).length / roiValues.length) * 100
 
   let interpretacion = 'Alta incertidumbre. Reconsiderar supuestos de ingreso o capital inicial.'
-  if (prob_positivo >= 85 && p50 >= 50) interpretacion = 'Alta probabilidad de éxito. Inversión respaldada estadísticamente.'
+  if (prob_positivo >= 85 && p50 >= 100) interpretacion = 'Alta probabilidad de éxito. Inversión respaldada estadísticamente.'
   else if (prob_positivo >= 70) interpretacion = 'Probabilidad favorable. Riesgo manejable con buena ejecución.'
   else if (prob_positivo >= 50) interpretacion = 'Viabilidad moderada. Requiere estrategia sólida y control de costos.'
 
@@ -265,7 +280,18 @@ function runFallbackAnalysis(payload = {}) {
   const irl = calculateIRL(payload.irl_params || {})
   const tam_som = calculateTAMSOM(payload.tam_params || {})
   const roi = calculateROI(payload.roi_params || {})
-  const monte_carlo = calculateMonteCarlo(payload.mc_params || {})
+  const roiParams = payload.roi_params || {}
+  const mcParams = payload.mc_params || {}
+  const monte_carlo = calculateMonteCarlo({
+    ingreso_esperado: mcParams.ingreso_esperado ?? roiParams.ingreso_base,
+    costo_esperado: mcParams.costo_esperado ?? roiParams.costos_fijos,
+    inversion_inicial: mcParams.inversion_inicial ?? roiParams.inversion_inicial,
+    meses: mcParams.meses ?? 12,
+    variabilidad_ingreso: mcParams.variabilidad_ingreso ?? 0.20,
+    variabilidad_costo: mcParams.variabilidad_costo ?? 0.15,
+    margen_utilidad: mcParams.margen_utilidad ?? roiParams.margen_utilidad,
+    idm_array: mcParams.idm_array ?? roiParams.idm_array,
+  })
   const svee = calculateSVEE(payload.menciones_mensuales, irl.irl_score, payload.factor_competencia || 0.8)
   const viability_score = viabilityScore(irl, roi, tam_som, svee, monte_carlo)
 

@@ -44,20 +44,48 @@ class ROIProjector:
 
         promedio_mensual = utilidad_total / 12
         roi = (utilidad_total / inversion_inicial * 100) if inversion_inicial > 0 else 0
-        break_even = (inversion_inicial / promedio_mensual) if promedio_mensual > 0 else None
+        break_even = self._calculate_break_even_month(
+            inversion_inicial=inversion_inicial,
+            ingreso_base=ingreso_base,
+            margen_utilidad=margen_utilidad,
+            costos_fijos=costos_fijos,
+            idm_array=idm_array,
+            max_months=120,
+        )
 
         return {
             "flujo_mensual": flujo_mensual,
             "utilidad_total_anual": round(utilidad_total, 2),
             "utilidad_mensual_promedio": round(promedio_mensual, 2),
             "roi_porcentaje": round(roi, 2),
-            "break_even_meses": round(break_even, 1) if break_even else None,
+            "break_even_meses": break_even,
             "inversion_inicial": inversion_inicial,
             "ingreso_base": ingreso_base,
             "margen_utilidad": margen_utilidad,
             "costos_fijos": costos_fijos,
             "viabilidad": self._interpret_roi(roi),
         }
+
+    def _calculate_break_even_month(
+        self,
+        inversion_inicial: float,
+        ingreso_base: float,
+        margen_utilidad: float,
+        costos_fijos: float,
+        idm_array: list,
+        max_months: int = 120,
+    ):
+        if inversion_inicial <= 0:
+            return 0
+
+        acumulado = -inversion_inicial
+        for month_idx in range(max_months):
+            idm = idm_array[month_idx % len(idm_array)]
+            utilidad_neta = (ingreso_base * idm * margen_utilidad) - costos_fijos
+            acumulado += utilidad_neta
+            if acumulado >= 0:
+                return month_idx + 1
+        return None
 
     def _interpret_roi(self, roi: float) -> str:
         if roi >= 100:

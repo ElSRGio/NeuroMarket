@@ -22,8 +22,14 @@ class MonteCarloSimulator:
         meses: int = 12,
         variabilidad_ingreso: float = 0.20,
         variabilidad_costo: float = 0.15,
+        margen_utilidad: float = 0.30,
+        idm_array: list = None,
     ) -> dict:
         rng = np.random.default_rng(seed=42)
+
+        if not idm_array or len(idm_array) == 0:
+            idm_array = [1.0] * 12
+        idm_vector = np.array([idm_array[i % len(idm_array)] for i in range(meses)])
 
         ingresos = np.clip(
             rng.normal(ingreso_esperado, ingreso_esperado * variabilidad_ingreso,
@@ -32,13 +38,15 @@ class MonteCarloSimulator:
             rng.normal(costo_esperado, costo_esperado * variabilidad_costo,
                        (self.iterations, meses)), 0, None)
 
-        utilidad_total = np.sum(ingresos - costos, axis=1)
+        utilidad_mensual = (ingresos * idm_vector * margen_utilidad) - costos
+        utilidad_total = np.sum(utilidad_mensual, axis=1)
         roi_dist = (utilidad_total / inversion_inicial * 100) if inversion_inicial > 0 else utilidad_total
 
         p10 = float(np.percentile(roi_dist, 10))
         p50 = float(np.percentile(roi_dist, 50))
         p90 = float(np.percentile(roi_dist, 90))
-        prob_pos = float(np.mean(roi_dist > 0) * 100)
+        # Éxito = recuperar la inversión en el horizonte evaluado (ROI >= 100%)
+        prob_pos = float(np.mean(roi_dist >= 100) * 100)
 
         histogram, bin_edges = np.histogram(roi_dist, bins=20)
 
@@ -63,7 +71,7 @@ class MonteCarloSimulator:
         }
 
     def _interpret(self, prob_positivo: float, p50: float) -> str:
-        if prob_positivo >= 85 and p50 >= 50:
+        if prob_positivo >= 85 and p50 >= 100:
             return "Alta probabilidad de éxito. Inversión respaldada estadísticamente."
         elif prob_positivo >= 70:
             return "Probabilidad favorable. Riesgo manejable con buena ejecución."

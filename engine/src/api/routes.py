@@ -89,10 +89,22 @@ def full_investment_analysis():
     """Análisis de viabilidad completo — combina los 4 módulos"""
     data = request.get_json() or {}
 
+    roi_params = data.get("roi_params", {})
+    mc_params = data.get("mc_params", {})
+
     irl = IRLCalculator().calculate(**data.get("irl_params", {}))
     tam_som = TAMSOMEngine().calculate(**data.get("tam_params", {}))
-    roi = ROIProjector().project(**data.get("roi_params", {}))
-    monte_carlo = MonteCarloSimulator(iterations=10000).simulate(**data.get("mc_params", {}))
+    roi = ROIProjector().project(**roi_params)
+    monte_carlo = MonteCarloSimulator(iterations=10000).simulate(
+        ingreso_esperado=mc_params.get("ingreso_esperado", roi_params.get("ingreso_base", 0)),
+        costo_esperado=mc_params.get("costo_esperado", roi_params.get("costos_fijos", 0)),
+        inversion_inicial=mc_params.get("inversion_inicial", roi_params.get("inversion_inicial", 0)),
+        meses=mc_params.get("meses", 12),
+        variabilidad_ingreso=mc_params.get("variabilidad_ingreso", 0.20),
+        variabilidad_costo=mc_params.get("variabilidad_costo", 0.15),
+        margen_utilidad=mc_params.get("margen_utilidad", roi_params.get("margen_utilidad", 0.30)),
+        idm_array=mc_params.get("idm_array", roi_params.get("idm_array", [1.0] * 12)),
+    )
     svee = SVEEDetector().detect(
         menciones_mensuales=data.get("menciones_mensuales", [100] * 12),
         irl=irl["irl_score"],

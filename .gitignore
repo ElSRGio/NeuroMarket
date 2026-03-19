@@ -10,9 +10,6 @@ uploads/
 logs/
 venv/
 .venv/
-.vite/
 /NeuroMarketAdmin/nbproject/private/
 /NeuroMarketAdmin/build/
-/NeuroMarketAdmin/dist/
-/NeuroMarketAdmin/installer/
-/Prueba/
+/Prueba/nbproject/private/

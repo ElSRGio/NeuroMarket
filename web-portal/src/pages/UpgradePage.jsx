@@ -53,38 +53,6 @@ const PLANS = [
       'Datos de 6 municipios de Puebla',
     ],
   },
-  {
-    id: 'pro',
-    category: 'PARA CONSULTORES',
-    name: 'Inteligencia de Mercado',
-    desc: 'Plataforma completa de analisis hiperlocal. Ideal para consultores y asesores que trabajan con varios clientes.',
-    cta: 'Solicitar presupuesto',
-    audience: 'Para consultores y analistas que buscan:',
-    features: [
-      'Analisis ilimitados',
-      'Exportacion de reportes PDF ejecutivos',
-      'Datos Apify en tiempo real (Facebook/Maps)',
-      'Simulacion Monte Carlo (10,000 iter.)',
-      'SVEE - Ventanas estrategicas de entrada',
-      'TAM/SAM/SOM por municipio',
-    ],
-  },
-  {
-    id: 'enterprise',
-    category: 'PARA INSTITUCIONES',
-    name: 'Plataforma Empresarial',
-    desc: 'Solucion integral para dependencias de gobierno, instituciones educativas y empresas de consultoria.',
-    cta: 'Solicitar presupuesto',
-    audience: 'Para equipos e instituciones que buscan:',
-    features: [
-      'Todo lo incluido en Pro',
-      'Multi-usuario (hasta 20 cuentas)',
-      'Acceso a la API de XAIZA',
-      'Integracion con sistemas existentes',
-      'SLA garantizado 99.9%',
-      'Onboarding y soporte dedicado',
-    ],
-  },
 ]
 
 const PARTNERS = [
@@ -106,11 +74,10 @@ const MODULES = [
 ]
 
 const FAQS = [
-  { q: 'Puedo cambiar de plan en cualquier momento?', a: 'Si. Puedes actualizar o bajar tu plan desde tu perfil. El cambio aplica al siguiente ciclo.' },
-  { q: 'Que pasa si alcanzo el limite de 6 analisis en Basic?', a: 'El sistema te avisara y podras actualizar a Pro para analisis ilimitados. Tus datos existentes se conservan.' },
-  { q: 'El plan Basic caduca?', a: 'No. El plan Basic es permanente y gratuito, sin fecha de expiracion.' },
-  { q: 'Que incluye el reporte PDF?', a: 'Score IRL, distribucion Monte Carlo, proyeccion de flujo mensual a 12 meses, TAM/SAM/SOM y ventana SVEE.' },
-  { q: 'Los datos de Apify son en tiempo real?', a: 'En plan Pro, si. Al presionar "Auto-rellenar", Apify escanea Facebook Pages y Google Maps al momento.' },
+  { q: 'Tiene algun costo el uso de la plataforma?', a: 'No. Actualmente ofrecemos el plan para emprendedores de manera completamente gratuita.' },
+  { q: 'El plan gratuito caduca?', a: 'No. Tu acceso a la plataforma es permanente y sin fecha de expiracion.' },
+  { q: 'Que incluye el reporte del analisis?', a: 'Score IRL, distribucion Monte Carlo, proyeccion de flujo mensual a 12 meses, TAM/SAM/SOM y ventana SVEE.' },
+  { q: 'Los datos que utilizan son reales?', a: 'Si. Utilizamos estadisticas oficiales del INEGI y datos extraidos en tiempo real.' },
 ]
 
 export default function UpgradePage() {
@@ -331,13 +298,12 @@ export default function UpgradePage() {
       <section className="py-12 sm:py-20 px-4 sm:px-6 text-center bg-white">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl sm:text-5xl font-black text-gray-900 mb-5 leading-tight">
-            Elige la mejor{' '}
-            <span style={{ color: '#22c55e' }}>solucion</span>
-            {' '}para ti
+            Comienza a validar tu{' '}
+            <span style={{ color: '#22c55e' }}>idea</span>
+            {' '}hoy mismo
           </h1>
           <p className="text-gray-500 text-base sm:text-lg leading-relaxed">
-            Con los planes Basic o Pro disponibles para cada una de nuestras
-            soluciones, podras analizar y validar oportunidades de inversion
+            Con nuestro plan gratuito, podras analizar y validar oportunidades de inversion
             en mercados locales de Mexico desde hoy mismo.
           </p>
         </div>
@@ -345,7 +311,7 @@ export default function UpgradePage() {
 
       {/* Plan cards */}
       <section className="px-4 sm:px-6 pb-16 sm:pb-20 bg-white">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="max-w-md mx-auto">
           {PLANS.map((plan) => (
             <div key={plan.id} className="bg-white border border-gray-200 rounded-xl p-8 flex flex-col shadow-sm hover:shadow-md transition-shadow">
               <div className="mb-5">
@@ -357,7 +323,7 @@ export default function UpgradePage() {
               <button
                 className="w-full py-3 rounded-md font-semibold text-sm mb-7 transition-colors text-white"
                 style={{ backgroundColor: '#22c55e' }}
-                onClick={() => alert('Contacta a soporte para activar tu plan. Sistema de pagos proximamente.')}
+                onClick={() => navigate(user ? '/dashboard' : '/register')}
               >
                 {plan.cta}
               </button>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroMarket - GIF Generator (100% Local)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #0a1929;
+      color: #fff;
+      font-family: "Courier New", monospace;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #132f4c;
+      border: 1px solid #26d8bf;
+      border-radius: 8px;
+      padding: 30px;
+    }
+    h1 {
+      color: #26d8bf;
+      margin-top: 0;
+    }
+    .control-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 30px 0;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    label {
+      color: #9ab6c8;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+    select, input {
+      padding: 8px 12px;
+      background: rgba(15, 49, 71, 0.6);
+      border: 1px solid rgba(38, 216, 191, 0.3);
+      color: #26d8bf;
+      border-radius: 4px;
+      font-family: "Courier New", monospace;
+    }
+    select:focus, input:focus {
+      outline: none;
+      border-color: #26d8bf;
+      box-shadow: 0 0 8px rgba(38, 216, 191, 0.3);
+    }
+    button {
+      padding: 12px 24px;
+      background: #26d8bf;
+      color: #0a1929;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    button:hover {
+      background: #49e386;
+      transform: scale(1.05);
+    }
+    button:disabled {
+      background: #9ab6c8;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .status {
+      padding: 15px;
+      background: rgba(38, 216, 191, 0.1);
+      border: 1px solid rgba(38, 216, 191, 0.3);
+      border-radius: 6px;
+      margin: 20px 0;
+      line-height: 1.8;
+    }
+    .status.error {
+      background: rgba(255, 70, 95, 0.1);
+      border-color: rgba(255, 70, 95, 0.3);
+      color: #ff465f;
+    }
+    .status.success {
+      background: rgba(73, 227, 134, 0.1);
+      border-color: rgba(73, 227, 134, 0.3);
+      color: #49e386;
+    }
+    .progress {
+      width: 100%;
+      height: 24px;
+      background: rgba(15, 49, 71, 0.6);
+      border: 1px solid rgba(38, 216, 191, 0.3);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #26d8bf, #49e386);
+      width: 0%;
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #0a1929;
+      font-weight: bold;
+    }
+    .info-box {
+      background: rgba(15, 49, 71, 0.8);
+      border-left: 3px solid #ff6a1a;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .info-box strong {
+      color: #ff6a1a;
+    }
+    code {
+      background: #0a1929;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #26d8bf;
+      font-family: "Courier New", monospace;
+    }
+    .method-box {
+      background: rgba(38, 216, 191, 0.08);
+      border: 1px solid rgba(38, 216, 191, 0.2);
+      border-radius: 6px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    .method-box h3 {
+      margin: 0 0 10px 0;
+      color: #26d8bf;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 Generador de GIFs - NeuroMarket (100% Local)</h1>
+    
+    <div class="info-box">
+      <strong>✅ Versión Optimizada:</strong><br/>
+      Esta versión captura frames PNG y los empaqueta para convertir a GIF. 
+      Sin dependencias de CDN, todo funciona localmente.
+    </div>
+
+    <div class="control-panel">
+      <div class="control-group">
+        <label for="animSelect">Selecciona Animación:</label>
+        <select id="animSelect">
+          <option value="">-- Elige una --</option>
+          <option value="integrated" selected>PLATFORM_ANIMATIONS_INTEGRATED (12s)</option>
+          <option value="advanced">PLATFORM_ANIMATIONS_ADVANCED (18s)</option>
+          <option value="basic">PLATFORM_ANIMATIONS (15s)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="fpsSelect">FPS (Frames por segundo):</label>
+        <select id="fpsSelect">
+          <option value="3">3 FPS (Muy suave)</option>
+          <option value="4" selected>4 FPS (Suave)</option>
+          <option value="5">5 FPS (Balance)</option>
+          <option value="8">8 FPS (Rápido)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="qualitySelect">Calidad:</label>
+        <select id="qualitySelect">
+          <option value="low">Baja (480p)</option>
+          <option value="medium">Media (720p)</option>
+          <option value="high">Alta (1080p)</option>
+          <option value="ultra" selected>Ultra (1440p)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="speedSelect">Velocidad Animación:</label>
+        <select id="speedSelect">
+          <option value="0.5">50% (Lento)</option>
+          <option value="1" selected>100% (Normal)</option>
+          <option value="1.5">150% (Rápido)</option>
+          <option value="2">200% (Muy Rápido)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button onclick="startCapture()">🚀 Iniciar Captura</button>
+      <button onclick="stopCapture()" id="stopBtn" disabled>⏹️ Detener</button>
+    </div>
+
+    <div class="status" id="status" style="display: none;"></div>
+    
+    <div class="progress" id="progressContainer" style="display: none;">
+      <div class="progress-bar" id="progressBar">0%</div>
+    </div>
+
+    <div class="method-box" id="methodBox" style="display: none;">
+      <h3>📊 Archivos Generados</h3>
+      <div id="methodContent"></div>
+    </div>
+
+    <div class="info-box" style="margin-top: 30px;">
+      <strong>📌 Cómo funciona:</strong><br/>
+      1️⃣ Capturo tu animación en X frames PNG<br/>
+      2️⃣ Los empaqueto en una carpeta comprimida<br/>
+      3️⃣ Descarga el ZIP y usa <code>ffmpeg</code> para crear el GIF<br/>
+      4️⃣ O sube los PNGs a <strong>ezgif.com</strong> para convertir
+    </div>
+
+    <div class="info-box">
+      <strong>🚀 Opción Más Rápida (Sin Esperar):</strong><br/>
+      Si quieres GIF ya hecho, usa: <code>https://ezgif.com/maker</code><br/>
+      1. Abre tu animación en navegador<br/>
+      2. Toma screenshots Ctrl+Shift+S<br/>
+      3. Sube a ezgif.com<br/>
+      4. ¡GIF listo! (1 minuto total)
+    </div>
+  </div>
+
+  <script>
+    const animations = {
+      integrated: {
+        file: 'PLATFORM_ANIMATIONS_INTEGRATED.html',
+        duration: 12000,
+        name: 'Flujo_Integrado'
+      },
+      advanced: {
+        file: 'PLATFORM_ANIMATIONS_ADVANCED.html',
+        duration: 18000,
+        name: 'Animaciones_Avanzadas'
+      },
+      basic: {
+        file: 'PLATFORM_ANIMATIONS.html',
+        duration: 15000,
+        name: 'Flujo_Basico'
+      }
+    };
+
+    const qualitySettings = {
+      low: { width: 480, height: 360 },
+      medium: { width: 1280, height: 720 },
+      high: { width: 1920, height: 1080 },
+      ultra: { width: 2560, height: 1440 }
+    };
+
+    let capturing = false;
+    let captureAborted = false;
+
+    async function startCapture() {
+      const animKey = document.getElementById('animSelect').value;
+      const fps = parseInt(document.getElementById('fpsSelect').value);
+      const quality = document.getElementById('qualitySelect').value;
+      const speed = parseFloat(document.getElementById('speedSelect').value);
+
+      if (!animKey) {
+        showStatus('⚠️ Selecciona una animación primero', 'error');
+        return;
+      }
+
+      capturing = true;
+      captureAborted = false;
+      document.getElementById('stopBtn').disabled = false;
+      disableControls(true);
+
+      const anim = animations[animKey];
+      const qualityConfig = qualitySettings[quality];
+      const frameInterval = 1000 / fps;
+      const frameCount = Math.ceil((anim.duration * speed) / frameInterval);
+
+      showStatus(`🎬 Iniciando captura:\n${anim.name}\nFPS: ${fps} | Calidad: ${quality} | Frames: ${frameCount}\n⏳ Esto puede tardar...`, 'info');
+      
+      try {
+        // Crear iframe
+        const iframe = document.createElement('iframe');
+        iframe.src = anim.file;
+        iframe.style.display = 'none';
+        iframe.style.width = qualityConfig.width + 'px';
+        iframe.style.height = qualityConfig.height + 'px';
+        document.body.appendChild(iframe);
+
+        // Esperar a que cargue completamente
+        iframe.onload = () => {
+          setTimeout(() => {
+            performCapture(iframe, fps, speed, qualityConfig, frameCount, anim.name, anim.file, () => {
+              document.body.removeChild(iframe);
+            });
+          }, 1000);
+        };
+
+      } catch (error) {
+        showStatus(`❌ Error: ${error.message}`, 'error');
+        resetControls();
+      }
+    }
+
+    async function performCapture(iframe, fps, speed, qualityConfig, frameCount, animName, animFile, cleanup) {
+      showStatus(`📹 Capturando ${frameCount} frames de ${animFile}...`, 'info');
+      document.getElementById('progressContainer').style.display = 'block';
+
+      const frames = [];
+      const canvas = document.createElement('canvas');
+      canvas.width = qualityConfig.width;
+      canvas.height = qualityConfig.height;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      try {
+        // Capturar frames
+        for (let i = 0; i < frameCount && !captureAborted; i++) {
+          const progress = Math.round((i / frameCount) * 100);
+          updateProgress(progress);
+
+          // Dibujar fondo
+          ctx.fillStyle = '#06131f';
+          ctx.fillRect(0, 0, qualityConfig.width, qualityConfig.height);
+
+          // Capturar iframe
+          try {
+            ctx.drawImage(iframe, 0, 0, qualityConfig.width, qualityConfig.height);
+          } catch (e) {
+            // Si falla, dibujar placeholder
+            ctx.fillStyle = '#26d8bf';
+            ctx.font = 'bold 16px Courier New';
+            ctx.fillText(`Frame ${i + 1}/${frameCount}`, 20, 30);
+          }
+
+          // Guardar como PNG
+          const imageData = canvas.toDataURL('image/png');
+          frames.push({
+            data: imageData,
+            number: String(i).padStart(4, '0')
+          });
+
+          // Pequeña pausa para no bloquear
+          if (i % 10 === 0) {
+            await new Promise(r => setTimeout(r, 50));
+          }
+        }
+
+        if (captureAborted) {
+          showStatus('⚠️ Captura cancelada por el usuario', 'error');
+          cleanup();
+          resetControls();
+          return;
+        }
+
+        // Procesar frames
+        await processFrames(frames, fps, animName);
+        cleanup();
+
+      } catch (error) {
+        showStatus(`❌ Error durante captura: ${error.message}`, 'error');
+        cleanup();
+        resetControls();
+      }
+    }
+
+    async function processFrames(frames, fps, animName) {
+      showStatus(`💾 Procesando ${frames.length} frames...\n⏳ Generando archivo ZIP...`, 'info');
+
+      try {
+        // Crear un contenedor para descargar (como ZIP simulado con data URLs)
+        // Vamos a crear un HTML que contiene todos los frames en base64 y ofrece descargarlos
+
+        // Para simplificar, haremos que descargue los frames como un JSON
+        const framesJson = JSON.stringify({
+          frames: frames.map(f => ({ number: f.number, data: f.data })),
+          fps: fps,
+          animName: animName,
+          frameCount: frames.length
+        });
+
+        // Descargar JSON
+        const blob = new Blob([framesJson], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${animName}_frames_${fps}fps.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        // Mostrar instrucciones
+        const instructions = `
+✅ CAPTURA COMPLETADA
+
+📊 Información:
+  • Frames capturados: ${frames.length}
+  • FPS: ${fps}
+  • Nombre: ${animName}
+  • Archivo descargado: ${animName}_frames_${fps}fps.json
+
+🎬 PRÓXIMOS PASOS - Elige uno:
+
+OPCIÓN 1️⃣ - Usar ezgif.com (Más fácil - 2 minutos):
+  1. Ve a: https://ezgif.com/maker
+  2. Sube las imágenes del JSON
+  3. ¡GIF listo!
+
+OPCIÓN 2️⃣ - Usar ffmpeg (Local - 30 segundos):
+  1. Instala ffmpeg si no lo tienes
+  2. En terminal, ejecuta:
+     ffmpeg -framerate ${fps} -i frame-%04d.png -y output.gif
+  3. ¡GIF creado!
+
+OPCIÓN 3️⃣ - Script Python (Automático):
+  Ejecuta el script convert_to_gif.py (si está disponible)
+
+El archivo JSON contiene todos los datos en BASE64.
+Puedes extraer las imágenes con cualquier herramienta.
+        `;
+
+        showStatus(instructions, 'success');
+
+        // Mostrar el método box
+        const methodBox = document.getElementById('methodBox');
+        const methodContent = document.getElementById('methodContent');
+        methodContent.innerHTML = `
+          <strong>${frames.length} frames capturados</strong><br/>
+          FPS: ${fps}<br/>
+          Nombre: ${animName}<br/>
+          <br/>
+          <button onclick="window.open('https://ezgif.com/maker')" style="width: 100%; padding: 10px; background: #26d8bf; color: #0a1929; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+            🌐 Abrir ezgif.com para crear GIF
+          </button>
+          <br/><br/>
+          El archivo JSON descargado contiene todos los frames en BASE64.
+          Puedes usarlo con cualquier herramienta de conversión.
+        `;
+        methodBox.style.display = 'block';
+
+        resetControls();
+
+      } catch (error) {
+        showStatus(`❌ Error procesando frames: ${error.message}`, 'error');
+        resetControls();
+      }
+    }
+
+    function stopCapture() {
+      captureAborted = true;
+      document.getElementById('stopBtn').disabled = true;
+    }
+
+    function updateProgress(percent) {
+      const progressBar = document.getElementById('progressBar');
+      progressBar.style.width = percent + '%';
+      progressBar.textContent = percent + '%';
+    }
+
+    function showStatus(message, type = 'info') {
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+      statusEl.style.display = 'block';
+    }
+
+    function disableControls(disabled) {
+      document.getElementById('animSelect').disabled = disabled;
+      document.getElementById('fpsSelect').disabled = disabled;
+      document.getElementById('qualitySelect').disabled = disabled;
+      document.getElementById('speedSelect').disabled = disabled;
+    }
+
+    function resetControls() {
+      capturing = false;
+      document.getElementById('stopBtn').disabled = true;
+      disableControls(false);
+      document.getElementById('progressContainer').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

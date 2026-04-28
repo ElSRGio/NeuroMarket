@@ -1,6 +1,57 @@
 # Arquitectura — NeuroMarket 2.0
 
-## Diagrama General
+## 📺 Demostraciones Visuales Tecnicas
+
+### ⭐ Versión Integrada: Entrada → BD → Cálculos (RECOMENDADA - NUEVA)
+- **Archivo**: `docs/PLATFORM_ANIMATIONS_INTEGRATED.html`
+- **Contenido**: Flujo completo y coherente mostrando:
+  - 📊 **Diagram de Flujo**: Entrada → PostgreSQL → Cálculo (líneas conectadas)
+  - 📝 **Panel 1 - Entrada de Datos**: Usuario ingresa "Restaurante La Familia" con typing animation (nombre, inversión, ingreso, margen, costos)
+  - 💾 **Panel 2 - Persistencia en PostgreSQL**: Mostrando exactamente dónde se guardan esos datos en tabla `analyses` (las 6 columnas)
+  - 🧮 **Panel 3 - Cálculos Matemáticos**: Transformación usando los MISMOS datos - IRL, ROI, Break-even, Score Final (con indicadores ✓ o ❌)
+  - 📍 **Ejemplo Completo**: "Restaurante La Familia" (Libres, Puebla) con input ($50k, $18k/mes, 30%, $5k costos) → transformación → resultado (28.5/100 ❌ No Recomendado)
+  - ⏱️ **Timeline Detallado**: Paso a paso desde T=0.0s (usuario escribe) hasta T=8.5s (dashboard renderizado), mostrando exactamente qué ocurre en cada momento
+- **Ideal para**: Presentaciones ejecutivas, demos integradas, explicar cómo los datos del usuario se convierten en recomendación
+
+### Versión Básica: Flujo de Sistema Completo
+- **Archivo**: `docs/PLATFORM_ANIMATIONS.html`
+- **Contenido**: Mapa de flujo de datos, tablas de BD llenándose, ejemplo concreto con números reales
+- **Ideal para**: Referencia histórica, entender arquitectura general
+
+### Versión Avanzada: Animaciones Complejas en Tiempo Real
+- **Archivo**: `docs/PLATFORM_ANIMATIONS_ADVANCED.html`
+- **Contenido**: 3 paneles simultáneos con animaciones complejas (typing, BD, math)
+  - 📝 Animación de escritura en tiempo real (typing)
+  - 💾 Visualización de tablas PostgreSQL
+  - 🧮 Transformación matemática con fórmulas
+  - 🔄 Flujo de 5 etapas del sistema
+  - 📊 Canvas animado con visualización de datos
+- **Ideal para**: Demos técnicas detalladas, referencias gráficas avanzadas
+
+### 🎬 Generador de GIFs desde Animaciones HTML
+- **Archivo**: `docs/GIF_GENERATOR.html`
+- **Propósito**: Convertir las animaciones HTML interactivas a archivos GIF optimizados para compartir
+- **Características**:
+  - ✅ Selecciona qué animación convertir (Integrada, Avanzada o Básica)
+  - ✅ Elige FPS (4, 5, 8, 10) para controlar fluidez vs. tamaño
+  - ✅ Selecciona resolución (480p, 720p, 1080p, 1440p)
+  - ✅ Ajusta velocidad de reproducción (50% a 200%)
+  - ✅ Descarga directa del GIF generado
+  - ✅ Barra de progreso en tiempo real
+  
+**Cómo usar:**
+1. Abre `docs/GIF_GENERATOR.html` en tu navegador
+2. Selecciona la animación que deseas convertir
+3. Configura FPS y calidad según tus necesidades
+4. Haz click en "🚀 Iniciar Captura"
+5. Espera a que se genere (puede tardar 1-2 minutos)
+6. Descarga automáticamente el archivo GIF
+
+**Recomendaciones por uso:**
+- **Presentaciones rápidas**: 720p + 5 FPS + velocidad 100%
+- **Redes Sociales**: 480p + 8 FPS + velocidad 150%
+- **Documentación detallada**: 1080p + 4 FPS + velocidad 100%
+- **Demostraciones técnicas**: 1080p + 5 FPS + velocidad 100%
 
 ```
 ┌──────────────────────────────────────────────────────────────┐

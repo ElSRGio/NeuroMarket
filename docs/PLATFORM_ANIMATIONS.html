@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroMarket - Animaciones Tecnicas de Flujo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-0: #06131f;
+      --bg-1: #0c2234;
+      --bg-2: #0f3147;
+      --ink: #ebf3f8;
+      --muted: #9ab6c8;
+      --line: #1f455e;
+      --hot: #ff6a1a;
+      --hot-soft: rgba(255, 106, 26, 0.22);
+      --cold: #26d8bf;
+      --cold-soft: rgba(38, 216, 191, 0.2);
+      --card: rgba(9, 29, 43, 0.8);
+      --card-border: rgba(112, 175, 209, 0.2);
+      --danger: #ff465f;
+      --warning: #ffcf5c;
+      --ok: #49e386;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      color: var(--ink);
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 12%, rgba(255, 106, 26, 0.18), transparent 30%),
+        radial-gradient(circle at 92% 6%, rgba(38, 216, 191, 0.2), transparent 36%),
+        linear-gradient(150deg, var(--bg-0), var(--bg-1) 48%, var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.1) 0.6px, transparent 0.6px);
+      background-size: 3px 3px;
+      opacity: 0.12;
+      animation: grain 7s steps(2) infinite;
+    }
+
+    @keyframes grain {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(1%, 1%); }
+      100% { transform: translate(0, 0); }
+    }
+
+    .wrap {
+      width: min(1200px, 92vw);
+      margin: 0 auto;
+      padding: 40px 0 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 30px;
+      background: linear-gradient(145deg, rgba(10, 32, 48, 0.96), rgba(9, 25, 40, 0.82));
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: -90px;
+      right: -60px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--hot-soft), transparent 70%);
+      animation: pulseGlow 3.4s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); opacity: 0.75; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 3.2vw, 2.9rem);
+      line-height: 1.08;
+      letter-spacing: 0.02em;
+      max-width: 760px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 850px;
+      margin: 14px 0 0;
+      line-height: 1.6;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .chip {
+      border: 1px solid var(--card-border);
+      background: rgba(10, 34, 50, 0.65);
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: #c2d9e8;
+      font-size: 0.88rem;
+    }
+
+    .grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: 1.8fr 1fr;
+      gap: 18px;
+    }
+
+    .panel {
+      border-radius: 18px;
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      backdrop-filter: blur(4px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(112, 175, 209, 0.16);
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #b8d2e2;
+    }
+
+    .viz-body {
+      padding: 10px 14px 14px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 14px;
+      border-bottom: 1px solid rgba(112, 175, 209, 0.16);
+      background: rgba(5, 25, 39, 0.6);
+    }
+
+    button {
+      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 10px 13px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: transform .16s ease, background .16s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    button.active {
+      border-color: rgba(255, 106, 26, 0.5);
+      background: rgba(255, 106, 26, 0.17);
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      background: linear-gradient(150deg, rgba(7, 22, 34, 0.9), rgba(4, 17, 28, 0.9));
+      border: 1px solid rgba(112, 175, 209, 0.14);
+    }
+
+    .node {
+      fill: #11334a;
+      stroke: #3d6c88;
+      stroke-width: 1.6;
+      rx: 12;
+    }
+
+    .node.active {
+      fill: #1b4864;
+      stroke: #88c8ee;
+    }
+
+    .label {
+      fill: #dbeaf2;
+      font-size: 13px;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 600;
+    }
+
+    .sublabel {
+      fill: #9ab6c8;
+      font-size: 10.5px;
+      font-family: "IBM Plex Mono", monospace;
+    }
+
+    .flow {
+      stroke: rgba(38, 216, 191, 0.64);
+      stroke-width: 2.4;
+      fill: none;
+      stroke-dasharray: 8 8;
+      animation: slide 1.2s linear infinite;
+    }
+
+    @keyframes slide {
+      from { stroke-dashoffset: 0; }
+      to { stroke-dashoffset: -16; }
+    }
+
+    .packet {
+      fill: var(--hot);
+      filter: drop-shadow(0 0 7px rgba(255, 106, 26, 0.85));
+    }
+
+    .side {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .log {
+      background: rgba(0, 0, 0, 0.26);
+      border: 1px solid rgba(112, 175, 209, 0.16);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 105px;
+    }
+
+    .log strong {
+      display: block;
+      color: #d5ecf7;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .log p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+
+    .metric-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      border-radius: 12px;
+      border: 1px solid rgba(112, 175, 209, 0.18);
+      padding: 10px;
+      background: rgba(7, 26, 40, 0.72);
+    }
+
+    .metric .k {
+      color: #91afc0;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .metric .v {
+      margin-top: 6px;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .flows {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .cards {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .card {
+      border: 1px solid rgba(112, 175, 209, 0.18);
+      border-radius: 12px;
+      padding: 12px;
+      background: rgba(7, 25, 38, 0.72);
+      transform-origin: left center;
+      animation: reveal .7s ease both;
+    }
+
+    .card:nth-child(2) { animation-delay: .08s; }
+    .card:nth-child(3) { animation-delay: .16s; }
+    .card:nth-child(4) { animation-delay: .24s; }
+    .card:nth-child(5) { animation-delay: .32s; }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateX(-16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 0.96rem;
+      color: #d8edf8;
+    }
+
+    .card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .formula {
+      font-family: "IBM Plex Mono", monospace;
+      color: #9eece1;
+      background: rgba(5, 20, 33, 0.85);
+      border: 1px solid rgba(38, 216, 191, 0.26);
+      border-radius: 8px;
+      padding: 7px 9px;
+      margin-top: 8px;
+      display: inline-block;
+      font-size: 0.82rem;
+      max-width: 100%;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .stages {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .stage {
+      border: 1px solid rgba(112, 175, 209, 0.16);
+      background: rgba(0, 0, 0, 0.22);
+      border-radius: 11px;
+      padding: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, transparent, rgba(38, 216, 191, 0.13), transparent);
+      transform: translateX(-100%);
+      animation: scan 2.4s linear infinite;
+    }
+
+    .stage:nth-child(2)::after { animation-delay: .2s; }
+    .stage:nth-child(3)::after { animation-delay: .4s; }
+    .stage:nth-child(4)::after { animation-delay: .6s; }
+    .stage:nth-child(5)::after { animation-delay: .8s; }
+
+    @keyframes scan {
+      to { transform: translateX(100%); }
+    }
+
+    .stage strong {
+      display: block;
+      color: #d4edf9;
+      margin-bottom: 7px;
+      font-size: 0.92rem;
+    }
+
+    .stage p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 0.86rem;
+    }
+
+    .timeline {
+      margin-top: 18px;
+      border: 1px solid rgba(112, 175, 209, 0.18);
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(5, 24, 39, 0.78);
+    }
+
+    .timeline table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .timeline th,
+    .timeline td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(112, 175, 209, 0.12);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .timeline th {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #9dc0d5;
+      background: rgba(2, 15, 26, 0.8);
+    }
+
+    .db-table {
+      border: 1px solid rgba(112, 175, 209, 0.18);
+      border-radius: 12px;
+      padding: 12px;
+      background: rgba(5, 24, 39, 0.78);
+    }
+
+    .db-table strong {
+      background: linear-gradient(100deg, transparent, rgba(38, 216, 191, 0.2), transparent);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .db-table tr td {
+      transition: opacity .4s ease, background-color .4s ease;
+    }
+
+    .db-table tr td {
+      background-color: transparent;
+    }
+
+    .db-table tr:nth-child(odd) {
+      background-color: rgba(38, 216, 191, 0.06);
+    }
+
+    .ok { color: var(--ok); }
+    .warn { color: var(--warning); }
+    .bad { color: var(--danger); }
+
+    .foot {
+      margin-top: 16px;
+      color: #8eaabd;
+      font-size: 0.86rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1030px) {
+      .grid,
+      .flows {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+    }
+
+    @media (max-width: 620px) {
+      .wrap { width: min(96vw, 1200px); }
+      .hero { padding: 22px; }
+      .controls { gap: 8px; }
+      button { width: 100%; }
+      .metric-grid { grid-template-columns: 1fr; }
+      .timeline { overflow-x: auto; }
+      .timeline table { min-width: 690px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>Animaciones Tecnicas de NeuroMarket: flujo, consumo, calculo e interaccion</h1>
+      <p>
+        Esta vista esta hecha para explicar de forma tecnica y visual como entra la informacion desde la interfaz,
+        como se mueve por API y Engine, que datos consume cada modulo, y como se construye el score de viabilidad.
+      </p>
+      <div class="chips">
+        <span class="chip">UI React</span>
+        <span class="chip">API Node + Express</span>
+        <span class="chip">Engine Python + Flask</span>
+        <span class="chip">PostgreSQL</span>
+        <span class="chip">IRL + TAM/SAM/SOM + ROI + Monte Carlo + SVEE</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>1) Movimiento de datos en tiempo real</h2>
+        <div class="controls" id="modeControls">
+          <button data-mode="full" class="active">Flujo Completo</button>
+          <button data-mode="registro">Registro de Usuario</button>
+          <button data-mode="analisis">Creacion de Analisis</button>
+          <button data-mode="calc">Pipeline de Calculo</button>
+          <button data-mode="infra">Consumo de Recursos</button>
+        </div>
+        <div class="viz-body">
+          <svg id="flowMap" viewBox="0 0 980 470" aria-label="Mapa animado de flujo de datos">
+            <path class="flow" d="M130,110 C220,110 220,210 310,210" />
+            <path class="flow" d="M390,210 C500,210 500,210 610,210" />
+            <path class="flow" d="M690,210 C785,210 785,120 880,120" />
+            <path class="flow" d="M690,230 C785,230 785,330 880,330" />
+            <path class="flow" d="M130,360 C220,360 220,260 310,260" />
+
+            <rect id="n-user" class="node" x="40" y="65" width="180" height="90" />
+            <text class="label" x="58" y="102">Usuario + Frontend</text>
+            <text class="sublabel" x="58" y="123">React Form + Dashboard</text>
+
+            <rect id="n-social" class="node" x="40" y="315" width="180" height="90" />
+            <text class="label" x="58" y="352">Data Externa</text>
+            <text class="sublabel" x="58" y="373">Menciones y densidad social</text>
+
+            <rect id="n-api" class="node" x="310" y="165" width="230" height="120" />
+            <text class="label" x="330" y="204">server-api /investment/analyze</text>
+            <text class="sublabel" x="330" y="225">JWT + validacion + orquestacion</text>
+            <text class="sublabel" x="330" y="244">payload + persistencia inicial</text>
+
+            <rect id="n-engine" class="node" x="610" y="165" width="230" height="120" />
+            <text class="label" x="630" y="204">engine /full-analysis</text>
+            <text class="sublabel" x="630" y="225">IRL, TAM/SOM, ROI, MC, SVEE</text>
+            <text class="sublabel" x="630" y="244">score final + rating</text>
+
+            <rect id="n-db" class="node" x="840" y="75" width="110" height="90" />
+            <text class="label" x="855" y="112">PostgreSQL</text>
+            <text class="sublabel" x="855" y="131">analyses</text>
+
+            <rect id="n-ui" class="node" x="840" y="285" width="110" height="90" />
+            <text class="label" x="866" y="322">UI</text>
+            <text class="sublabel" x="850" y="341">graficas + score</text>
+
+            <circle id="packet" class="packet" cx="130" cy="110" r="7" />
+          </svg>
+
+          <div class="metric-grid">
+            <div class="metric"><div class="k">Latencia API</div><div class="v" id="mLatency">212 ms</div></div>
+            <div class="metric"><div class="k">Payload</div><div class="v" id="mPayload">4.6 KB</div></div>
+            <div class="metric"><div class="k">Iteraciones MC</div><div class="v" id="mIter">10,000</div></div>
+            <div class="metric"><div class="k">Nodos activos</div><div class="v" id="mNodes">6</div></div>
+            <div class="metric"><div class="k">Estado</div><div class="v ok" id="mStatus">En ejecucion</div></div>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel">
+        <h2>Evento tecnico actual</h2>
+        <div class="side">
+          <div class="log" id="runtimeLog">
+            <strong>Frontend envia solicitud segura</strong>
+            <p>El usuario dispara POST /api/v2/investment/analyze con JWT y parametros de negocio. El backend crea registro status=processing.</p>
+          </div>
+          <div class="log">
+            <strong>Resumen del tipo de informacion</strong>
+            <p>
+              1) Datos del municipio y contexto local.<br />
+              2) Parametros financieros del negocio.<br />
+              3) Estacionalidad por menciones mensuales.<br />
+              4) Config de riesgo para simulacion.
+            </p>
+          </div>
+          <div class="log">
+            <strong>Resultado consumido por interfaz</strong>
+            <p>
+              viability_score, rating, IRL, TAM/SOM, ROI, escenarios Monte Carlo y SVEE con top meses para estrategia de apertura.
+            </p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="flows">
+      <article class="panel">
+        <h2>2) Que consume y como usa la informacion</h2>
+        <div class="cards">
+          <div class="card">
+            <h3>Entrada de usuario</h3>
+            <p>Nombre del negocio, sector, inversion inicial, ingreso base, costos, margen y escenario de mercado.</p>
+            <span class="formula">payload.business_name + roi_params + tam_params + irl_params</span>
+          </div>
+          <div class="card">
+            <h3>Datos territoriales y socioeconomicos</h3>
+            <p>Variables locales usadas por IRL: densidad digital, validacion fisica, bancarizacion, empleo y conectividad.</p>
+            <span class="formula">IRL = 0.30*DD + 0.25*VF + 0.20*NB + 0.15*IE + 0.10*CP</span>
+          </div>
+          <div class="card">
+            <h3>Estacionalidad y demanda social</h3>
+            <p>Serie de 12 meses de menciones para construir IDM y detectar mejor ventana de apertura.</p>
+            <span class="formula">IDM_mes = menciones_mes / promedio_anual</span>
+          </div>
+          <div class="card">
+            <h3>Mercado y captacion</h3>
+            <p>TAM/SAM/SOM usa poblacion, gasto promedio y porcentajes de acceso/captura para estimar alcance real de ventas.</p>
+            <span class="formula">SOM = TAM * pct_accesible * pct_capturable</span>
+          </div>
+          <div class="card">
+            <h3>Riesgo probabilistico</h3>
+            <p>Monte Carlo genera 10k escenarios con variabilidad de ingresos y costos para medir probabilidad de exito.</p>
+            <span class="formula">escenarios: P10 / P50 / P90 + prob_positivo</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>3) Pipeline de calculo del score</h2>
+        <div class="stages">
+          <div class="stage">
+            <strong>Etapa 1 - IRL (calidad contextual)</strong>
+            <p>Mide confiabilidad de mercado local e informalidad. Entrega score, categoria y correction factor.</p>
+          </div>
+          <div class="stage">
+            <strong>Etapa 2 - TAM/SAM/SOM (tamano objetivo)</strong>
+            <p>Calcula mercado total, servible y capturable con multiplicadores por sector.</p>
+          </div>
+          <div class="stage">
+            <strong>Etapa 3 - ROI estructural</strong>
+            <p>Proyecta utilidad mensual con estacionalidad, ROI anual y break-even en meses.</p>
+          </div>
+          <div class="stage">
+            <strong>Etapa 4 - Monte Carlo</strong>
+            <p>Simula incertidumbre bajo distribuciones normales y obtiene P10/P50/P90.</p>
+          </div>
+          <div class="stage">
+            <strong>Etapa 5 - SVEE y score final</strong>
+            <p>Detecta mes optimo de entrada y combina pesos para viability_score.</p>
+            <span class="formula">score = ROI*0.30 + IRL*0.25 + SOM*0.20 + SVEE*0.15 + MC*0.10</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="timeline">
+      <h2 style="margin: 0 0 16px 0; padding: 0 16px; font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; color: #b8d2e2;">4) Operaciones en BD y transformacion de datos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Paso</th>
+            <th>Componente</th>
+            <th>Operacion tecnica</th>
+            <th>Datos que entran/salen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>01</td>
+            <td>web-portal</td>
+            <td>Captura formulario y autentica usuario con JWT</td>
+            <td class="ok">Input: params negocio / Output: request JSON</td>
+          </tr>
+          <tr>
+            <td>02</td>
+            <td>server-api</td>
+            <td>Valida token, persiste status=processing y llama Engine</td>
+            <td class="ok">Input: JSON + JWT / Output: llamada a /api/engine/full-analysis</td>
+          </tr>
+          <tr>
+            <td>03</td>
+            <td>engine</td>
+            <td>Ejecuta IRL, TAM/SOM, ROI, Monte Carlo y SVEE secuencial</td>
+            <td class="ok">Output: viability_score + modulos detallados</td>
+          </tr>
+          <tr>
+            <td>04</td>
+            <td>PostgreSQL</td>
+            <td>Guarda resultado final en tabla analyses</td>
+            <td class="ok">Output: historial auditable de analisis</td>
+          </tr>
+          <tr>
+            <td>05</td>
+            <td>web-portal</td>
+            <td>Renderiza score, escenarios y dashboard ejecutivo</td>
+            <td class="ok">Output: visualizacion tecnica + comercial</td>
+          </tr>
+          <tr>
+            <td>06</td>
+            <td>Fallback interno</td>
+            <td>Si engine falla, backend ejecuta calculo espejo local</td>
+            <td class="warn">Output: continuidad operativa con warning</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="flows" style="margin-top: 24px;">
+      <article class="panel">
+        <h2>2) Tablas de BD: como se llenan los datos</h2>
+        <div id="tablasDB">
+          <div class="db-table" id="tableUsuarios">
+            <strong style="color: #d5ecf7; display: block; margin-bottom: 8px;">Tabla: users</strong>
+            <div class="timeline">
+              <table>
+                <thead>
+                  <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>email</th>
+                    <th>plan_type</th>
+                    <th>created_at</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr id="user-row-1">
+                    <td style="opacity: 0;">1</td>
+                    <td style="opacity: 0;">Carlos Mejia</td>
+                    <td style="opacity: 0;">carlos@neuromarket.mx</td>
+                    <td style="opacity: 0;">basic</td>
+                    <td style="opacity: 0;">2026-03-25 14:32</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin-top: 12px; color: var(--muted); font-size: 0.85rem;">
+              <strong style="color: #c2d9e8;">Evento:</strong> Usuario se registra en el portal con email y contraseña. Backend hash la contraseña y crea registro en tabla users. Plan default: "basic".
+            </p>
+          </div>
+
+          <div class="db-table" id="tableAnalyses" style="margin-top: 18px;">
+            <strong style="color: #d5ecf7; display: block; margin-bottom: 8px;">Tabla: analyses</strong>
+            <div class="timeline">
+              <table>
+                <thead>
+                  <tr>
+                    <th>id</th>
+                    <th>user_id</th>
+                    <th>business_name</th>
+                    <th>sector</th>
+                    <th>status</th>
+                    <th>viability_score</th>
+                    <th>created_at</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr id="analysis-row-1">
+                    <td style="opacity: 0;">uuid-001</td>
+                    <td style="opacity: 0;">1</td>
+                    <td style="opacity: 0;">Restaurante La Familia</td>
+                    <td style="opacity: 0;">restaurante</td>
+                    <td style="opacity: 0;">processing</td>
+                    <td style="opacity: 0;">–</td>
+                    <td style="opacity: 0;">2026-03-25 15:10</td>
+                  </tr>
+                  <tr id="analysis-row-2" style="opacity: 0;">
+                    <td>uuid-001</td>
+                    <td>1</td>
+                    <td>Restaurante La Familia</td>
+                    <td>restaurante</td>
+                    <td class="ok">completed</td>
+                    <td class="ok">72.34</td>
+                    <td>2026-03-25 15:10</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin-top: 12px; color: var(--muted); font-size: 0.85rem;">
+              <strong style="color: #c2d9e8;">Evento:</strong> Usuario envia parametros del analisis. Backend crea registro con status=processing, luego actualiza con resultado y viability_score cuando engine termina.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>3) Ejemplo concreto: calculo paso a paso</h2>
+        <div class="cards" id="exampleCalc">
+          <div class="card" style="grid-column: 1 / -1; margin-bottom: 8px;">
+            <h3>📊 Caso: Restaurante La Familia en Libres, Puebla</h3>
+            <p style="margin-top: 10px; color: #9ab6c8;">
+              <strong style="color: #d8edf8;">Entrada del usuario:</strong> Inversion inicial $50,000 | Ingreso base $18,000/mes | Margen 30% | Costos fijos $5,000/mes
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>1️⃣ IRL - Indice de Realidad Local</h3>
+            <p>Datos del municipio Libres:</p>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; margin-top: 8px; font-size: 0.85rem; color: #9eece1;">
+              DD=42 | VF=55 | NB=38 | IE=48 | CP=55<br/>
+              IRL = (0.30×42) + (0.25×55) + (0.20×38) + (0.15×48) + (0.10×55)<br/>
+              <strong style="color: #d5ecf7;">IRL = 46.65</strong> → Categoria: <span style="color: var(--warning);">mixta</span> → Factor: 1.3×
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>2️⃣ TAM/SAM/SOM - Tamaño de Mercado</h3>
+            <p>Libres: poblacion 15,420 | gasto promedio $2,400/mes | sector restaurante (mult 1.10)</p>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; margin-top: 8px; font-size: 0.85rem; color: #9eece1;">
+              TAM = 15,420 × 2,400 × 12 × 1.10 = <strong style="color: #d5ecf7;">488.5M</strong><br/>
+              SAM = 488.5M × (30% accesible) = <strong style="color: #d5ecf7;">146.5M</strong><br/>
+              SOM = 146.5M × (5% capturable) = <strong style="color: #d5ecf7;">7.3M</strong> / año
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>3️⃣ ROI Estructural - Proyeccion 12 meses</h3>
+            <p>Con estacionalidad (IDM por mes): enero 0.85, febrero 0.90, ... diciembre 1.30</p>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; margin-top: 8px; font-size: 0.85rem; color: #9eece1;">
+              Mes 1: Ingreso = 18,000 × 0.85 = 15,300 | Util Bruta = 15,300 × 0.30 = 4,590 | Util Neta = 4,590 - 5,000 = <span style="color: var(--danger);">-410</span><br/>
+              Mes 12: Ingreso = 18,000 × 1.30 = 23,400 | Util Bruta = 7,020 | Util Neta = 2,020<br/>
+              <strong style="color: #d5ecf7;">Utilidad anual = 7,230</strong> | Break-even = 83 meses
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>4️⃣ Monte Carlo - 10,000 escenarios</h3>
+            <p>Variabilidad: ingresos ±20%, costos ±15%. Distribuciones normales + seed fijo.</p>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; margin-top: 8px; font-size: 0.85rem; color: #9eece1;">
+              Escenario P10 (pesimista): ROI = <span style="color: var(--danger);">-45.2%</span><br/>
+              Escenario P50 (realista): ROI = <strong style="color: var(--warning);">12.1%</strong><br/>
+              Escenario P90 (optimista): ROI = <span style="color: var(--ok);">68.5%</span><br/>
+              Prob de éxito (ROI ≥ 60): 18.7%
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>5️⃣ SVEE - Ventana estrategica</h3>
+            <p>Menciones mensuales por redes: [85,90,100,100,110,95,100,100,115,100,120,130]</p>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; margin-top: 8px; font-size: 0.85rem; color: #9eece1;">
+              Mejor mes: Diciembre (menciones 130, IDM 1.17)<br/>
+              SVEE score = 1.17 × (46.65/100) × 0.8 = <strong style="color: #d5ecf7;">0.436</strong><br/>
+              Recomendacion: Comienza preparativos en <strong style="color: #d5ecf7;">Septiembre</strong> (permisos, inventario, staff)
+            </div>
+          </div>
+
+          <div class="card" style="grid-column: 1 / -1;">
+            <h3>🎯 Score Final de Viabilidad</h3>
+            <p style="margin-top: 10px; line-height: 1.8;">
+              Score = ROI_norm × 0.30 + IRL × 0.25 + SOM_ratio × 0.20 + SVEE_max × 0.15 + MC_P50 × 0.10<br/>
+              <strong style="color: #d5ecf7;">Score = (14.46 × 0.30) + (46.65 × 0.25) + (1.5 × 0.20) + (43.6 × 0.15) + (51.2 × 0.10)</strong><br/>
+              <strong style="color: #d5ecf7; font-size: 1.1rem;">Score Final = 36.85 / 100</strong> → Rating: <span style="color: var(--danger);">❌ No recomendado</span> (Alto riesgo)
+            </p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <p class="foot">
+      <strong style="color: #d8edf8; display: block; margin-bottom: 8px;">Cómo usar esta demostración tecnica:</strong>
+      1. <strong>Flujo Completo:</strong> Visualiza el ciclo completo desde entrada usuario hasta resultado final.<br/>
+      2. <strong>Registro de Usuario:</strong> Ve cómo se llena la tabla users cuando un nuevo usuario se registra en el portal.<br/>
+      3. <strong>Creacion de Analisis:</strong> Observa cómo se crea y completa un registro en la tabla analyses: primero status=processing, luego status=completed con viability_score.<br/>
+      4. <strong>Pipeline de Calculo:</strong> Sigue el encadenamiento de IRL → TAM/SOM → ROI → Monte Carlo → SVEE paso a paso.<br/>
+      5. <strong>Consumo de Recursos:</strong> Entiende cómo cada componente (frontend, API, engine, DB) interactúa y consume recursos.<br/>
+      <br/>
+      Debajo encontrarás un <strong>ejemplo concreto completo</strong> con números reales (Restaurante La Familia) y fórmulas visibles.
+      Esto es perfecto para explicar en demos tecnicas cómo transformamos datos en decisiones de inversión.
+    </p>
+  </main>
+
+  <script>
+    const modeButtons = Array.from(document.querySelectorAll("#modeControls button"));
+    const packet = document.getElementById("packet");
+    const runtimeLog = document.getElementById("runtimeLog");
+
+    const metrics = {
+      latency: document.getElementById("mLatency"),
+      payload: document.getElementById("mPayload"),
+      iter: document.getElementById("mIter"),
+      nodes: document.getElementById("mNodes"),
+      status: document.getElementById("mStatus"),
+    };
+
+    const nodes = {
+      user: document.getElementById("n-user"),
+      social: document.getElementById("n-social"),
+      api: document.getElementById("n-api"),
+      engine: document.getElementById("n-engine"),
+      db: document.getElementById("n-db"),
+      ui: document.getElementById("n-ui"),
+    };
+
+    const modeConfig = {
+      full: {
+        title: "Flujo completo de plataforma",
+        text: "El backend orquesta el analisis completo: crea registro inicial, consume engine Python, consolida modulos y retorna score final al dashboard.",
+        speed: 0.0033,
+        metric: { latency: "212 ms", payload: "4.6 KB", iter: "10,000", nodes: "6" },
+      },
+      registro: {
+        title: "Registro de Usuario",
+        text: "El usuario ingresa email y contraseña. El backend hash la contraseña, crea registro en tabla users con plan_type=basic y retorna JWT para futuras solicitudes.",
+        speed: 0.0025,
+        metric: { latency: "145 ms", payload: "1.8 KB", iter: "N/A", nodes: "2" },
+        animated: true,
+      },
+      analisis: {
+        title: "Creacion y Procesamiento de Analisis",
+        text: "El usuario envia parametros del negocio. Backend crea fila en analyses con status=processing, llama al engine, y luego actualiza con resultados y viability_score.",
+        speed: 0.0044,
+        metric: { latency: "286 ms", payload: "5.1 KB", iter: "10,000", nodes: "5" },
+        animated: true,
+      },
+      calc: {
+        title: "Pipeline de calculo financiero y probabilistico",
+        text: "El engine encadena IRL -> TAM/SOM -> ROI -> Monte Carlo -> SVEE y normaliza resultados para construir el viability_score.",
+        speed: 0.0044,
+        metric: { latency: "286 ms", payload: "5.1 KB", iter: "10,000", nodes: "4" },
+      },
+      infra: {
+        title: "Consumo de recursos y resiliencia",
+        text: "La API administra persistencia en PostgreSQL y activa fallback local cuando el engine principal no esta disponible, preservando continuidad.",
+        speed: 0.003,
+        metric: { latency: "238 ms", payload: "4.9 KB", iter: "10,000", nodes: "5" },
+      },
+    };
+
+    const points = [
+      [130, 110],
+      [210, 110],
+      [270, 170],
+      [335, 210],
+      [470, 210],
+      [650, 210],
+      [760, 190],
+      [880, 120],
+      [785, 230],
+      [880, 330],
+      [735, 250],
+      [610, 230],
+      [500, 220],
+      [390, 230],
+      [310, 260],
+      [205, 325],
+      [130, 360],
+      [200, 320],
+      [280, 260],
+      [340, 220],
+      [130, 110],
+    ];
+
+    let currentMode = "full";
+    let t = 0;
+
+    function lerp(a, b, n) {
+      return (1 - n) * a + n * b;
+    }
+
+    function pointOnPath(p, segmentT) {
+      const next = (p + 1) % points.length;
+      return {
+        x: lerp(points[p][0], points[next][0], segmentT),
+        y: lerp(points[p][1], points[next][1], segmentT),
+      };
+    }
+
+    function clearNodeState() {
+      Object.values(nodes).forEach((el) => el.classList.remove("active"));
+    }
+
+    function highlightByPoint(point) {
+      clearNodeState();
+      if (point.x < 260 && point.y < 200) nodes.user.classList.add("active");
+      if (point.x < 260 && point.y > 260) nodes.social.classList.add("active");
+      if (point.x >= 260 && point.x < 590) nodes.api.classList.add("active");
+      if (point.x >= 590 && point.x < 830) nodes.engine.classList.add("active");
+      if (point.x >= 830 && point.y < 220) nodes.db.classList.add("active");
+      if (point.x >= 830 && point.y >= 220) nodes.ui.classList.add("active");
+    }
+
+    function animate() {
+      const cfg = modeConfig[currentMode];
+      t = (t + cfg.speed) % 1;
+
+      const scaled = t * (points.length - 1);
+      const idx = Math.floor(scaled);
+      const segT = scaled - idx;
+      const p = pointOnPath(idx, segT);
+
+      packet.setAttribute("cx", p.x);
+      packet.setAttribute("cy", p.y);
+      highlightByPoint(p);
+
+      requestAnimationFrame(animate);
+    }
+
+    function applyMode(mode) {
+      currentMode = mode;
+      const cfg = modeConfig[mode];
+
+      runtimeLog.innerHTML = `<strong>${cfg.title}</strong><p>${cfg.text}</p>`;
+      metrics.latency.textContent = cfg.metric.latency;
+      metrics.payload.textContent = cfg.metric.payload;
+      metrics.iter.textContent = cfg.metric.iter;
+      metrics.nodes.textContent = cfg.metric.nodes;
+      metrics.status.textContent = "En ejecucion";
+      metrics.status.className = "v ok";
+
+      modeButtons.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.mode === mode);
+      });
+
+      // Animar llenado de tablas de BD
+      if (mode === "registro") {
+        animateUserRegistration();
+      } else if (mode === "analisis") {
+        animateAnalysisCreation();
+      }
+    }
+
+    function animateUserRegistration() {
+      const row = document.getElementById("user-row-1");
+      const cells = row.querySelectorAll("td");
+      
+      // Resetear estilos
+      row.style.backgroundColor = "transparent";
+      cells.forEach(cell => cell.style.opacity = "0");
+      
+      // Animar con highlight
+      cells.forEach((cell, idx) => {
+        setTimeout(() => {
+          row.style.backgroundColor = "rgba(38, 216, 191, 0.15)";
+          cell.style.opacity = "1";
+        }, idx * 180);
+      });
+      
+      // Fade del highlight después de terminar
+      setTimeout(() => {
+        row.style.backgroundColor = "transparent";
+      }, cells.length * 180 + 800);
+    }
+
+    function animateAnalysisCreation() {
+      const row1 = document.getElementById("analysis-row-1");
+      const row2 = document.getElementById("analysis-row-2");
+      const cells1 = row1.querySelectorAll("td");
+      
+      // Resetear estilos
+      cells1.forEach(cell => cell.style.opacity = "0");
+      row2.style.opacity = "0";
+      row1.style.backgroundColor = "transparent";
+      row2.style.backgroundColor = "transparent";
+      
+      // Primera fila: processing
+      cells1.forEach((cell, idx) => {
+        setTimeout(() => {
+          row1.style.backgroundColor = "rgba(255, 207, 92, 0.12)";
+          cell.style.opacity = "1";
+        }, idx * 180);
+      });
+
+      // Segunda fila: completed (después de 3 segundos)
+      setTimeout(() => {
+        row1.style.backgroundColor = "transparent";
+        row2.style.backgroundColor = "rgba(73, 227, 134, 0.12)";
+        row2.style.opacity = "1";
+      }, 3000);
+      
+      setTimeout(() => {
+        row2.style.backgroundColor = "transparent";
+      }, 3500);
+    }
+
+    modeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => applyMode(btn.dataset.mode));
+    });
+
+    applyMode("full");
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>

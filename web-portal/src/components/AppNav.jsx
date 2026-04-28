@@ -6,15 +6,11 @@ import api from '../services/api.js'
 
 function HexLogo({ size = 30 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="#e8f5e9"/>
-      <path d="M20 2 L36 11 L28 20 Z" fill="#4ade80"/>
-      <path d="M36 11 L36 29 L28 20 Z" fill="#22c55e"/>
-      <path d="M20 38 L36 29 L28 20 Z" fill="#16a34a"/>
-      <path d="M4 29 L20 38 L12 20 Z" fill="#60a5fa"/>
-      <path d="M4 11 L4 29 L12 20 Z" fill="#3b82f6"/>
-      <path d="M20 2 L4 11 L12 20 Z" fill="#f97316"/>
-    </svg>
+    <img
+      src="/logo.png"
+      alt="XAIZA"
+      style={{ width: size, height: size }}
+    />
   )
 }
 
@@ -50,7 +46,7 @@ export default function AppNav({ showNewAnalysis = true }) {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <HexLogo size={30}/>
-          <span className="font-black text-lg text-gray-900">NeuroMarket</span>
+          <span className="font-black text-lg text-gray-900">XAIZA</span>
           {user && (
             <span className={`text-xs font-bold px-2 py-0.5 rounded-full ml-1 ${badge.bg}`}>
               {badge.label}

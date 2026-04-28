@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroMarket - Dashboard de Demostraciones</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0a1929 0%, #132f4c 50%, #0f3147 100%);
+      color: #ebf3f8;
+      font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(9, 29, 43, 0.9);
+      border-bottom: 2px solid #26d8bf;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #26d8bf;
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 20px rgba(38, 216, 191, 0.3);
+    }
+
+    .header p {
+      margin: 12px 0 0 0;
+      color: #9ab6c8;
+      font-size: 1rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .intro-section {
+      background: rgba(15, 49, 71, 0.6);
+      border: 1px solid rgba(38, 216, 191, 0.3);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 40px;
+      backdrop-filter: blur(10px);
+    }
+
+    .intro-section h2 {
+      color: #26d8bf;
+      margin-top: 0;
+      font-size: 1.3rem;
+    }
+
+    .intro-section p {
+      color: #9ab6c8;
+      line-height: 1.8;
+      margin-bottom: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: rgba(15, 49, 71, 0.8);
+      border: 1px solid rgba(38, 216, 191, 0.3);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: #26d8bf;
+      box-shadow: 0 20px 40px rgba(38, 216, 191, 0.2);
+      background: rgba(15, 49, 71, 0.95);
+    }
+
+    .card-icon {
+      font-size: 3rem;
+      padding: 20px;
+      text-align: center;
+      background: rgba(38, 216, 191, 0.1);
+      border-bottom: 1px solid rgba(38, 216, 191, 0.2);
+    }
+
+    .card-content {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #b8d2e2;
+      margin: 0 0 8px 0;
+    }
+
+    .card-version {
+      font-size: 0.75rem;
+      color: #26d8bf;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      color: #9ab6c8;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      flex: 1;
+      margin-bottom: 12px;
+    }
+
+    .card-features {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0;
+      font-size: 0.85rem;
+    }
+
+    .card-features li {
+      color: #9ab6c8;
+      padding: 4px 0;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .card-features li:before {
+      content: "✓";
+      color: #49e386;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: 1px solid rgba(38, 216, 191, 0.4);
+      background: transparent;
+      color: #26d8bf;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: rgba(38, 216, 191, 0.15);
+      border-color: #26d8bf;
+    }
+
+    .btn.primary {
+      background: #26d8bf;
+      color: #0a1929;
+      border-color: #26d8bf;
+    }
+
+    .btn.primary:hover {
+      background: #49e386;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(38, 216, 191, 0.2);
+      color: #26d8bf;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-right: 6px;
+      margin-bottom: 8px;
+    }
+
+    .badge.recommended {
+      background: rgba(73, 227, 134, 0.2);
+      color: #49e386;
+    }
+
+    .badge.new {
+      background: rgba(255, 106, 26, 0.2);
+      color: #ff6a1a;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      color: #b8d2e2;
+      margin: 50px 0 30px 0;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(38, 216, 191, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(15, 49, 71, 0.6);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .comparison-table th {
+      background: rgba(38, 216, 191, 0.15);
+      color: #26d8bf;
+      padding: 15px;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(38, 216, 191, 0.3);
+    }
+
+    .comparison-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid rgba(38, 216, 191, 0.2);
+      color: #9ab6c8;
+    }
+
+    .comparison-table tr:hover {
+      background: rgba(38, 216, 191, 0.05);
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .quick-start {
+      background: rgba(38, 216, 191, 0.1);
+      border: 1px solid rgba(38, 216, 191, 0.3);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      border-left: 4px solid #26d8bf;
+    }
+
+    .quick-start strong {
+      color: #26d8bf;
+    }
+
+    .code {
+      background: rgba(9, 29, 43, 0.9);
+      border: 1px solid rgba(38, 216, 191, 0.2);
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin: 10px 0;
+      overflow-x: auto;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.85rem;
+      color: #26d8bf;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ab6c8;
+      border-top: 1px solid rgba(38, 216, 191, 0.2);
+      margin-top: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.8rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🚀 NeuroMarket - Centro de Demostraciones</h1>
+    <p>Visualizaciones técnicas interactivas y generador de GIFs para presentaciones</p>
+  </div>
+
+  <div class="container">
+    <!-- INTRO -->
+    <div class="intro-section">
+      <h2>📌 Bienvenido</h2>
+      <p>
+        Aquí encontrarás todas las herramientas de demostración de NeuroMarket. Cada herramienta está diseñada para mostrar 
+        de forma visual cómo el sistema transforma datos de usuarios en decisiones empresariales fundamentadas. 
+        Puedes ver las animaciones en tiempo real o generarlas como GIFs para compartir.
+      </p>
+    </div>
+
+    <!-- ANIMACIONES -->
+    <h2 class="section-title">📺 Animaciones Interactivas</h2>
+    <div class="grid">
+      <!-- INTEGRATED -->
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-content">
+          <span class="card-version">⭐ Recomendada | Nueva</span>
+          <div>
+            <span class="badge recommended">Integrada</span>
+            <span class="badge new">Flujo Completo</span>
+          </div>
+          <h3 class="card-title">Entrada → BD → Cálculos</h3>
+          <p class="card-desc">
+            Visualización coherente del flujo completo: cómo el usuario ingresa datos, se guardan en PostgreSQL, 
+            y se transforman matemáticamente en recomendaciones.
+          </p>
+          <ul class="card-features">
+            <li>Panel 1: Typing animation en tiempo real</li>
+            <li>Panel 2: Visualización PostgreSQL</li>
+            <li>Panel 3: Cálculos (IRL, ROI, Score)</li>
+            <li>Ejemplo: Restaurante La Familia</li>
+            <li>Timeline: T=0.0s - T=8.5s</li>
+          </ul>
+          <div class="card-actions">
+            <button class="btn" onclick="open('PLATFORM_ANIMATIONS_INTEGRATED.html')">Ver Ahora</button>
+            <button class="btn primary" onclick="open('GIF_GENERATOR.html', 'integrated')">Crear GIF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADVANCED -->
+      <div class="card">
+        <div class="card-icon">🎨</div>
+        <div class="card-content">
+          <span class="card-version">Versión Avanzada</span>
+          <div>
+            <span class="badge">5 Paneles</span>
+            <span class="badge">Paralelo</span>
+          </div>
+          <h3 class="card-title">Animaciones Simultáneas</h3>
+          <p class="card-desc">
+            5 paneles animándose en paralelo: entrada de datos, BD llenándose, cálculos revelándose, 
+            pipeline de 5 etapas y visualización con Canvas.
+          </p>
+          <ul class="card-features">
+            <li>Typing animation sincronizado</li>
+            <li>Tabla PostgreSQL con estados</li>
+            <li>Fórmulas matemáticas reveladoras</li>
+            <li>Pipeline de 5 etapas</li>
+            <li>Canvas con transformación de datos</li>
+          </ul>
+          <div class="card-actions">
+            <button class="btn" onclick="open('PLATFORM_ANIMATIONS_ADVANCED.html')">Ver Ahora</button>
+            <button class="btn primary" onclick="open('GIF_GENERATOR.html', 'advanced')">Crear GIF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BASIC -->
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <div class="card-content">
+          <span class="card-version">Versión Básica</span>
+          <div>
+            <span class="badge">Introducción</span>
+          </div>
+          <h3 class="card-title">Flujo del Sistema</h3>
+          <p class="card-desc">
+            Demostración interactiva con múltiples modos: flujo completo, registro de usuarios, cálculo paso a paso, 
+            y análisis de consumo de recursos.
+          </p>
+          <ul class="card-features">
+            <li>Modo "Flujo Completo"</li>
+            <li>Modo "Registro Usuario"</li>
+            <li>Modo "Cálculo Paso a Paso"</li>
+            <li>Métricas de rendimiento</li>
+            <li>Selector de modos</li>
+          </ul>
+          <div class="card-actions">
+            <button class="btn" onclick="open('PLATFORM_ANIMATIONS.html')">Ver Ahora</button>
+            <button class="btn primary" onclick="open('GIF_GENERATOR.html', 'basic')">Crear GIF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERRAMIENTAS -->
+    <h2 class="section-title">🛠️ Herramientas de Generación</h2>
+    <div class="grid">
+      <!-- GIF GENERATOR -->
+      <div class="card">
+        <div class="card-icon">🎬</div>
+        <div class="card-content">
+          <span class="card-version">Interface Web | Recomendado</span>
+          <div>
+            <span class="badge recommended">Fácil</span>
+            <span class="badge">Rápido</span>
+          </div>
+          <h3 class="card-title">Generador de GIFs</h3>
+          <p class="card-desc">
+            Convierte las animaciones HTML a GIFs optimizados directamente en el navegador. 
+            Controla FPS, resolución y velocidad. Descarga automática.
+          </p>
+          <ul class="card-features">
+            <li>Interface gráfica intuitiva</li>
+            <li>FPS ajustable (4-10)</li>
+            <li>Resolución variable (480p-1440p)</li>
+            <li>Control de velocidad</li>
+            <li>Descarga automática</li>
+          </ul>
+          <div class="card-actions">
+            <button class="btn primary" onclick="open('GIF_GENERATOR.html')" style="grid-column: 1/3;">🚀 Abrir Generador</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCUMENTATION -->
+      <div class="card">
+        <div class="card-icon">📖</div>
+        <div class="card-content">
+          <span class="card-version">Guía de Referencia</span>
+          <div>
+            <span class="badge">Markdown</span>
+            <span class="badge">Detallado</span>
+          </div>
+          <h3 class="card-title">Guía del Generador</h3>
+          <p class="card-desc">
+            Documentación completa con ejemplos, recomendaciones por plataforma (Twitter, LinkedIn, presentaciones), 
+            tips profesionales y solución de problemas.
+          </p>
+          <ul class="card-features">
+            <li>Configuraciones recomendadas</li>
+            <li>Tips por red social</li>
+            <li>Solución de problemas</li>
+            <li>Ejemplos de uso</li>
+            <li>Comandos avanzados</li>
+          </ul>
+          <div class="card-actions">
+            <button class="btn" onclick="open('GIF_GENERATOR_README.md')" style="grid-column: 1/3;">📖 Ver Documentación</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCRIPT NODE -->
+      <div class="card">
+        <div class="card-icon">⚙️</div>
+        <div class="card-content">
+          <span class="card-version">Para Desarrolladores</span>
+          <div>
+            <span class="badge">Node.js</span>
+            <span class="badge">Avanzado</span>
+          </div>
+          <h3 class="card-title">Script de Captura</h3>
+          <p class="card-desc">
+            Script Node.js para capturar frames directamente con Puppeteer. Genera carpetas con PNGs 
+            que puedes convertir a GIF con ffmpeg.
+          </p>
+          <ul class="card-features">
+            <li>Usa Puppeteer + captura de pantalla</li>
+            <li>Genera frames PNG</li>
+            <li>Compatible con ffmpeg</li>
+            <li>Personalizable por código</li>
+            <li>Para integración CI/CD</li>
+          </ul>
+          <div class="card-actions">
+            <button class="btn" onclick="copyCode('npm install puppeteer')" style="grid-column: 1/3;">📋 Ver Script</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARATIVA -->
+    <h2 class="section-title">📊 Comparativa de Animaciones</h2>
+    <div style="overflow-x: auto;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Aspecto</th>
+            <th>Integrada ⭐</th>
+            <th>Avanzada</th>
+            <th>Básica</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Duración</strong></td>
+            <td>12 segundos</td>
+            <td>18 segundos</td>
+            <td>15 segundos</td>
+          </tr>
+          <tr>
+            <td><strong>Paneles</strong></td>
+            <td>5 (Flujo + 3 integrados)</td>
+            <td>5 (Paralelos)</td>
+            <td>Selector de modos</td>
+          </tr>
+          <tr>
+            <td><strong>Complejidad Visual</strong></td>
+            <td>Media-Alta</td>
+            <td>Muy Alta</td>
+            <td>Media</td>
+          </tr>
+          <tr>
+            <td><strong>Ejemplo Real</strong></td>
+            <td>✓ Restaurante La Familia</td>
+            <td>✓ Incluido</td>
+            <td>✓ Incluido</td>
+          </tr>
+          <tr>
+            <td><strong>Mejor para</strong></td>
+            <td>Ejecutivos & Generales</td>
+            <td>Técnicos & Arquitectos</td>
+            <td>Introducción & Educación</td>
+          </tr>
+          <tr>
+            <td><strong>Ideal para GIF</strong></td>
+            <td>LinkedIn, Presentaciones</td>
+            <td>Documentación Técnica</td>
+            <td>Twitter, General</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QUICK START -->
+    <h2 class="section-title">⚡ Inicio Rápido</h2>
+
+    <div class="quick-start">
+      <strong>Opción 1: Generador Web (Recomendado)</strong>
+      <ol>
+        <li>Haz clic en <strong>"🚀 Abrir Generador"</strong> o abre <strong>GIF_GENERATOR.html</strong></li>
+        <li>Selecciona la animación que deseas convertir</li>
+        <li>Ajusta FPS y calidad según tu necesidad</li>
+        <li>Haz clic en <strong>"🚀 Iniciar Captura"</strong></li>
+        <li>Espera 1-2 minutos y descarga automáticamente</li>
+      </ol>
+    </div>
+
+    <div class="quick-start">
+      <strong>Opción 2: Configuraciones Recomendadas por Plataforma</strong>
+      <ul>
+        <li><strong>LinkedIn (Ejecutivos):</strong> Resolución Alta + 5 FPS + Velocidad 100%</li>
+        <li><strong>Twitter (Atención):</strong> Resolución Media + 8 FPS + Velocidad 150%</li>
+        <li><strong>Presentación (Detalle):</strong> Resolución Ultra + 4 FPS + Velocidad 100%</li>
+        <li><strong>WhatsApp (Móvil):</strong> Resolución Baja + 8 FPS + Velocidad 150%</li>
+      </ul>
+    </div>
+
+    <!-- RESUMEN -->
+    <h2 class="section-title">✨ Resumen del Sistema</h2>
+    <div class="intro-section">
+      <h2>¿Qué ves en las animaciones?</h2>
+      <p>
+        Las animaciones visualizan el proceso completo de NeuroMarket:
+      </p>
+      <ol>
+        <li><strong>① Entrada:</strong> Usuario ingresa datos del negocio (nombre, inversión, ingresos, márgenes, costos)</li>
+        <li><strong>② Persistencia:</strong> Los datos se guardan en PostgreSQL en tabla <code>analyses</code></li>
+        <li><strong>③ Cálculos:</strong> Python Engine ejecuta 5 módulos matemáticos (IRL, TAM/SAM/SOM, ROI, Monte Carlo, SVEE)</li>
+        <li><strong>④ Resultado:</strong> Se genera Score final, viabilidad y recomendaciones</li>
+        <li><strong>⑤ Dashboard:</strong> Frontend renderiza resultados con gráficos interactivos</li>
+      </ol>
+      <p>Todas las animaciones muestran este flujo de forma visual y clara.</p>
+    </div>
+
+    <div class="intro-section">
+      <h2>¿Cómo usar los GIFs?</h2>
+      <ul>
+        <li>📊 <strong>Presentaciones:</strong> Inserta en PowerPoint / Keynote para demostrar el sistema</li>
+        <li>📱 <strong>Redes Sociales:</strong> Tweet / Post en LinkedIn mostrando capacidades</li>
+        <li>📚 <strong>Documentación:</strong> Agrega a README.md / Wiki técnica</li>
+        <li>🎓 <strong>Educación:</strong> Enseña a clientes cómo funciona la plataforma</li>
+        <li>💼 <strong>Propuestas:</strong> Incluye en presentaciones de venta</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      🎬 NeuroMarket Demostraciones v1.0<br/>
+      Última actualización: 2026-03-25<br/>
+      © NeuroMarket Team - Todos los derechos reservados
+    </p>
+  </footer>
+
+  <script>
+    function open(file, param) {
+      if (file.endsWith('.md')) {
+        window.open(file, '_blank');
+      } else if (file === 'GIF_GENERATOR.html' && param) {
+        // Preseleccionar en el generador
+        const win = window.open(file);
+        setTimeout(() => {
+          try {
+            win.document.getElementById('animSelect').value = param;
+          } catch (e) {}
+        }, 1000);
+      } else {
+        window.location.href = file;
+      }
+    }
+
+    function copyCode(code) {
+      navigator.clipboard.writeText(code);
+      alert('Comando copiado al portapapeles:\n' + code);
+    }
+  </script>
+</body>
+</html>

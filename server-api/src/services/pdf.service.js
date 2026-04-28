@@ -137,12 +137,14 @@ function buildHtml(analysis) {
       <div class="lbl">Utilidad Anual</div>
     </div>
     <div class="kpi">
-      <div class="val">${roi.break_even_meses?.toFixed(1) || "—"} meses</div>
-      <div class="lbl">Break-even</div>
+      <div class="val" style="color:${roi.runway_meses < 3 ? '#ef4444' : roi.runway_meses < 6 ? '#eab308' : '#16a34a'}">
+        ${roi.runway_meses === 999 ? "∞" : roi.runway_meses?.toFixed(1) || "—"}
+      </div>
+      <div class="lbl">Runway (Meses)</div>
     </div>
     <div class="kpi">
-      <div class="val">${mc.prob_positivo || 100}%</div>
-      <div class="lbl">Probabilidad de éxito</div>
+      <div class="val">${roi.clientes_equilibrio || "—"}</div>
+      <div class="lbl">Clientes/Mes (Pto. Eq.)</div>
     </div>
   </div>
 </div>
@@ -156,15 +158,15 @@ ${mc.escenarios ? `
   </p>
   <div class="scenarios">
     <div class="scenario pessimist">
-      <div class="s-roi">${mc.escenarios.pesimista?.roi?.toFixed(1)}%</div>
+      <div class="s-roi">${mc.escenarios?.pesimista?.roi?.toFixed(1) || 0}%</div>
       <div class="s-label">Pesimista (P10)</div>
     </div>
     <div class="scenario realist">
-      <div class="s-roi">${mc.escenarios.realista?.roi?.toFixed(1)}%</div>
+      <div class="s-roi">${mc.escenarios?.realista?.roi?.toFixed(1) || 0}%</div>
       <div class="s-label">Realista (P50)</div>
     </div>
     <div class="scenario optimist">
-      <div class="s-roi">${mc.escenarios.optimista?.roi?.toFixed(1)}%</div>
+      <div class="s-roi">${mc.escenarios?.optimista?.roi?.toFixed(1) || 0}%</div>
       <div class="s-label">Optimista (P90)</div>
     </div>
   </div>

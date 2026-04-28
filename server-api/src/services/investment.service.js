@@ -15,6 +15,12 @@ async function runFullAnalysis(userId, payload) {
     municipio: payload.municipio || "Libres",
     estado: payload.estado || "Puebla",
     inversion_inicial: payload.roi_params?.inversion_inicial || 0,
+    capital_total: payload.roi_params?.capital_total || null,
+    costos_fijos: payload.roi_params?.costos_fijos || null,
+    clientes_estimados: payload.roi_params?.clientes_estimados || null,
+    gasto_promedio: payload.roi_params?.gasto_promedio || null,
+    margen_contribucion: payload.roi_params?.margen_contribucion || null,
+    regimen_fiscal: payload.roi_params?.regimen_fiscal || null,
     params: payload,
     status: "processing",
   });

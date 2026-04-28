@@ -35,17 +35,20 @@ export default function NewAnalysisPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [municipios, setMunicipios] = useState([])
+  const [giros, setGiros] = useState([])
   const [socialLoading, setSocialLoading] = useState(false)
   const [socialStatus, setSocialStatus] = useState('')
   const [form, setForm] = useState({
     business_name: location.state?.business_name || '', sector: 'general', municipio: 'Libres', estado: 'Puebla',
-    inversion_inicial: '', ingreso_base: '', margen_utilidad: '0.30', costos_fijos: '',
+    capital_total: '', inversion_inicial: '', costos_fijos: '', clientes_estimados: '',
+    gasto_promedio: '150', margen_contribucion: '0.40', regimen_fiscal: 'RESICO',
     densidad_digital: '42', validacion_fisica: '55', nivel_bancarizacion: '38',
-    indice_empleo: '48', conectividad: '55', poblacion: '15420', gasto_promedio: '2400',
+    indice_empleo: '48', conectividad: '55', poblacion: '15420',
   })
 
   useEffect(() => {
     api.get('/api/v2/municipios').then(({ data }) => setMunicipios(data?.data || [])).catch(() => {})
+    api.get('/api/v2/municipios/data/giros').then(({ data }) => setGiros(data?.data || [])).catch(() => {})
   }, [])
 
   function set(key, val) { setForm(f => ({ ...f, [key]: val })) }
@@ -58,7 +61,41 @@ export default function NewAnalysisPage() {
       densidad_digital: String(m.densidad_digital), validacion_fisica: String(m.validacion_fisica),
       nivel_bancarizacion: String(m.nivel_bancarizacion), indice_empleo: String(m.indice_empleo),
       conectividad: String(m.conectividad), poblacion: String(m.poblacion),
-      gasto_promedio: String(m.gasto_promedio_mensual),
+    }))
+  }
+
+  function handleGiroChange(e) {
+    const g = giros.find(x => x.nombre_giro === e.target.value)
+    if (!g) return
+
+    // Cálculos reales de la región basados en PostgreSQL
+    const gasto = Number(g.gasto_promedio_cliente) || 0;
+    const costos_fijos = Number(g.costos_indirectos_mensuales) || 0;
+    const ventas_diarias = Number(g.ventas_diarias_estimadas) || 0;
+    const clientes_mensuales = ventas_diarias * 30;
+    
+    const costos_directos = Number(g.costos_directos_mensuales) || 0;
+    const ingresos_mensuales = clientes_mensuales * gasto;
+    
+    // Si el negocio gana algo, deducimos su margen real de operación
+    let margen_contribucion = 0.40;
+    if (ingresos_mensuales > 0) {
+       margen_contribucion = (ingresos_mensuales - costos_directos) / ingresos_mensuales;
+    }
+    
+    // Auto-detectamos el Régimen Fiscal que le espera
+    let regimen = 'RESICO';
+    if (g.regimen_fiscal && g.regimen_fiscal.includes('GENERAL')) regimen = 'GENERAL';
+    else if (g.regimen_fiscal && g.regimen_fiscal.includes('ACTIVIDADES EMPRESARIALES')) regimen = 'PFAE';
+
+    setForm(f => ({
+      ...f,
+      business_name: `Mi ${g.nombre_giro}`,
+      gasto_promedio: String(gasto),
+      costos_fijos: String(costos_fijos),
+      clientes_estimados: String(Math.round(clientes_mensuales)),
+      margen_contribucion: String(Math.max(0.01, Math.min(0.99, margen_contribucion)).toFixed(2)),
+      regimen_fiscal: regimen
     }))
   }
 
@@ -99,8 +136,24 @@ export default function NewAnalysisPage() {
           nivel_bancarizacion: +form.nivel_bancarizacion, indice_empleo: +form.indice_empleo, conectividad: +form.conectividad,
         },
         tam_params: { poblacion: +form.poblacion, gasto_promedio: +form.gasto_promedio, sector: form.sector, pct_mercado_accesible: 30, pct_cuota_capturable: 5 },
-        roi_params: { inversion_inicial: +form.inversion_inicial, ingreso_base: +form.ingreso_base, margen_utilidad: +form.margen_utilidad, costos_fijos: +form.costos_fijos, idm_array: DEFAULT_IDM },
-        mc_params: { ingreso_esperado: +form.ingreso_base, costo_esperado: +form.costos_fijos, inversion_inicial: +form.inversion_inicial, meses: 12 },
+        roi_params: { 
+          capital_total: +form.capital_total, 
+          inversion_inicial: +form.inversion_inicial, 
+          costos_fijos: +form.costos_fijos, 
+          gasto_promedio: +form.gasto_promedio,
+          margen_contribucion: +form.margen_contribucion,
+          clientes_estimados: +form.clientes_estimados,
+          regimen_fiscal: form.regimen_fiscal,
+          idm_array: DEFAULT_IDM 
+        },
+        mc_params: { 
+          ingreso_esperado: (+form.clientes_estimados * +form.gasto_promedio), 
+          costo_esperado: +form.costos_fijos, 
+          inversion_inicial: +form.inversion_inicial, meses: 12,
+          margen_contribucion: +form.margen_contribucion,
+          regimen_fiscal: form.regimen_fiscal,
+          capital_total: +form.capital_total
+        },
       }
       const { data } = await investmentService.analyze(payload)
       navigate(`/analysis/${data.analysis_id}`)
@@ -129,6 +182,16 @@ export default function NewAnalysisPage() {
             <Field label="Nombre del negocio">
               <input className={INPUT} value={form.business_name} onChange={e => set('business_name', e.target.value)} placeholder="Ej: Restaurante La Familia" required />
             </Field>
+        
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mt-4">
+          <Field label="💡 Inteligencia de Mercado (Auto-Rellenado)" hint="Selecciona un giro para cargar costos, ticket promedio y márgenes reales de la región">
+            <select className={INPUT} onChange={handleGiroChange} defaultValue="">
+              <option value="" disabled>Selecciona un tipo de negocio...</option>
+              {giros.map((g, i) => <option key={i} value={g.nombre_giro}>{g.clasificacion} - {g.nombre_giro}</option>)}
+            </select>
+          </Field>
+        </div>
+
             <div className="grid grid-cols-2 gap-4">
               <Field label="Sector">
                 <select className={INPUT} value={form.sector} onChange={e => set('sector', e.target.value)}>
@@ -152,19 +215,33 @@ export default function NewAnalysisPage() {
 
           {/* Financiero */}
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
-            <h2 className="font-black text-gray-900 text-base">Datos financieros</h2>
+            <h2 className="font-black text-gray-900 text-base">Economía de Supervivencia</h2>
+            <p className="text-xs text-gray-500 -mt-3 mb-2">Datos reales para calcular tu Runway y Punto de Equilibrio</p>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Inversion inicial ($)">
-                <input className={INPUT} type="number" min="1" required value={form.inversion_inicial} onChange={e => set('inversion_inicial', e.target.value)} placeholder="50000"/>
+              <Field label="Capital Total en Banco ($)">
+                <input className={INPUT} type="number" min="1" required value={form.capital_total} onChange={e => set('capital_total', e.target.value)} placeholder="100000" hint="Todo el dinero disponible"/>
               </Field>
-              <Field label="Ingreso base mensual ($)">
-                <input className={INPUT} type="number" min="1" required value={form.ingreso_base} onChange={e => set('ingreso_base', e.target.value)} placeholder="20000"/>
+              <Field label="Inversión Fija (Apertura) ($)">
+                <input className={INPUT} type="number" min="1" required value={form.inversion_inicial} onChange={e => set('inversion_inicial', e.target.value)} placeholder="60000" hint="Remodelación, equipo, licencias"/>
               </Field>
-              <Field label="Margen de utilidad (0-1)">
-                <input className={INPUT} type="number" step="0.01" min="0.01" max="0.99" required value={form.margen_utilidad} onChange={e => set('margen_utilidad', e.target.value)}/>
+              <Field label="Costos Fijos / Indirectos ($)">
+                <input className={INPUT} type="number" min="0" required value={form.costos_fijos} onChange={e => set('costos_fijos', e.target.value)} placeholder="15000" hint="Renta, luz, salarios base (Burn Rate)"/>
               </Field>
-              <Field label="Costos fijos mensuales ($)">
-                <input className={INPUT} type="number" min="0" value={form.costos_fijos} onChange={e => set('costos_fijos', e.target.value)} placeholder="5000"/>
+              <Field label="Régimen Fiscal">
+                <select className={INPUT} value={form.regimen_fiscal} onChange={e => set('regimen_fiscal', e.target.value)}>
+                  <option value="RESICO">RESICO (Física/Moral)</option>
+                  <option value="PFAE">Actividad Empresarial</option>
+                  <option value="GENERAL">Régimen General (Moral)</option>
+                </select>
+              </Field>
+              <Field label="Ticket Promedio por Cliente ($)">
+                <input className={INPUT} type="number" min="1" required value={form.gasto_promedio} onChange={e => set('gasto_promedio', e.target.value)} placeholder="150"/>
+              </Field>
+              <Field label="Margen de Contribución (0-1)">
+                <input className={INPUT} type="number" step="0.01" min="0.01" max="0.99" required value={form.margen_contribucion} onChange={e => set('margen_contribucion', e.target.value)} hint="(Precio - Costo Directo) / Precio"/>
+              </Field>
+              <Field label="Clientes Estimados Mensuales">
+                <input className={INPUT} type="number" min="1" required value={form.clientes_estimados} onChange={e => set('clientes_estimados', e.target.value)} placeholder="300" hint="Para la simulación base"/>
               </Field>
             </div>
           </div>

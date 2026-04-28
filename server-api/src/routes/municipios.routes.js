@@ -18,6 +18,24 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /api/v2/municipios/data/giros — Obtener datos reales de negocios (Tabla Maestra)
+router.get("/data/giros", async (req, res) => {
+  try {
+    const [rows] = await sequelize.query(`
+      SELECT c.nombre AS clasificacion, n.nombre_giro, n.gasto_promedio_cliente, 
+             n.costos_directos_mensuales, n.costos_indirectos_mensuales, 
+             n.factor_captacion, n.competencia, n.ventas_diarias_estimadas,
+             n.regimen_fiscal, n.tipo_persona
+      FROM field.negocios_maestro n
+      JOIN field.clasificaciones c ON n.clasificacion_id = c.id
+      ORDER BY c.id, n.nombre_giro
+    `);
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/v2/municipios/:id — single municipality IRL defaults
 router.get("/:id", async (req, res) => {
   try {

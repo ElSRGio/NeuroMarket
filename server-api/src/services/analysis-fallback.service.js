@@ -101,10 +101,14 @@ function calculateTAMSOM(params = {}) {
 function calculateROI(params = {}) {
   const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
   const inversion_inicial = Number(params.inversion_inicial) || 0
-  const ingreso_base = Number(params.ingreso_base) || 0
-  const margen_utilidad = Number(params.margen_utilidad) || 0.30
+  const ingreso_base = Number(params.ingreso_base) || (Number(params.clientes_estimados || 0) * Number(params.gasto_promedio || 0)) || 0
+  const margen_utilidad = Number(params.margen_contribucion) || Number(params.margen_utilidad) || 0.30
   const costos_fijos = Number(params.costos_fijos) || 0
   const idm_array = Array.isArray(params.idm_array) && params.idm_array.length === 12 ? params.idm_array : new Array(12).fill(1)
+  const capital_total = Number(params.capital_total) || 0
+  const gasto_promedio = Number(params.gasto_promedio) || 0
+  const clientes_estimados = Number(params.clientes_estimados) || 0
+  const regimen_fiscal = params.regimen_fiscal || 'RESICO'
 
   let utilidad_total = 0
   const flujo_mensual = idm_array.map((idm, index) => {
@@ -123,36 +127,26 @@ function calculateROI(params = {}) {
 
   const utilidad_mensual_promedio = utilidad_total / 12
   const roi_porcentaje = inversion_inicial > 0 ? (utilidad_total / inversion_inicial) * 100 : 0
-  let break_even_meses = null
-  if (inversion_inicial > 0) {
-    let acumulado = -inversion_inicial
-    for (let i = 0; i < 120; i += 1) {
-      const idm = idm_array[i % idm_array.length]
-      const utilidad = (ingreso_base * Number(idm || 0) * margen_utilidad) - costos_fijos
-      acumulado += utilidad
-      if (acumulado >= 0) {
-        break_even_meses = i + 1
-        break
-      }
-    }
-  }
 
-  let viabilidad = 'Negativo — Revisar modelo de negocio'
-  if (roi_porcentaje >= 100) viabilidad = 'Excelente — Recuperación en menos de 12 meses'
-  else if (roi_porcentaje >= 50) viabilidad = 'Bueno — Recuperación entre 12 y 24 meses'
-  else if (roi_porcentaje >= 20) viabilidad = 'Aceptable — Recuperación entre 2 y 5 años'
-  else if (roi_porcentaje >= 0) viabilidad = 'Bajo — Evaluar reducción de costos o aumento de precio'
+  const capital_trabajo = Math.max(0, capital_total - inversion_inicial)
+  const runway_meses = costos_fijos > 0 ? capital_trabajo / costos_fijos : 999
+  const margen_unitario = gasto_promedio * margen_utilidad
+  const clientes_equilibrio = margen_unitario > 0 ? costos_fijos / margen_unitario : 0
+
+  let viabilidad = 'Viable — Runway superior a 6 meses'
+  if (clientes_estimados < clientes_equilibrio) viabilidad = 'Peligro — No alcanzas el punto de equilibrio'
+  else if (runway_meses < 3) viabilidad = 'Riesgo Alto — Runway menor a 3 meses'
+  else if (runway_meses < 6) viabilidad = 'Riesgo Medio — Runway entre 3 y 6 meses'
 
   return {
     flujo_mensual,
     utilidad_total_anual: Number(utilidad_total.toFixed(2)),
     utilidad_mensual_promedio: Number(utilidad_mensual_promedio.toFixed(2)),
     roi_porcentaje: Number(roi_porcentaje.toFixed(2)),
-    break_even_meses: break_even_meses ? Number(break_even_meses.toFixed(1)) : null,
+    capital_trabajo: Number(capital_trabajo.toFixed(2)),
+    runway_meses: Number(runway_meses.toFixed(1)),
+    clientes_equilibrio: Math.floor(clientes_equilibrio),
     inversion_inicial,
-    ingreso_base,
-    margen_utilidad,
-    costos_fijos,
     viabilidad,
   }
 }
@@ -199,7 +193,9 @@ function calculateMonteCarlo(params = {}) {
   const meses = normalizeMonths(params.meses, 12, 1, 60)
   const variabilidad_ingreso = normalizeRatio(params.variabilidad_ingreso, 0.20, 0.01, 0.60)
   const variabilidad_costo = normalizeRatio(params.variabilidad_costo, 0.15, 0.01, 0.60)
-  const margen_utilidad = normalizeRatio(params.margen_utilidad, 0.30, 0.05, 0.90)
+  const margen_utilidad = normalizeRatio(params.margen_contribucion ?? params.margen_utilidad, 0.30, 0.05, 0.90)
+  const regimen_fiscal = params.regimen_fiscal || 'RESICO'
+  const tasa_isr = regimen_fiscal === 'RESICO' ? 0.025 : 0.30
   const idm_array = Array.isArray(params.idm_array) && params.idm_array.length > 0 ? params.idm_array : new Array(12).fill(1)
   const roiValues = []
 
@@ -214,7 +210,11 @@ function calculateMonteCarlo(params = {}) {
       const idm = Number(idm_array[month % idm_array.length] || 1)
       const ingreso = clamp(randomNormal(random, ingreso_esperado, ingreso_esperado * variabilidad_ingreso), ingresoMin, ingresoMax)
       const costo = clamp(randomNormal(random, costo_esperado, costo_esperado * variabilidad_costo), costoMin, costoMax)
-      utilidad += (ingreso * idm * margen_utilidad) - costo
+      
+      const utilidad_bruta = ingreso * idm * margen_utilidad
+      const utilidad_antes_impuestos = utilidad_bruta - costo
+      const isr = regimen_fiscal === 'RESICO' ? (ingreso * idm * tasa_isr) : Math.max(0, utilidad_antes_impuestos * tasa_isr)
+      utilidad += utilidad_antes_impuestos - isr
     }
     const roiBase = inversion_inicial > 0 ? (utilidad / inversion_inicial) * 100 : utilidad
     // Transformación suave acotada para evitar saturación plana en 100.
@@ -313,7 +313,9 @@ function runFallbackAnalysis(payload = {}) {
     meses: mcParams.meses ?? 12,
     variabilidad_ingreso: mcParams.variabilidad_ingreso ?? 0.20,
     variabilidad_costo: mcParams.variabilidad_costo ?? 0.15,
-    margen_utilidad: mcParams.margen_utilidad ?? roiParams.margen_utilidad,
+    margen_contribucion: mcParams.margen_contribucion ?? roiParams.margen_contribucion,
+    regimen_fiscal: mcParams.regimen_fiscal ?? roiParams.regimen_fiscal,
+    capital_total: mcParams.capital_total ?? roiParams.capital_total,
     idm_array: mcParams.idm_array ?? roiParams.idm_array,
   })
   const svee = calculateSVEE(payload.menciones_mensuales, irl.irl_score, payload.factor_competencia || 0.8)

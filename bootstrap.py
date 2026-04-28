@@ -150,11 +150,14 @@ def calculate_roi():
     data = request.get_json()
     projector = ROIProjector()
     result = projector.project(
+        capital_total=data.get("capital_total", 0),
         inversion_inicial=data.get("inversion_inicial", 0),
-        ingreso_base=data.get("ingreso_base", 0),
-        margen_utilidad=data.get("margen_utilidad", 0.30),
-        idm_array=data.get("idm_array", [1.0] * 12),
         costos_fijos=data.get("costos_fijos", 0),
+        gasto_promedio=data.get("gasto_promedio", 0),
+        margen_contribucion=data.get("margen_contribucion", 0.30),
+        clientes_estimados=data.get("clientes_estimados", 0),
+        regimen_fiscal=data.get("regimen_fiscal", "RESICO"),
+        idm_array=data.get("idm_array", [1.0] * 12)
     )
     return jsonify(result)
 
@@ -169,6 +172,9 @@ def simulate_monte_carlo():
         costo_esperado=data.get("costo_esperado", 0),
         inversion_inicial=data.get("inversion_inicial", 0),
         meses=data.get("meses", 12),
+        margen_contribucion=data.get("margen_contribucion", 0.30),
+        regimen_fiscal=data.get("regimen_fiscal", "RESICO"),
+        capital_total=data.get("capital_total", 0),
     )
     return jsonify(result)
 
@@ -401,22 +407,35 @@ MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun",
 class ROIProjector:
     def project(
         self,
+        capital_total: float = 0,
         inversion_inicial: float = 0,
-        ingreso_base: float = 0,
-        margen_utilidad: float = 0.30,
-        idm_array: list = None,
         costos_fijos: float = 0,
+        gasto_promedio: float = 0,
+        margen_contribucion: float = 0.30,
+        clientes_estimados: int = 0,
+        regimen_fiscal: str = "RESICO",
+        idm_array: list = None,
+        **kwargs
     ) -> dict:
         if idm_array is None or len(idm_array) != 12:
             idm_array = [1.0] * 12
+
+        capital_trabajo = max(0, capital_total - inversion_inicial)
+        runway_meses = (capital_trabajo / costos_fijos) if costos_fijos > 0 else 999
+        
+        tasa_isr = 0.025 if regimen_fiscal == "RESICO" else 0.30
+        ingreso_base = clientes_estimados * gasto_promedio
 
         flujo_mensual = []
         utilidad_total = 0
 
         for i, idm in enumerate(idm_array):
             ingreso_ajustado = ingreso_base * idm
-            utilidad_bruta = ingreso_ajustado * margen_utilidad
-            utilidad_neta = utilidad_bruta - costos_fijos
+            utilidad_bruta = ingreso_ajustado * margen_contribucion
+            utilidad_antes_impuestos = utilidad_bruta - costos_fijos
+            
+            isr = ingreso_ajustado * tasa_isr if regimen_fiscal == "RESICO" else max(0, utilidad_antes_impuestos * tasa_isr)
+            utilidad_neta = utilidad_antes_impuestos - isr
 
             flujo_mensual.append({
                 "mes": MONTHS[i],
@@ -429,32 +448,30 @@ class ROIProjector:
 
         roi = (utilidad_total / inversion_inicial * 100) if inversion_inicial > 0 else 0
         utilidad_mensual_promedio = utilidad_total / 12
-        break_even = (
-            inversion_inicial / utilidad_mensual_promedio
-            if utilidad_mensual_promedio > 0
-            else None
-        )
+        
+        margen_unitario = gasto_promedio * margen_contribucion
+        clientes_equilibrio = (costos_fijos / margen_unitario) if margen_unitario > 0 else 0
 
         return {
             "flujo_mensual": flujo_mensual,
             "utilidad_total_anual": round(utilidad_total, 2),
             "utilidad_mensual_promedio": round(utilidad_mensual_promedio, 2),
             "roi_porcentaje": round(roi, 2),
-            "break_even_meses": round(break_even, 1) if break_even else None,
+            "capital_trabajo": round(capital_trabajo, 2),
+            "runway_meses": round(runway_meses, 1),
+            "clientes_equilibrio": int(clientes_equilibrio),
             "inversion_inicial": inversion_inicial,
-            "viabilidad": self._interpret_roi(roi),
+            "viabilidad": self._interpret_runway(runway_meses, clientes_estimados, clientes_equilibrio),
         }
 
-    def _interpret_roi(self, roi: float) -> str:
-        if roi >= 100:
-            return "Excelente — Recuperación en menos de 12 meses"
-        elif roi >= 50:
-            return "Bueno — Recuperación entre 12 y 24 meses"
-        elif roi >= 20:
-            return "Aceptable — Recuperación entre 2 y 5 años"
-        elif roi >= 0:
-            return "Bajo — Evaluar reducción de costos o aumento de precio"
-        return "Negativo — Revisar modelo de negocio"
+    def _interpret_runway(self, runway: float, clientes_est: int, clientes_eq: float) -> str:
+        if clientes_est < clientes_eq:
+            return "Peligro — No alcanzas el punto de equilibrio"
+        if runway < 3:
+            return "Riesgo Alto — Runway menor a 3 meses"
+        elif runway < 6:
+            return "Riesgo Medio — Runway entre 3 y 6 meses"
+        return "Viable — Runway superior a 6 meses"
 '''
 
 # ── engine/src/core/monte_carlo.py ───────────────────────────────────────────
@@ -483,6 +500,9 @@ class MonteCarloSimulator:
         meses: int = 12,
         variabilidad_ingreso: float = 0.20,
         variabilidad_costo: float = 0.15,
+        margen_contribucion: float = 0.30,
+        regimen_fiscal: str = "RESICO",
+        capital_total: float = 0,
     ) -> dict:
         rng = np.random.default_rng(seed=42)
 
@@ -500,7 +520,15 @@ class MonteCarloSimulator:
         ingresos = np.clip(ingresos, 0, None)
         costos = np.clip(costos, 0, None)
 
-        utilidad_total = np.sum(ingresos - costos, axis=1)
+        utilidad_bruta = ingresos * margen_contribucion
+        utilidad_antes_impuestos = utilidad_bruta - costos
+        
+        tasa_isr = 0.025 if regimen_fiscal == "RESICO" else 0.30
+        
+        isr = ingresos * tasa_isr if regimen_fiscal == "RESICO" else np.maximum(0, utilidad_antes_impuestos * tasa_isr)
+        utilidad_neta = utilidad_antes_impuestos - isr
+        
+        utilidad_total = np.sum(utilidad_neta, axis=1)
         roi_distribution = (
             (utilidad_total / inversion_inicial * 100)
             if inversion_inicial > 0

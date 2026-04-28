@@ -28,6 +28,18 @@ async function ensureUserProfileColumns() {
   `);
 }
 
+async function ensureAnalysisColumns() {
+  await sequelize.query(`
+    ALTER TABLE analyses
+    ADD COLUMN IF NOT EXISTS capital_total NUMERIC(12,2),
+    ADD COLUMN IF NOT EXISTS costos_fijos NUMERIC(12,2),
+    ADD COLUMN IF NOT EXISTS clientes_estimados INTEGER,
+    ADD COLUMN IF NOT EXISTS gasto_promedio NUMERIC(12,2),
+    ADD COLUMN IF NOT EXISTS margen_contribucion NUMERIC(5,4),
+    ADD COLUMN IF NOT EXISTS regimen_fiscal VARCHAR(50);
+  `);
+}
+
 async function connectWithRetry(retries = 5, delay = 3000) {
   for (let i = 1; i <= retries; i++) {
     try {
@@ -82,6 +94,7 @@ async function start() {
 
   try {
     await ensureUserProfileColumns();
+    await ensureAnalysisColumns();
     await sequelize.sync({ alter: false });
     await ensureTemporaryAdminAccount();
     console.log("[DB] Models synchronized");

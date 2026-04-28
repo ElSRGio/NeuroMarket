@@ -1,6 +1,6 @@
 /**
  * PresentationPage — Slide ejecutivo para defensa escolar
- * Explica la arquitectura y metodología de NeuroMarket 2.0
+ * Explica la arquitectura y metodología de XAIZA 2.0
  */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 const SLIDES = [
   {
     id: 1,
-    title: "NeuroMarket 2.0",
+    title: "XAIZA 2.0",
     subtitle: "Consultora Estratégica de Inversión Hiperlocal",
     content: null,
     type: "cover",
@@ -154,7 +154,10 @@ export default function PresentationPage() {
     <div className="min-h-screen bg-brand-darker flex flex-col">
       {/* Nav */}
       <header className="border-b border-white/10 px-6 py-3 flex items-center justify-between">
-        <Link to="/" className="text-brand-green font-bold text-lg">⬡ NeuroMarket 2.0</Link>
+        <Link to="/" className="text-brand-green font-bold text-lg flex items-center gap-2">
+          <img src="/logo.png" alt="XAIZA" className="w-5 h-5" />
+          <span>XAIZA 2.0</span>
+        </Link>
         <div className="flex items-center gap-3">
           <span className="text-gray-500 text-sm">{current + 1} / {SLIDES.length}</span>
           <Link to="/dashboard" className="text-gray-400 hover:text-white text-sm transition-colors">Ir al Dashboard →</Link>

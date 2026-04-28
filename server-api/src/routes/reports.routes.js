@@ -22,7 +22,7 @@ router.get("/:id/pdf", auth, requirePdfAccess, async (req, res) => {
       .toLowerCase();
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="neuromarket_${safeName}.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="xaiza_${safeName}.pdf"`);
     res.send(pdfBuffer);
   } catch (err) {
     console.error("[PDF]", err.message);

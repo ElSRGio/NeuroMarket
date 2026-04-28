@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
- * LoginFrame — Pantalla de inicio de sesión del backoffice NeuroMarket Admin.
+ * LoginFrame — Pantalla de inicio de sesión del backoffice XAIZA Admin.
  * Credenciales hardcodeadas para uso interno del equipo de trabajo.
  */
 public class LoginFrame extends JFrame {
@@ -20,7 +20,7 @@ public class LoginFrame extends JFrame {
     private JLabel lblStatus;
 
     public LoginFrame() {
-        setTitle("NeuroMarket Admin — Acceso");
+        setTitle("XAIZA Admin — Acceso");
         setSize(400, 320);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -36,7 +36,7 @@ public class LoginFrame extends JFrame {
         add(panel);
 
         // ─── Logo / Título ───────────────────────────────────────────
-        JLabel lblTitulo = new JLabel("NeuroMarket Admin", SwingConstants.CENTER);
+        JLabel lblTitulo = new JLabel("XAIZA Admin", SwingConstants.CENTER);
         lblTitulo.setBounds(0, 25, 400, 32);
         lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 22));
         lblTitulo.setForeground(new Color(0x22c55e));

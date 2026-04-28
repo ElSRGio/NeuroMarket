@@ -41,7 +41,7 @@ export default function AnalysisResultPage() {
       const url = URL.createObjectURL(blob)
       const disposition = response.headers?.['content-disposition'] || ''
       const match = disposition.match(/filename=\"?([^\";]+)\"?/i)
-      const fileName = match?.[1] || `neuromarket_${id}.pdf`
+      const fileName = match?.[1] || `xaiza_${id}.pdf`
 
       const link = document.createElement('a')
       link.href = url

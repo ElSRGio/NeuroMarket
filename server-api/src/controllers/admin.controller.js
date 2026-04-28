@@ -258,7 +258,7 @@ async function downloadReportPdfAsAdmin(req, res, next) {
       .toLowerCase();
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="neuromarket_admin_${safeName}.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="xaiza_admin_${safeName}.pdf"`);
     return res.send(pdfBuffer);
   } catch (err) {
     next(err);

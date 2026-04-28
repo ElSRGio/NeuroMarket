@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeuroMarket - GIF Generator (Versión Mejorada)</title>
+  <title>XAIZA - GIF Generator (Versión Mejorada)</title>
+  <link rel="icon" href="../img/logo.png" />
   <style>
     * { box-sizing: border-box; }
     body {
@@ -131,7 +132,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>🎬 Generador de GIFs - NeuroMarket (Versión Mejorada)</h1>
+    <h1>🎬 Generador de GIFs - XAIZA (Versión Mejorada)</h1>
     
     <div class="info-box">
       <strong>✅ Versión Sin CORS:</strong><br/>
@@ -366,7 +367,7 @@
         const url = URL.createObjectURL(frames[0]);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `NeuroMarket_${animName.replace(/\s+/g, '_')}_preview.png`;
+        link.download = `XAIZA_${animName.replace(/\s+/g, '_')}_preview.png`;
         link.click();
         URL.revokeObjectURL(url);
       }

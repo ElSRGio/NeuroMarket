@@ -157,7 +157,7 @@ Resolución: 1080p (Alta)
 Velocidad: 100%
 Resultado: ~8 MB, 12 segundos
 ```
-**Caption:** "Cómo NeuroMarket transforma datos en decisiones empresariales"
+**Caption:** "Cómo XAIZA transforma datos en decisiones empresariales"
 
 ---
 

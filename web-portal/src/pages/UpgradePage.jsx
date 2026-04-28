@@ -5,15 +5,15 @@ import { useAuthStore } from '../store/auth.store.js'
 import api from '../services/api.js'
 
 const NAV_DROPDOWN = {
-  'Por que NeuroMarket': [
+  'Por que XAIZA': [
     { title: 'Indice de Realidad Local (IRL)', desc: 'Cruzamos datos digitales con el mundo fisico para medir viabilidad real.' },
     { title: 'Motor de deteccion de nichos', desc: 'Identifica oportunidades de mercado antes de que la competencia las vea.' },
-    { title: 'NeuroMarket + INEGI', desc: 'Datos oficiales de poblacion, empleo y bancarizacion integrados.' },
+    { title: 'XAIZA + INEGI', desc: 'Datos oficiales de poblacion, empleo y bancarizacion integrados.' },
   ],
   'Nuestra plataforma': [
     { title: 'Dashboard ejecutivo', desc: 'Visualiza tus analisis con graficas interactivas y score de viabilidad.' },
     { title: 'Reportes PDF', desc: 'Exporta reportes profesionales con un solo clic (plan Pro).' },
-    { title: 'API REST', desc: 'Integra NeuroMarket con tus sistemas existentes (plan Enterprise).' },
+    { title: 'API REST', desc: 'Integra XAIZA con tus sistemas existentes (plan Enterprise).' },
   ],
 }
 
@@ -79,7 +79,7 @@ const PLANS = [
     features: [
       'Todo lo incluido en Pro',
       'Multi-usuario (hasta 20 cuentas)',
-      'Acceso a la API de NeuroMarket',
+      'Acceso a la API de XAIZA',
       'Integracion con sistemas existentes',
       'SLA garantizado 99.9%',
       'Onboarding y soporte dedicado',
@@ -150,21 +150,21 @@ export default function UpgradePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <HexLogo size={32}/>
-            <span className="font-black text-lg text-gray-900">NeuroMarket</span>
+            <span className="font-black text-lg text-gray-900">XAIZA</span>
           </Link>
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-600 font-medium">
-            {/* Por que NeuroMarket — con dropdown */}
+            {/* Por que XAIZA — con dropdown */}
             <div className="relative group">
               <button className="flex items-center gap-1 hover:text-gray-900 transition-colors py-5">
-                Por que NeuroMarket
+                Por que XAIZA
                 <svg className="w-3.5 h-3.5 mt-0.5 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/>
                 </svg>
               </button>
               <div className="absolute top-full left-0 mt-0 w-72 bg-white rounded-xl shadow-xl border border-gray-100 py-3 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0">
-                {NAV_DROPDOWN['Por que NeuroMarket'].map((item, i) => (
+                {NAV_DROPDOWN['Por que XAIZA'].map((item, i) => (
                   <div key={i}>
                     {i > 0 && <div className="mx-4 border-t border-gray-100 my-1"/>}
                     <div className="px-5 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
@@ -288,8 +288,8 @@ export default function UpgradePage() {
                   </div>
                 </div>
               )}
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 pt-2 pb-1">Por que NeuroMarket</p>
-              {NAV_DROPDOWN['Por que NeuroMarket'].map((item, i) => (
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 pt-2 pb-1">Por que XAIZA</p>
+              {NAV_DROPDOWN['Por que XAIZA'].map((item, i) => (
                 <div key={i} className="px-3 py-2 rounded-lg hover:bg-gray-50">
                   <p className="text-sm font-semibold text-gray-900">{item.title}</p>
                   <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
@@ -433,11 +433,11 @@ export default function UpgradePage() {
           <div className="text-white">
             <h2 className="text-3xl sm:text-4xl font-black mb-5 leading-tight">
               Quieres ver<br/>
-              <span style={{ color: '#4ade80' }}>NeuroMarket en</span><br/>
+              <span style={{ color: '#4ade80' }}>XAIZA en</span><br/>
               <span style={{ color: '#4ade80' }}>accion?</span>
             </h2>
             <p className="text-gray-300 font-semibold text-base sm:text-lg mb-3">
-              Descubre como NeuroMarket puede ayudarte a tomar mejores decisiones de inversion.
+              Descubre como XAIZA puede ayudarte a tomar mejores decisiones de inversion.
             </p>
             <p className="text-gray-400 mb-6 sm:mb-8">
               Crea tu primer analisis gratis y descubre el potencial de nuestra plataforma hiperlocal.
@@ -468,7 +468,7 @@ export default function UpgradePage() {
               </div>
             </form>
             <p className="text-xs text-gray-400 mt-4">
-              Proyecto academico NeuroMarket 2.0 - Ing. en Sistemas 2026.
+              Proyecto academico XAIZA 2.0 - Ing. en Sistemas 2026.
             </p>
           </div>
         </div>
@@ -548,7 +548,7 @@ export default function UpgradePage() {
             <div className="flex items-center gap-2">
               <HexLogo size={24}/>
               <span className="text-xs text-gray-400">
-                2026 NeuroMarket 2.0. Proyecto academico - Ingenieria en Sistemas, Libres, Puebla.
+                2026 XAIZA 2.0. Proyecto academico - Ingenieria en Sistemas, Libres, Puebla.
               </span>
             </div>
             <div className="flex gap-4 text-gray-400 text-lg items-center">

@@ -153,7 +153,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
-        <span className="font-black text-lg text-gray-900">NeuroMarket Admin</span>
+        <span className="font-black text-lg text-gray-900">XAIZA Admin</span>
         <button onClick={() => navigate('/dashboard')} className="text-sm text-gray-600 hover:text-green-600">Volver a App</button>
       </nav>
 

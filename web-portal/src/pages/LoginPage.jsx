@@ -5,15 +5,11 @@ import { useAuthStore } from '../store/auth.store.js'
 
 function HexLogo() {
   return (
-    <svg width={40} height={40} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="#e8f5e9"/>
-      <path d="M20 2 L36 11 L28 20 Z" fill="#4ade80"/>
-      <path d="M36 11 L36 29 L28 20 Z" fill="#22c55e"/>
-      <path d="M20 38 L36 29 L28 20 Z" fill="#16a34a"/>
-      <path d="M4 29 L20 38 L12 20 Z" fill="#60a5fa"/>
-      <path d="M4 11 L4 29 L12 20 Z" fill="#3b82f6"/>
-      <path d="M20 2 L4 11 L12 20 Z" fill="#f97316"/>
-    </svg>
+    <img
+      src="/logo.png"
+      alt="XAIZA"
+      style={{ width: 40, height: 40 }}
+    />
   )
 }
 
@@ -50,7 +46,7 @@ export default function LoginPage() {
       <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <HexLogo/>
-          <span className="font-black text-lg text-gray-900">NeuroMarket</span>
+          <span className="font-black text-lg text-gray-900">XAIZA</span>
         </Link>
         <Link to="/register" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
           Crear cuenta →
@@ -61,8 +57,8 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <img
-              src="https://api.dicebear.com/9.x/shapes/svg?seed=NeuroMarket"
-              alt="NeuroMarket"
+              src="/logo.png"
+              alt="XAIZA"
               className="w-20 h-20 mx-auto mb-3 rounded-2xl border border-gray-200 bg-white"
             />
             <h1 className="text-3xl font-black text-gray-900 mb-2">Bienvenido de vuelta</h1>

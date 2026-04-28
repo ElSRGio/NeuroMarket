@@ -1,6 +1,6 @@
-# NeuroMarket Admin — Backoffice Java
+# XAIZA Admin — Backoffice Java
 
-Panel de administración de escritorio para inyectar y gestionar datos de la plataforma NeuroMarket 2.0.
+Panel de administración de escritorio para inyectar y gestionar datos de la plataforma XAIZA 2.0.
 
 ---
 
@@ -80,4 +80,4 @@ private static final String URL = "jdbc:postgresql://TU_HOST:5432/neuromarket_v2
 
 ---
 
-*NeuroMarket 2.0 — Ingeniería en Sistemas 2026*
+*XAIZA 2.0 — Ingeniería en Sistemas 2026*

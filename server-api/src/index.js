@@ -1,5 +1,5 @@
 /**
- * NeuroMarket 2.0 — Entry Point
+ * XAIZA 2.0 — Entry Point
  * Node.js + Express API
  */
 require("dotenv").config();
@@ -49,7 +49,7 @@ async function ensureTemporaryAdminAccount() {
   if (!existing) {
     await User.create({
       name: "Admin Temporal",
-      last_name: "NeuroMarket",
+      last_name: "XAIZA",
       email: TEMP_ADMIN_EMAIL,
       password_hash,
       role: "admin",
@@ -70,8 +70,8 @@ async function ensureTemporaryAdminAccount() {
 async function start() {
   // Levanta el servidor HTTP inmediatamente para que Render no lo mate por timeout
   const server = app.listen(PORT, () => {
-    console.log(`[NeuroMarket API] Running on http://localhost:${PORT}`);
-    console.log(`[NeuroMarket API] Environment: ${process.env.NODE_ENV}`);
+    console.log(`[XAIZA API] Running on http://localhost:${PORT}`);
+    console.log(`[XAIZA API] Environment: ${process.env.NODE_ENV}`);
   });
 
   const connected = await connectWithRetry();

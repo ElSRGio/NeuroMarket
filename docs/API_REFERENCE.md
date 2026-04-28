@@ -1,4 +1,4 @@
-# NeuroMarket 2.0 — API Reference
+# XAIZA 2.0 — API Reference
 
 Base URL: `http://localhost:3000/api/v2`  
 Authentication: Bearer JWT (except `/auth/*` endpoints)

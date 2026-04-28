@@ -1,8 +1,8 @@
-# 🎬 Generador de GIFs - NeuroMarket Animaciones
+# 🎬 Generador de GIFs - XAIZA Animaciones
 
 ## Descripción
 
-El **Generador de GIFs** convierte las animaciones HTML interactivas de NeuroMarket a archivos GIF optimizados, perfectos para:
+El **Generador de GIFs** convierte las animaciones HTML interactivas de XAIZA a archivos GIF optimizados, perfectos para:
 
 - 📊 Presentaciones y demostraciones
 - 📱 Redes sociales (Twitter, LinkedIn, WhatsApp)
@@ -256,7 +256,7 @@ ffmpeg -i input.mp4 -vf "fps=5,scale=1280:-1" output.gif
 2. Selecciona: "PLATFORM_ANIMATIONS_INTEGRATED"
 3. FPS: 5, Calidad: Alta, Velocidad: 100%
 4. Resultado: GIF profesional de 12 segundos, ~8 MB
-5. Sube a LinkedIn con caption: "Cómo NeuroMarket transforma datos en decisiones empresariales"
+5. Sube a LinkedIn con caption: "Cómo XAIZA transforma datos en decisiones empresariales"
 
 ### Ejemplo 2: Para Twitter (Viral)
 1. Abre `GIF_GENERATOR.html`
@@ -274,4 +274,4 @@ ffmpeg -i input.mp4 -vf "fps=5,scale=1280:-1" output.gif
 
 ---
 
-**Versión**: 1.0 | **Última actualización**: 2026-03-25 | **Autor**: NeuroMarket Team
+**Versión**: 1.0 | **Última actualización**: 2026-03-25 | **Autor**: XAIZA Team

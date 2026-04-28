@@ -9,7 +9,7 @@ import java.awt.*;
 public class MainFrame extends JFrame {
 
     public MainFrame() {
-        setTitle("NeuroMarket Admin — Panel de Control");
+        setTitle("XAIZA Admin — Panel de Control");
         setSize(900, 650);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -23,7 +23,7 @@ public class MainFrame extends JFrame {
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0xe5e7eb)));
         header.setPreferredSize(new Dimension(900, 56));
 
-        JLabel titulo = new JLabel("  NeuroMarket Admin", SwingConstants.LEFT);
+        JLabel titulo = new JLabel("  XAIZA Admin", SwingConstants.LEFT);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 18));
         titulo.setForeground(new Color(0x22c55e));
         header.add(titulo, BorderLayout.WEST);
@@ -46,7 +46,7 @@ public class MainFrame extends JFrame {
         add(tabs, BorderLayout.CENTER);
 
         // ─── Footer ──────────────────────────────────────────────────
-        JLabel footer = new JLabel("  NeuroMarket 2.0 — Backoffice v1.0  |  Equipo: Giovanni · Pamela · Ximena · Melisa", SwingConstants.LEFT);
+        JLabel footer = new JLabel("  XAIZA 2.0 — Backoffice v1.0  |  Equipo: Giovanni · Pamela · Ximena · Melisa", SwingConstants.LEFT);
         footer.setFont(new Font("SansSerif", Font.PLAIN, 10));
         footer.setForeground(new Color(0x9ca3af));
         footer.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(0xe5e7eb)));

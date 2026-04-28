@@ -160,7 +160,7 @@ export default function DashboardPage() {
               >
                 Entrar a panel admin →
               </Link>
-              <span className="text-xs text-gray-400">Correo temporal: admin@neuromarket.tmp</span>
+              <span className="text-xs text-gray-400">Correo temporal: admin@xaiza.tmp</span>
             </div>
           </section>
         )}

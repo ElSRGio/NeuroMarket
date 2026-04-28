@@ -143,7 +143,7 @@ function generateGifCommand(name, frameCount) {
 
 async function main() {
   console.log(`\n${'='.repeat(70)}`);
-  console.log(`🎬 NeuroMarket - Capturador de Animaciones HTML a GIF`);
+  console.log(`🎬 XAIZA - Capturador de Animaciones HTML a GIF`);
   console.log(`${'='.repeat(70)}`);
 
   // Verificar que Puppeteer esté disponible

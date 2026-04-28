@@ -109,7 +109,7 @@ function buildHtml(analysis) {
   <div style="display:flex; justify-content:space-between; align-items:flex-start">
     <div>
       <div style="color:#2563eb; font-size:13px; font-weight:600; letter-spacing:2px; margin-bottom:8px">
-        ⬡ NEUROMARKET 2.0 — REPORTE DE VIABILIDAD
+        XAIZA 2.0 — REPORTE DE VIABILIDAD
       </div>
       <h1>${analysis.business_name || "Análisis de Inversión"}</h1>
       <h2>${analysis.sector} · ${analysis.municipio}, ${analysis.estado}</h2>
@@ -214,7 +214,7 @@ ${flujoRows ? `
 </div>
 
 <div class="footer">
-  <span>⬡ NeuroMarket 2.0 — Consultora Estratégica de Inversión Hiperlocal</span>
+  <span>XAIZA 2.0 — Consultora Estratégica de Inversión Hiperlocal</span>
   <span>Generado el ${new Date().toLocaleDateString("es-MX", { dateStyle: "long" })}</span>
 </div>
 

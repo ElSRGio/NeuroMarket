@@ -1,4 +1,4 @@
-# NeuroMarket 2.0 — Consultora Estratégica de Inversión Hiperlocal
+# XAIZA 2.0 — Consultora Estratégica de Inversión Hiperlocal
 
 > De "¿qué dice la gente?" a "¿es viable invertir aquí y cuánta es la probabilidad de éxito?"
 

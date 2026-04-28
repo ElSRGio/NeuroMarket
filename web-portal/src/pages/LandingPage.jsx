@@ -6,8 +6,8 @@ export default function LandingPage() {
       {/* Navbar */}
       <nav className="border-b border-white/10 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
-          <span className="text-brand-green font-bold text-xl">⬡</span>
-          <span className="font-bold text-lg text-white">NeuroMarket <span className="text-brand-blue">2.0</span></span>
+          <img src="/logo.png" alt="XAIZA" className="w-6 h-6" />
+          <span className="font-bold text-lg text-white">XAIZA <span className="text-brand-blue">2.0</span></span>
         </div>
         <div className="flex gap-4">
           <Link to="/login" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">
@@ -101,7 +101,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-white/10 px-6 py-8 text-center text-gray-600 text-sm">
-        <p>© 2024 NeuroMarket 2.0 · Consultora Estratégica de Inversión Hiperlocal</p>
+        <p>© 2024 XAIZA 2.0 · Consultora Estratégica de Inversión Hiperlocal</p>
       </footer>
     </div>
   )

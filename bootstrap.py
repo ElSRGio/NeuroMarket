@@ -1,5 +1,5 @@
 """
-NeuroMarket 2.0 — Bootstrap Script
+XAIZA 2.0 — Bootstrap Script
 Run this once to create all project directories and files.
 Usage: python bootstrap.py
 """
@@ -49,7 +49,7 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "main:app"]
 # ── engine/main.py ───────────────────────────────────────────────────────────
 files["engine/main.py"] = '''\
 """
-NeuroMarket 2.0 — Python Analytics Engine
+XAIZA 2.0 — Python Analytics Engine
 Entry point for Flask API
 """
 import os
@@ -63,7 +63,7 @@ app = create_app()
 if __name__ == "__main__":
     port = int(os.getenv("ENGINE_PORT", 5000))
     debug = os.getenv("NODE_ENV", "development") == "development"
-    print(f"[NeuroMarket Engine] Starting on port {port}")
+    print(f"[XAIZA Engine] Starting on port {port}")
     app.run(host="0.0.0.0", port=port, debug=debug)
 '''
 
@@ -102,7 +102,7 @@ def create_app():
 # ── engine/src/api/routes.py ─────────────────────────────────────────────────
 files["engine/src/api/routes.py"] = '''\
 """
-API Route Registration — NeuroMarket Engine
+API Route Registration — XAIZA Engine
 """
 from flask import Blueprint, request, jsonify
 from ..core.irl_calculator import IRLCalculator
@@ -633,7 +633,7 @@ class SVEEDetector:
 # ── engine/src/utils/validators.py ───────────────────────────────────────────
 files["engine/src/utils/validators.py"] = '''\
 """
-Input validators for the NeuroMarket Engine API
+Input validators for the XAIZA Engine API
 """
 
 
@@ -659,7 +659,7 @@ def validate_idm_array(arr):
 
 # ── docs/FORMULAS.md ─────────────────────────────────────────────────────────
 files["docs/FORMULAS.md"] = """\
-# Fórmulas Matemáticas — NeuroMarket 2.0
+# Fórmulas Matemáticas — XAIZA 2.0
 
 ## 1. IRL — Índice de Realidad Local
 
@@ -735,11 +735,11 @@ Score = (ROI_realista × 0.30) + (IRL × 0.25) + (SOM_ratio × 0.20) + (SVEE_max
 
 # ── docs/ARCHITECTURE.md ─────────────────────────────────────────────────────
 files["docs/ARCHITECTURE.md"] = """\
-# Arquitectura — NeuroMarket 2.0
+# Arquitectura — XAIZA 2.0
 
 ## Visión General
 
-NeuroMarket 2.0 es una plataforma de inteligencia de inversión hiperlocal compuesta por 4 servicios
+XAIZA 2.0 es una plataforma de inteligencia de inversión hiperlocal compuesta por 4 servicios
 independientes que se comunican a través de HTTP.
 
 ```
@@ -817,7 +817,7 @@ Identifica el mes óptimo de apertura y calcula 3 meses de preparación previa.
 
 
 if __name__ == "__main__":
-    print("NeuroMarket 2.0 — Bootstrap")
+    print("XAIZA 2.0 — Bootstrap")
     print(f"Base directory: {BASE}")
     print()
     for rel_path, content in files.items():

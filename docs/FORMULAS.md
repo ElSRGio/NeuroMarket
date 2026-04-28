@@ -1,4 +1,4 @@
-# Fórmulas Matemáticas — NeuroMarket 2.0
+# Fórmulas Matemáticas — XAIZA 2.0
 
 ## 1. IRL — Índice de Realidad Local
 

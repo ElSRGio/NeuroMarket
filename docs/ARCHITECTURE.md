@@ -1,4 +1,4 @@
-# Arquitectura — NeuroMarket 2.0
+# Arquitectura — XAIZA 2.0
 
 ## 📺 Demostraciones Visuales Tecnicas
 

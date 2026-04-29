@@ -199,10 +199,14 @@ export default function AnalysisResultPage() {
               { label: 'Mercado Total (TAM)', value: tam.tam },
               { label: 'Clientes con Poder Adquisitivo (SAM)', value: tam.sam },
               { label: 'Tu Meta de Ventas (SOM)', value: tam.som },
+              { label: 'Mercado Total (TAM)', value: tam.tam_personas ? `${Number(tam.tam_personas).toLocaleString()} personas` : `$${Number(tam.tam || 0).toLocaleString()}` },
+              { label: 'Clientes con Poder Adquisitivo (SAM)', value: tam.sam_personas ? `${Number(tam.sam_personas).toLocaleString()} personas` : `$${Number(tam.sam || 0).toLocaleString()}` },
+              { label: 'Tu Meta de Ventas (SOM)', value: tam.som_personas ? `${Number(tam.som_personas).toLocaleString()} clientes` : `$${Number(tam.som || 0).toLocaleString()}` },
             ].map(m => (
               <div key={m.label} className="flex justify-between py-2.5 border-b border-gray-100 last:border-0">
                 <span className="text-gray-500 text-sm">{m.label}</span>
                 <span className="text-gray-900 font-semibold text-sm">${Number(m.value || 0).toLocaleString()}</span>
+                <span className="text-gray-900 font-semibold text-sm">{m.value}</span>
               </div>
             ))}
             {tam.interpretation && <p className="text-gray-400 text-xs mt-3">{tam.interpretation}</p>}

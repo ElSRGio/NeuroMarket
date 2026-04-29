@@ -127,6 +127,20 @@ export default function NewAnalysisPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
+    
+    if (+form.capital_total <= +form.inversion_inicial) {
+      setError('El Capital Total debe ser MAYOR a la Inversión Fija. Necesitas Capital de Trabajo para sobrevivir el mes 1.')
+      setLoading(false)
+      return
+    }
+    
+    const irlSum = +form.densidad_digital + +form.validacion_fisica + +form.nivel_bancarizacion + +form.indice_empleo + +form.conectividad
+    if (irlSum === 0) {
+      setError('El Índice de Realidad Local (IRL) no puede estar en 0. Usa el botón "Auto-rellenar datos" o ingrésalos manualmente.')
+      setLoading(false)
+      return
+    }
+
     try {
       const clientes_calc = Math.max(1, Math.round(+form.ingresos_mensuales / +form.gasto_promedio));
       const payload = {

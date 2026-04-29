@@ -40,6 +40,39 @@ async function ensureAnalysisColumns() {
   `);
 }
 
+async function ensureFieldSchema() {
+  try {
+    await sequelize.query(`CREATE SCHEMA IF NOT EXISTS field;`);
+    await sequelize.query(`
+      CREATE TABLE IF NOT EXISTS field.clasificaciones (
+          id SERIAL PRIMARY KEY,
+          nombre TEXT NOT NULL UNIQUE
+      );
+    `);
+    await sequelize.query(`
+      CREATE TABLE IF NOT EXISTS field.negocios_maestro (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          clasificacion_id INT REFERENCES field.clasificaciones(id),
+          nombre_giro TEXT NOT NULL,
+          competencia NUMERIC,
+          gasto_promedio_cliente NUMERIC(12,2),
+          factor_captacion NUMERIC(5,4),
+          clientes_bajo_transito NUMERIC,
+          clientes_medio_transito NUMERIC,
+          clientes_alto_transito NUMERIC,
+          ventas_diarias_estimadas NUMERIC,
+          unidad_medida TEXT,
+          costos_directos_mensuales NUMERIC(12,2),
+          costos_indirectos_mensuales NUMERIC(12,2),
+          tipo_persona TEXT,
+          regimen_fiscal TEXT
+      );
+    `);
+  } catch (err) {
+    console.error("[DB] Warning ensuring field schema:", err.message);
+  }
+}
+
 async function connectWithRetry(retries = 5, delay = 3000) {
   for (let i = 1; i <= retries; i++) {
     try {
@@ -93,6 +126,7 @@ async function start() {
   }
 
   try {
+    await ensureFieldSchema();
     await ensureUserProfileColumns();
     await ensureAnalysisColumns();
     await sequelize.sync({ alter: false });

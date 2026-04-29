@@ -26,6 +26,9 @@ function getAllowedOrigins() {
     "http://localhost:5173",
     "http://localhost:3000",
     "https://neuromarket-web-portal.onrender.com",
+    "http://xazia.online",
+    "https://xazia.online",
+    "https://www.xazia.online"
   ];
 }
 

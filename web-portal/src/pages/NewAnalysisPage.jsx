@@ -36,6 +36,7 @@ export default function NewAnalysisPage() {
   const [error, setError] = useState('')
   const [municipios, setMunicipios] = useState([])
   const [giros, setGiros] = useState([])
+  const [selectedClasificacion, setSelectedClasificacion] = useState('')
   const [socialLoading, setSocialLoading] = useState(false)
   const [socialStatus, setSocialStatus] = useState('')
   const [form, setForm] = useState({
@@ -184,12 +185,25 @@ export default function NewAnalysisPage() {
             </Field>
         
         <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mt-4">
-          <Field label="💡 Inteligencia de Mercado (Auto-Rellenado)" hint="Selecciona un giro para cargar costos, ticket promedio y márgenes reales de la región">
-            <select className={INPUT} onChange={handleGiroChange} defaultValue="">
-              <option value="" disabled>Selecciona un tipo de negocio...</option>
-              {giros.map((g, i) => <option key={i} value={g.nombre_giro}>{g.clasificacion} - {g.nombre_giro}</option>)}
-            </select>
-          </Field>
+          <h3 className="text-sm font-bold text-emerald-900 mb-3">💡 Inteligencia de Mercado (Auto-Rellenado)</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="1. Sector de Mercado" hint="Las 13 categorías principales">
+              <select className={INPUT} value={selectedClasificacion} onChange={e => { setSelectedClasificacion(e.target.value); setForm(f => ({...f, business_name: ''})) }}>
+                <option value="">Selecciona un sector...</option>
+                {[...new Set(giros.map(g => g.clasificacion))].map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="2. Giro Específico" hint="Auto-carga costos, ticket y márgenes">
+              <select className={INPUT} onChange={handleGiroChange} disabled={!selectedClasificacion} defaultValue="">
+                <option value="" disabled>Selecciona un negocio...</option>
+                {giros.filter(g => g.clasificacion === selectedClasificacion).map((g, i) => (
+                  <option key={i} value={g.nombre_giro}>{g.nombre_giro}</option>
+                ))}
+              </select>
+            </Field>
+          </div>
         </div>
 
             <div className="grid grid-cols-2 gap-4">

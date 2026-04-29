@@ -2,7 +2,9 @@ import { Link } from 'react-router-dom'
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-brand-darker">
+    <div ssName="min-h-screen bg-brand-darker bg-cover bg-center bg-fixed"
+      style={{ backgroundImage: 'linear-gradient(to bottom, rgba(17,24,39,0.85), rgba(17,24,39,0.98)), url("/img/image_desktoop.jpg")' }}
+    >
       {/* Navbar */}
       <nav className="border-b border-white/10 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center gap-2">

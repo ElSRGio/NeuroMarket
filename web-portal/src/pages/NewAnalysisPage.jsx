@@ -91,7 +91,7 @@ export default function NewAnalysisPage() {
 
     setForm(f => ({
       ...f,
-      business_name: `Mi ${g.nombre_giro}`,
+      business_name: f.business_name || `Mi ${g.nombre_giro}`,
       gasto_promedio: String(gasto),
       costos_fijos: String(costos_fijos),
       clientes_estimados: String(Math.round(clientes_mensuales)),
@@ -164,7 +164,10 @@ export default function NewAnalysisPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className="min-h-screen bg-gray-50 bg-cover bg-center bg-fixed relative"
+      style={{ backgroundImage: 'linear-gradient(to bottom, rgba(249,250,251,0.85), rgba(249,250,251,0.95)), url("/img/image_desktoop2.jpg")' }}
+    >
       <AppNav showNewAnalysis={false}/>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
@@ -188,7 +191,7 @@ export default function NewAnalysisPage() {
           <h3 className="text-sm font-bold text-emerald-900 mb-3">💡 Inteligencia de Mercado (Auto-Rellenado)</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="1. Sector de Mercado" hint="Las 13 categorías principales">
-              <select className={INPUT} value={selectedClasificacion} onChange={e => { setSelectedClasificacion(e.target.value); setForm(f => ({...f, business_name: ''})) }}>
+              <select className={INPUT} value={selectedClasificacion} onChange={e => { setSelectedClasificacion(e.target.value); setForm(f => ({...f, sector: e.target.value})) }}>
                 <option value="">Selecciona un sector...</option>
                 {[...new Set(giros.map(g => g.clasificacion))].map(c => (
                   <option key={c} value={c}>{c}</option>
@@ -206,15 +209,8 @@ export default function NewAnalysisPage() {
           </div>
         </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Sector">
-                <select className={INPUT} value={form.sector} onChange={e => set('sector', e.target.value)}>
-                  {['general','restaurante','retail','servicios','salud','educacion','entretenimiento','tecnologia'].map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Municipio">
+            <div className="mt-4">
+              <Field label="Municipio" hint="Región donde se ubicará el negocio">
                 {municipios.length > 0 ? (
                   <select className={INPUT} onChange={handleMunicipioChange} defaultValue="">
                     <option value="" disabled>Selecciona...</option>

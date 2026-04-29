@@ -21,8 +21,7 @@ function getAllowedOrigins() {
     .map((o) => o.trim())
     .filter(Boolean);
 
-  if (parsed.length > 0) return parsed;
-  return [
+  const defaultOrigins = [
     "http://localhost:5173",
     "http://localhost:3000",
     "https://neuromarket-web-portal.onrender.com",
@@ -30,6 +29,8 @@ function getAllowedOrigins() {
     "https://xazia.online",
     "https://www.xazia.online"
   ];
+
+  return [...new Set([...parsed, ...defaultOrigins])];
 }
 
 const allowedOrigins = getAllowedOrigins();

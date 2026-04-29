@@ -41,7 +41,7 @@ export default function NewAnalysisPage() {
   const [socialStatus, setSocialStatus] = useState('')
   const [form, setForm] = useState({
     business_name: location.state?.business_name || '', sector: 'general', municipio: 'Libres', estado: 'Puebla',
-    capital_total: '', inversion_inicial: '', costos_fijos: '', ingresos_mensuales: '',
+    presupuesto_inversion: '', costos_fijos: '', ingresos_mensuales: '',
     gasto_promedio: '150', margen_contribucion: '0.40', regimen_fiscal: 'RESICO',
     densidad_digital: '42', validacion_fisica: '55', nivel_bancarizacion: '38',
     indice_empleo: '48', conectividad: '55', poblacion: '15420',
@@ -128,8 +128,8 @@ export default function NewAnalysisPage() {
     setError('')
     setLoading(true)
     
-    if (+form.capital_total <= +form.inversion_inicial) {
-      setError('El Capital Total debe ser MAYOR a la Inversión Fija. Necesitas Capital de Trabajo para sobrevivir el mes 1.')
+    if (+form.presupuesto_inversion <= 0) {
+      setError('El Presupuesto a Invertir debe ser mayor a 0.')
       setLoading(false)
       return
     }
@@ -153,22 +153,23 @@ export default function NewAnalysisPage() {
         },
         tam_params: { poblacion: +form.poblacion, gasto_promedio: +form.gasto_promedio, sector: form.sector, pct_mercado_accesible: 30, pct_cuota_capturable: 5 },
         roi_params: { 
-          capital_total: +form.capital_total, 
-          inversion_inicial: +form.inversion_inicial, 
+          presupuesto_inversion: +form.presupuesto_inversion, 
           costos_fijos: +form.costos_fijos, 
           gasto_promedio: +form.gasto_promedio,
           margen_contribucion: +form.margen_contribucion,
           clientes_estimados: clientes_calc,
           regimen_fiscal: form.regimen_fiscal,
-          idm_array: DEFAULT_IDM 
+          idm_array: DEFAULT_IDM,
+          sector: form.sector,
+          validacion_fisica: +form.validacion_fisica
         },
         mc_params: { 
           ingreso_esperado: +form.ingresos_mensuales, 
           costo_esperado: +form.costos_fijos, 
-          inversion_inicial: +form.inversion_inicial, meses: 12,
+          inversion_inicial: +form.presupuesto_inversion * 0.6, meses: 12,
           margen_contribucion: +form.margen_contribucion,
           regimen_fiscal: form.regimen_fiscal,
-          capital_total: +form.capital_total
+          capital_total: +form.presupuesto_inversion
         },
       }
       const { data } = await investmentService.analyze(payload)
@@ -243,11 +244,8 @@ export default function NewAnalysisPage() {
             <h2 className="font-black text-gray-900 text-base">Economía de Supervivencia</h2>
             <p className="text-xs text-gray-500 -mt-3 mb-2">Datos reales para calcular tu Runway y Punto de Equilibrio</p>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Capital Total en Banco ($)">
-                <input className={INPUT} type="number" min="1" required value={form.capital_total} onChange={e => set('capital_total', e.target.value)} placeholder="100000" hint="Todo el dinero disponible"/>
-              </Field>
-              <Field label="Inversión Fija (Apertura) ($)">
-                <input className={INPUT} type="number" min="1" required value={form.inversion_inicial} onChange={e => set('inversion_inicial', e.target.value)} placeholder="60000" hint="Remodelación, equipo, licencias"/>
+              <Field label="Presupuesto a Invertir ($)" hint="Capital total disponible para este proyecto">
+                <input className={INPUT} type="number" min="1" required value={form.presupuesto_inversion} onChange={e => set('presupuesto_inversion', e.target.value)} placeholder="150000"/>
               </Field>
               <Field label="Costos Fijos / Indirectos ($)">
                 <input className={INPUT} type="number" min="0" required value={form.costos_fijos} onChange={e => set('costos_fijos', e.target.value)} placeholder="15000" hint="Renta, luz, salarios base (Burn Rate)"/>

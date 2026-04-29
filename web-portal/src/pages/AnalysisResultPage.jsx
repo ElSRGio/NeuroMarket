@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, ReferenceLine, CartesianGrid } from 'recharts'
-import { XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, ReferenceLine, CartesianGrid } from 'recharts'
 import { investmentService } from '../services/investment.service.js'
 import { useAuthStore } from '../store/auth.store.js'
 import AppNav from '../components/AppNav.jsx'
 
-const scoreColor = s => s >= 85 ? '#34d399' : s >= 70 ? '#fbbf24' : s >= 50 ? '#fb923c' : '#f43f5e'
 const scoreColor = s => s >= 85 ? '#16a34a' : s >= 70 ? '#ca8a04' : s >= 50 ? '#ea580c' : '#dc2626'
 const scoreLabel = s => s >= 85 ? 'Excelente' : s >= 70 ? 'Bueno' : s >= 50 ? 'Regular' : 'Riesgo Alto'
 
@@ -95,23 +93,13 @@ export default function AnalysisResultPage() {
   const color = scoreColor(score)
 
   return (
-    <div className="relative min-h-screen bg-slate-950 text-slate-100 font-sans overflow-x-hidden">
-      {/* Orbes de luz de fondo (Spatial Computing) */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/30 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-900/20 blur-[120px] pointer-events-none" />
-      
-      <div className="relative z-10">
     <div className="min-h-screen bg-gray-50 font-sans overflow-x-hidden">
         <AppNav showNewAnalysis={false}/>
 
         {/* Sub-header */}
-        <div className="bg-white/5 border-b border-white/10 backdrop-blur-md px-4 sm:px-6 py-4">
         <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link to="/dashboard" className="text-slate-400 hover:text-white text-sm transition-colors">← Dashboard</Link>
-              <span className="text-slate-600">/</span>
-              <span className="text-sm font-semibold text-white">Resultado del analisis</span>
               <Link to="/dashboard" className="text-gray-500 hover:text-gray-900 text-sm transition-colors">← Dashboard</Link>
               <span className="text-gray-400">/</span>
               <span className="text-sm font-semibold text-gray-900">Resultado del analisis</span>
@@ -121,8 +109,6 @@ export default function AnalysisResultPage() {
                 type="button"
                 onClick={handleDownloadPdf}
                 disabled={downloadingPdf}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg text-white transition-all duration-300 border border-emerald-400/50 shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)]"
-                style={{ backgroundColor: downloadingPdf ? '#059669' : '#10b981' }}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg text-white transition-colors"
                 style={{ backgroundColor: downloadingPdf ? '#86efac' : '#22c55e' }}
               >
@@ -394,7 +380,6 @@ export default function AnalysisResultPage() {
           <CapitalSimulator roi={roi} simInversion={simInversion} setSimInversion={setSimInversion}/>
         </main>
       </div>
-    </div>
   )
 }
 
@@ -423,9 +408,6 @@ function CapitalSimulator({ roi, simInversion, setSimInversion }) {
   const roiSimulado = acumulado > 0 ? Math.round((acumulado / inv) * 100) : 0
 
   return (
-    <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-2xl shadow-2xl">
-      <h2 className="font-black text-white text-lg mb-1">Simulador de Capital Espacial</h2>
-      <p className="text-slate-400 text-xs mb-6 uppercase tracking-wider">Ajusta tu inversión inicial para proyectar a 24 meses</p>
     <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
       <h2 className="font-black text-gray-900 text-lg mb-1">Simulador de Capital</h2>
       <p className="text-gray-500 text-xs mb-6 font-semibold uppercase tracking-wider">Ajusta tu inversión inicial para proyectar a 24 meses</p>
@@ -433,8 +415,6 @@ function CapitalSimulator({ roi, simInversion, setSimInversion }) {
       {/* Slider */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
-          <label className="text-sm font-semibold text-slate-300">Inversión Inicial</label>
-          <span className="text-2xl font-light text-emerald-400 drop-shadow-sm">${Number(inv).toLocaleString()}</span>
           <label className="text-sm font-semibold text-gray-700">Inversión Inicial</label>
           <span className="text-2xl font-black text-green-600">${Number(inv).toLocaleString()}</span>
         </div>
@@ -442,12 +422,9 @@ function CapitalSimulator({ roi, simInversion, setSimInversion }) {
           type="range" min="10000" max="500000" step="5000"
           value={inv}
           onChange={e => setSimInversion(Number(e.target.value))}
-          className="w-full h-2 rounded-full appearance-none cursor-pointer"
-          style={{ accentColor: '#34d399', background: 'rgba(255,255,255,0.1)' }}
           className="w-full h-2 rounded-full appearance-none cursor-pointer bg-gray-200"
           style={{ accentColor: '#16a34a' }}
         />
-        <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
         <div className="flex justify-between text-xs text-gray-500 mt-2 font-mono">
           <span>$10,000</span><span>$500,000</span>
         </div>
@@ -455,29 +432,20 @@ function CapitalSimulator({ roi, simInversion, setSimInversion }) {
 
       {/* KPIs simulados */}
       <div className="grid grid-cols-3 gap-5 mb-8">
-        <div className="bg-emerald-400/10 border border-emerald-400/20 rounded-2xl p-5 text-center shadow-[0_0_15px_rgba(52,211,153,0.1)]">
-          <div className="text-2xl font-light text-emerald-400">{roiSimulado}%</div>
-          <div className="text-slate-400 text-[10px] uppercase tracking-widest mt-1 font-semibold">ROI 24 meses</div>
         <div className="bg-green-50 border border-green-200 rounded-xl p-5 text-center">
           <div className="text-2xl font-black text-green-700">{roiSimulado}%</div>
           <div className="text-green-800 text-[10px] uppercase tracking-widest mt-1 font-bold">ROI 24 meses</div>
         </div>
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-5 text-center">
-          <div className="text-2xl font-light text-blue-400">
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 text-center">
           <div className="text-2xl font-black text-blue-700">
             {breakEvenMes >= 0 ? `Mes ${breakEvenMes + 1}` : '+24m'}
           </div>
-          <div className="text-slate-400 text-[10px] uppercase tracking-widest mt-1 font-semibold">Break-even</div>
           <div className="text-blue-800 text-[10px] uppercase tracking-widest mt-1 font-bold">Break-even</div>
         </div>
-        <div className={`rounded-2xl p-5 text-center border backdrop-blur-md ${acumulado >= 0 ? 'bg-emerald-400/10 border-emerald-400/20' : 'bg-rose-500/10 border-rose-500/20'}`}>
-          <div className={`text-2xl font-light ${acumulado >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
         <div className={`rounded-xl p-5 text-center border ${acumulado >= 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
           <div className={`text-2xl font-black ${acumulado >= 0 ? 'text-green-700' : 'text-red-700'}`}>
             ${Math.abs(Math.round(acumulado / 1000))}k
           </div>
-          <div className="text-slate-400 text-[10px] uppercase tracking-widest mt-1 font-semibold">{acumulado >= 0 ? 'Ganancia neta' : 'Pérdida neta'}</div>
           <div className={`text-[10px] uppercase tracking-widest mt-1 font-bold ${acumulado >= 0 ? 'text-green-800' : 'text-red-800'}`}>{acumulado >= 0 ? 'Ganancia neta' : 'Pérdida neta'}</div>
         </div>
       </div>
@@ -485,20 +453,13 @@ function CapitalSimulator({ roi, simInversion, setSimInversion }) {
       {/* Gráfica acumulado */}
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={flujo}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10"/>
-          <XAxis dataKey="mes" tick={{ fill: '#64748b', fontSize: 10 }} stroke="#334155"/>
-          <YAxis tick={{ fill: '#64748b', fontSize: 10 }} stroke="#334155" tickFormatter={v => `$${Math.round(v/1000)}k`}/>
           <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6"/>
           <XAxis dataKey="mes" tick={{ fill: '#6b7280', fontSize: 10 }} stroke="#e5e7eb"/>
           <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} stroke="#e5e7eb" tickFormatter={v => `$${Math.round(v/1000)}k`}/>
           <Tooltip
-            contentStyle={{ background: '#020617', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem', fontSize: 12, color: '#f8fafc' }}
-            itemStyle={{ color: '#34d399' }}
             contentStyle={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '0.75rem', fontSize: 12, color: '#111827' }}
             formatter={v => [`$${Number(v).toLocaleString()}`, 'Flujo acumulado']}
           />
-          <ReferenceLine y={0} stroke="#f43f5e" strokeDasharray="4 4" label={{ value: 'Break-even', fill: '#f43f5e', fontSize: 10, position: 'insideTopLeft' }}/>
-          <Line type="monotone" dataKey="acumulado" stroke="#34d399" strokeWidth={3} dot={false}/>
           <ReferenceLine y={0} stroke="#ef4444" strokeDasharray="4 4" label={{ value: 'Break-even', fill: '#ef4444', fontSize: 10, position: 'insideTopLeft' }}/>
           <Line type="monotone" dataKey="acumulado" stroke="#16a34a" strokeWidth={3} dot={false}/>
         </LineChart>

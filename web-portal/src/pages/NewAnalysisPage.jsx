@@ -41,7 +41,7 @@ export default function NewAnalysisPage() {
   const [socialStatus, setSocialStatus] = useState('')
   const [form, setForm] = useState({
     business_name: location.state?.business_name || '', sector: 'general', municipio: 'Libres', estado: 'Puebla',
-    presupuesto_inversion: '', costos_fijos: '', ingresos_mensuales: '',
+    presupuesto_inversion: '', costos_fijos: '',
     gasto_promedio: '150', margen_contribucion: '0.40', regimen_fiscal: 'RESICO',
     densidad_digital: '42', validacion_fisica: '55', nivel_bancarizacion: '38',
     indice_empleo: '48', conectividad: '55', poblacion: '15420',
@@ -76,12 +76,11 @@ export default function NewAnalysisPage() {
     const clientes_mensuales = ventas_diarias * 30;
     
     const costos_directos = Number(g.costos_directos_mensuales) || 0;
-    const ingresos_mensuales = clientes_mensuales * gasto;
+    const ingresos_estimados = clientes_mensuales * gasto;
     
-    // Si el negocio gana algo, deducimos su margen real de operación
     let margen_contribucion = 0.40;
-    if (ingresos_mensuales > 0) {
-       margen_contribucion = (ingresos_mensuales - costos_directos) / ingresos_mensuales;
+    if (ingresos_estimados > 0) {
+       margen_contribucion = (ingresos_estimados - costos_directos) / ingresos_estimados;
     }
     
     // Auto-detectamos el Régimen Fiscal que le espera
@@ -94,7 +93,6 @@ export default function NewAnalysisPage() {
       business_name: f.business_name || `Mi ${g.nombre_giro}`,
       gasto_promedio: String(gasto),
       costos_fijos: String(costos_fijos),
-      ingresos_mensuales: String(Math.round(ingresos_mensuales)),
       margen_contribucion: String(Math.max(0.01, Math.min(0.99, margen_contribucion)).toFixed(2)),
       regimen_fiscal: regimen
     }))
@@ -142,7 +140,7 @@ export default function NewAnalysisPage() {
     }
 
     try {
-      const clientes_calc = Math.max(1, Math.round(+form.ingresos_mensuales / +form.gasto_promedio));
+      const clientes_calc = 0; // El motor de Python proyectará esto basado en el TAM y SVEE
       const payload = {
         business_name: form.business_name, sector: form.sector,
         municipio: form.municipio, estado: form.estado, factor_competencia: 0.8,
@@ -164,7 +162,7 @@ export default function NewAnalysisPage() {
           validacion_fisica: +form.validacion_fisica
         },
         mc_params: { 
-          ingreso_esperado: +form.ingresos_mensuales, 
+          ingreso_esperado: 0, // Removido, el motor debe calcularlo
           costo_esperado: +form.costos_fijos, 
           inversion_inicial: +form.presupuesto_inversion * 0.6, meses: 12,
           margen_contribucion: +form.margen_contribucion,
@@ -262,9 +260,6 @@ export default function NewAnalysisPage() {
               </Field>
               <Field label="Margen de Contribución (0-1)">
                 <input className={INPUT} type="number" step="0.01" min="0.01" max="0.99" required value={form.margen_contribucion} onChange={e => set('margen_contribucion', e.target.value)} hint="(Precio - Costo Directo) / Precio"/>
-              </Field>
-              <Field label="Ingresos Mensuales Esperados ($)">
-                <input className={INPUT} type="number" min="1" required value={form.ingresos_mensuales} onChange={e => set('ingresos_mensuales', e.target.value)} placeholder="45000" hint="Ventas totales al mes"/>
               </Field>
             </div>
           </div>

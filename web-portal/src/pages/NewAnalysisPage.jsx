@@ -166,7 +166,7 @@ export default function NewAnalysisPage() {
   return (
     <div 
       className="min-h-screen bg-gray-50 bg-cover bg-center bg-fixed relative"
-      style={{ backgroundImage: 'linear-gradient(to bottom, rgba(249,250,251,0.85), rgba(249,250,251,0.95)), url("/img/image_desktoop2.jpg")' }}
+      style={{ backgroundImage: 'linear-gradient(to bottom, rgba(249,250,251,0.50), rgba(249,250,251,0.85)), url("/img/image_desktoop2.jpg")' }}
     >
       <AppNav showNewAnalysis={false}/>
 

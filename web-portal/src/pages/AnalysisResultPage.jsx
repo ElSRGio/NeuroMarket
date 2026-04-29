@@ -138,8 +138,8 @@ export default function AnalysisResultPage() {
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: 'ROI Realista', value: `${mc.escenarios?.realista?.roi ?? roi.roi_porcentaje}%`, color: '#16a34a' },
-            { label: 'Break-even', value: roi.break_even_meses ? `${roi.break_even_meses} meses` : '—', color: '#2563eb' },
+            { label: 'Runway (Meses de vida)', value: roi.runway_meses !== undefined ? `${roi.runway_meses} meses` : '—', color: roi.runway_meses >= 6 ? '#16a34a' : roi.runway_meses >= 3 ? '#ca8a04' : '#dc2626' },
+            { label: 'Break-even (Clientes/mes)', value: roi.clientes_equilibrio !== undefined ? `${roi.clientes_equilibrio}` : '—', color: '#2563eb' },
             { label: 'Prob. exito', value: `${mc.prob_positivo ?? 0}%`, color: '#ca8a04' },
             { label: 'IRL Score', value: irl.irl_score ?? 0, color: '#6b7280' },
           ].map(kpi => (
@@ -150,18 +150,26 @@ export default function AnalysisResultPage() {
           ))}
         </div>
 
+        {/* Alerta de Supervivencia */}
+        {roi.viabilidad && (
+          <div className={`rounded-xl p-5 border ${roi.viabilidad.includes('Peligro') ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-800'}`}>
+            <div className="font-black text-sm mb-1 flex items-center gap-2">{roi.viabilidad.includes('Peligro') ? '⚠️' : '✅'} Diagnóstico de Supervivencia</div>
+            <div className="text-sm">{roi.viabilidad}. Tienes un Capital de Trabajo de <strong>${Number(roi.capital_trabajo || 0).toLocaleString()} MXN</strong> en efectivo real.</div>
+          </div>
+        )}
+
         {/* Monte Carlo */}
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-          <h2 className="font-black text-gray-900 text-lg mb-5">Simulacion Monte Carlo — 3 Escenarios</h2>
+          <h2 className="font-black text-gray-900 text-lg mb-5">Simulador de Crisis — 3 Escenarios</h2>
           <div className="grid grid-cols-3 gap-4 text-center">
             {[
-              { label: 'Pesimista (P10)', roi: mc.escenarios?.pesimista?.roi, color: '#dc2626', bg: 'bg-red-50 border-red-200' },
-              { label: 'Realista (P50)', roi: mc.escenarios?.realista?.roi, color: '#ca8a04', bg: 'bg-amber-50 border-amber-200 ring-2 ring-amber-300' },
-              { label: 'Optimista (P90)', roi: mc.escenarios?.optimista?.roi, color: '#16a34a', bg: 'bg-green-50 border-green-200' },
+              { label: 'Escenario Pesimista', roi: mc.escenarios?.pesimista?.roi, color: '#dc2626', bg: 'bg-red-50 border-red-200' },
+              { label: 'Escenario Realista', roi: mc.escenarios?.realista?.roi, color: '#ca8a04', bg: 'bg-amber-50 border-amber-200 ring-2 ring-amber-300' },
+              { label: 'Escenario Optimista', roi: mc.escenarios?.optimista?.roi, color: '#16a34a', bg: 'bg-green-50 border-green-200' },
             ].map(s => (
               <div key={s.label} className={`rounded-xl p-4 border ${s.bg}`}>
                 <div className="text-3xl font-black mb-1" style={{ color: s.color }}>{s.roi ?? '—'}%</div>
-                <div className="text-gray-500 text-xs">ROI {s.label}</div>
+                <div className="text-gray-500 text-xs text-balance">{s.label}</div>
               </div>
             ))}
           </div>
@@ -188,9 +196,9 @@ export default function AnalysisResultPage() {
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
             <h2 className="font-black text-gray-900 text-base mb-4">Tamano de Mercado</h2>
             {[
-              { label: 'TAM (Total)', value: tam.tam },
-              { label: 'SAM (Disponible)', value: tam.sam },
-              { label: 'SOM (Capturable ano 1)', value: tam.som },
+              { label: 'Mercado Total (TAM)', value: tam.tam },
+              { label: 'Clientes con Poder Adquisitivo (SAM)', value: tam.sam },
+              { label: 'Tu Meta de Ventas (SOM)', value: tam.som },
             ].map(m => (
               <div key={m.label} className="flex justify-between py-2.5 border-b border-gray-100 last:border-0">
                 <span className="text-gray-500 text-sm">{m.label}</span>
@@ -213,8 +221,8 @@ export default function AnalysisResultPage() {
         {/* SVEE: Gráfico mensual de oportunidad */}
         {svee.monthly_data?.length > 0 && (
           <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-            <h2 className="font-black text-gray-900 text-lg mb-1">Mapa de Ventanas Estratégicas (SVEE)</h2>
-            <p className="text-gray-400 text-xs mb-5">Score de oportunidad por mes — mayor barra = mejor momento para abrir</p>
+            <h2 className="font-black text-gray-900 text-lg mb-1">Mejor Mes para Abrir</h2>
+            <p className="text-gray-400 text-xs mb-5">Oportunidad estacional — mayor barra = mejor momento para abrir</p>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={svee.monthly_data}>
                 <XAxis dataKey="mes" tick={{ fill: '#9ca3af', fontSize: 11 }}/>

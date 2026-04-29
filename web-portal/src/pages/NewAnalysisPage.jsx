@@ -41,7 +41,7 @@ export default function NewAnalysisPage() {
   const [socialStatus, setSocialStatus] = useState('')
   const [form, setForm] = useState({
     business_name: location.state?.business_name || '', sector: 'general', municipio: 'Libres', estado: 'Puebla',
-    capital_total: '', inversion_inicial: '', costos_fijos: '', clientes_estimados: '',
+    capital_total: '', inversion_inicial: '', costos_fijos: '', ingresos_mensuales: '',
     gasto_promedio: '150', margen_contribucion: '0.40', regimen_fiscal: 'RESICO',
     densidad_digital: '42', validacion_fisica: '55', nivel_bancarizacion: '38',
     indice_empleo: '48', conectividad: '55', poblacion: '15420',
@@ -94,7 +94,7 @@ export default function NewAnalysisPage() {
       business_name: f.business_name || `Mi ${g.nombre_giro}`,
       gasto_promedio: String(gasto),
       costos_fijos: String(costos_fijos),
-      clientes_estimados: String(Math.round(clientes_mensuales)),
+      ingresos_mensuales: String(Math.round(ingresos_mensuales)),
       margen_contribucion: String(Math.max(0.01, Math.min(0.99, margen_contribucion)).toFixed(2)),
       regimen_fiscal: regimen
     }))
@@ -128,6 +128,7 @@ export default function NewAnalysisPage() {
     setError('')
     setLoading(true)
     try {
+      const clientes_calc = Math.max(1, Math.round(+form.ingresos_mensuales / +form.gasto_promedio));
       const payload = {
         business_name: form.business_name, sector: form.sector,
         municipio: form.municipio, estado: form.estado, factor_competencia: 0.8,
@@ -143,12 +144,12 @@ export default function NewAnalysisPage() {
           costos_fijos: +form.costos_fijos, 
           gasto_promedio: +form.gasto_promedio,
           margen_contribucion: +form.margen_contribucion,
-          clientes_estimados: +form.clientes_estimados,
+          clientes_estimados: clientes_calc,
           regimen_fiscal: form.regimen_fiscal,
           idm_array: DEFAULT_IDM 
         },
         mc_params: { 
-          ingreso_esperado: (+form.clientes_estimados * +form.gasto_promedio), 
+          ingreso_esperado: +form.ingresos_mensuales, 
           costo_esperado: +form.costos_fijos, 
           inversion_inicial: +form.inversion_inicial, meses: 12,
           margen_contribucion: +form.margen_contribucion,
@@ -250,8 +251,8 @@ export default function NewAnalysisPage() {
               <Field label="Margen de Contribución (0-1)">
                 <input className={INPUT} type="number" step="0.01" min="0.01" max="0.99" required value={form.margen_contribucion} onChange={e => set('margen_contribucion', e.target.value)} hint="(Precio - Costo Directo) / Precio"/>
               </Field>
-              <Field label="Clientes Estimados Mensuales">
-                <input className={INPUT} type="number" min="1" required value={form.clientes_estimados} onChange={e => set('clientes_estimados', e.target.value)} placeholder="300" hint="Para la simulación base"/>
+              <Field label="Ingresos Mensuales Esperados ($)">
+                <input className={INPUT} type="number" min="1" required value={form.ingresos_mensuales} onChange={e => set('ingresos_mensuales', e.target.value)} placeholder="45000" hint="Ventas totales al mes"/>
               </Field>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { investmentService } from '../services/investment.service.js'
 import api from '../services/api.js'
 import { useAuthStore } from '../store/auth.store.js'
@@ -11,7 +11,7 @@ export default function DashboardPage() {
   const [analyses, setAnalyses] = useState([])
   const [credits, setCredits] = useState(null)
   const [loading, setLoading] = useState(true)
-  const { user } = useAuthStore()
+  const { user, token } = useAuthStore()
 
   const planKey = user?.plan_type || 'basic'
   const isAdmin = user?.role === 'admin'
@@ -28,6 +28,7 @@ export default function DashboardPage() {
     : `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user?.name || user?.email || 'User')}`
 
   useEffect(() => {
+    if (!token) return
     Promise.all([
       investmentService.getHistory(),
       investmentService.getCredits(),
@@ -35,7 +36,7 @@ export default function DashboardPage() {
       setAnalyses(h.data)
       setCredits(c.data)
     }).catch(() => {}).finally(() => setLoading(false))
-  }, [])
+  }, [token])
 
   async function handleDelete(id) {
     await investmentService.softDelete(id)
@@ -45,6 +46,10 @@ export default function DashboardPage() {
   async function handleRename(id, newName) {
     await investmentService.updateName(id, newName)
     setAnalyses(prev => prev.map(a => a.id === id ? { ...a, business_name: newName } : a))
+  }
+
+  if (!token) {
+    return <Navigate to="/login" replace />
   }
 
   return (

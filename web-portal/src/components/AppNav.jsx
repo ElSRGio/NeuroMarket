@@ -8,7 +8,7 @@ function HexLogo({ size = 30 }) {
   return (
     <img
       src="/logo.png"
-      alt="XAIZA"
+      alt="XAZIA"
       style={{ width: size, height: size }}
     />
   )
@@ -46,7 +46,7 @@ export default function AppNav({ showNewAnalysis = true }) {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <HexLogo size={30}/>
-          <span className="font-black text-lg text-gray-900">XAIZA</span>
+          <span className="font-black text-lg text-gray-900">XAZIA</span>
           {user && (
             <span className={`text-xs font-bold px-2 py-0.5 rounded-full ml-1 ${badge.bg}`}>
               {badge.label}
@@ -57,6 +57,8 @@ export default function AppNav({ showNewAnalysis = true }) {
         {/* Desktop links */}
         <div className="hidden md:flex items-center gap-6 text-sm text-gray-600 font-medium">
           <Link to="/dashboard" className="hover:text-gray-900 transition-colors">Dashboard</Link>
+          <Link to="/social-listening" className="hover:text-gray-900 transition-colors">Social Listening</Link>
+          <Link to="/geo-maps" className="hover:text-gray-900 transition-colors">Mapas</Link>
           <Link to="/upgrade" className="hover:text-gray-900 transition-colors">Planes</Link>
           <Link to="/presentation" className="hover:text-gray-900 transition-colors">Demo</Link>
         </div>
@@ -147,6 +149,8 @@ export default function AppNav({ showNewAnalysis = true }) {
             </div>
           )}
           <Link to="/dashboard" onClick={() => setOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Dashboard</Link>
+          <Link to="/social-listening" onClick={() => setOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Social Listening</Link>
+          <Link to="/geo-maps" onClick={() => setOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Mapas</Link>
           <Link to="/upgrade" onClick={() => setOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Planes y precios</Link>
           <Link to="/presentation" onClick={() => setOpen(false)} className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Demo</Link>
           {user && (

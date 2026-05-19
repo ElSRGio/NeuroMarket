@@ -7,8 +7,8 @@ export default defineConfig({
     port: 5173,
     host: '0.0.0.0',
     proxy: {
-      '/api/engine': { target: 'http://localhost:5000', changeOrigin: true },
-      '/api': { target: 'http://localhost:3000', changeOrigin: true },
+      '/api/engine': { target: 'https://neuromarket-engine.onrender.com', changeOrigin: true, secure: true },
+      '/api': { target: 'https://neuromarket-api.onrender.com', changeOrigin: true, secure: true },
     },
   },
 })

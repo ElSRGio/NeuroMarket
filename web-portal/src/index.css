@@ -18,6 +18,9 @@
   .card {
     @apply bg-brand-dark rounded-xl border border-white/10 p-6;
   }
+  .input-light {
+    @apply w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors;
+  }
   .score-badge {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-lg;
   }

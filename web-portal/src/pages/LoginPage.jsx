@@ -7,7 +7,7 @@ function HexLogo() {
   return (
     <img
       src="/logo.png"
-      alt="XAIZA"
+      alt="XAZIA"
       style={{ width: 40, height: 40 }}
     />
   )
@@ -46,7 +46,7 @@ export default function LoginPage() {
       <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <HexLogo/>
-          <span className="font-black text-lg text-gray-900">XAIZA</span>
+          <span className="font-black text-lg text-gray-900">XAZIA</span>
         </Link>
         <Link to="/register" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
           Crear cuenta →
@@ -58,7 +58,7 @@ export default function LoginPage() {
           <div className="text-center mb-8">
             <img
               src="/logo.png"
-              alt="XAIZA"
+              alt="XAZIA"
               className="w-20 h-20 mx-auto mb-3 rounded-2xl border border-gray-200 bg-white"
             />
             <h1 className="text-3xl font-black text-gray-900 mb-2">Bienvenido de vuelta</h1>

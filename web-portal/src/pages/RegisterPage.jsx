@@ -16,11 +16,18 @@ const NICHE_OPTIONS = [
   'Entretenimiento',
 ]
 
+const REGISTER_STEPS = [
+  { title: 'Perfil', description: 'Quien usara XAZIA' },
+  { title: 'Mercado', description: 'Intereses de negocio' },
+  { title: 'Acceso', description: 'Credenciales seguras' },
+  { title: 'Confirmar', description: 'Revisa y crea tu cuenta' },
+]
+
 function HexLogo() {
   return (
     <img
       src="/logo.png"
-      alt="XAIZA"
+      alt="XAZIA"
       style={{ width: 40, height: 40 }}
     />
   )
@@ -32,11 +39,11 @@ export default function RegisterPage() {
     last_name: '',
     age: '',
     email: '',
-    preferred_niches: '',
     average_investment: '',
     password: '',
     confirm_password: '',
   })
+  const [step, setStep] = useState(0)
   const [selectedNiches, setSelectedNiches] = useState([])
   const [profileImage, setProfileImage] = useState(null)
   const fileInputRef = useRef(null)
@@ -58,26 +65,72 @@ export default function RegisterPage() {
     }
   }, [registerAvatarSrc])
 
+  function updateField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }))
+  }
+
+  function validateStep(targetStep = step) {
+    if (targetStep === 0 && (!form.name.trim() || !form.last_name.trim())) {
+      setError('Completa nombre y apellidos para continuar.')
+      return false
+    }
+
+    if (targetStep === 1 && selectedNiches.length === 0) {
+      setError('Selecciona al menos un nicho para personalizar tu dashboard.')
+      return false
+    }
+
+    if (targetStep === 2) {
+      if (!form.email.trim() || !form.password || !form.confirm_password) {
+        setError('Completa email, contraseña y confirmacion.')
+        return false
+      }
+      if (form.password.length < 6) {
+        setError('La contraseña debe tener al menos 6 caracteres.')
+        return false
+      }
+      if (form.password !== form.confirm_password) {
+        setError('La confirmación de contraseña no coincide.')
+        return false
+      }
+    }
+
+    setError('')
+    return true
+  }
+
+  function goNext() {
+    if (!validateStep(step)) return
+    setStep((current) => Math.min(current + 1, REGISTER_STEPS.length - 1))
+  }
+
+  function goBack() {
+    setError('')
+    setStep((current) => Math.max(current - 1, 0))
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
 
-    if (form.password !== form.confirm_password) {
-      setError('La confirmación de contraseña no coincide')
-      return
+    for (let index = 0; index < REGISTER_STEPS.length - 1; index += 1) {
+      if (!validateStep(index)) {
+        setStep(index)
+        return
+      }
     }
 
     setLoading(true)
     try {
       const formData = new FormData()
-      formData.append("name", form.name)
-      formData.append("last_name", form.last_name)
-      formData.append("email", form.email)
-      formData.append("password", form.password)
-      if (form.age) formData.append("age", form.age)
-      if (selectedNiches.length > 0) formData.append("preferred_niches", selectedNiches.join(', '))
-      if (form.average_investment) formData.append("average_investment", form.average_investment)
-      if (profileImage) formData.append("profile_image", profileImage)
+      formData.append('name', form.name.trim())
+      formData.append('last_name', form.last_name.trim())
+      formData.append('email', form.email.trim())
+      formData.append('password', form.password)
+      if (form.age) formData.append('age', form.age)
+      if (selectedNiches.length > 0) formData.append('preferred_niches', selectedNiches.join(', '))
+      if (form.average_investment) formData.append('average_investment', form.average_investment)
+      if (profileImage) formData.append('profile_image', profileImage)
 
       const { data } = await authService.register(formData)
       setAuth(data.user, data.token)
@@ -89,202 +142,339 @@ export default function RegisterPage() {
     }
   }
 
+  const activeStep = REGISTER_STEPS[step]
+  const progress = ((step + 1) / REGISTER_STEPS.length) * 100
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <HexLogo/>
-          <span className="font-black text-lg text-gray-900">XAIZA</span>
+          <HexLogo />
+          <span className="font-black text-lg text-gray-900">XAZIA</span>
         </Link>
-        <Link to="/login" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+        <Link to="/login" className="text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">
           Ya tengo cuenta
         </Link>
       </nav>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-black text-gray-900 mb-2">Crea tu cuenta gratis</h1>
-            <p className="text-gray-500 text-sm">Completa tu perfil para recomendaciones mas precisas</p>
-          </div>
+      <main className="flex-1 px-4 py-10">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-[0.9fr_1.1fr] gap-8 items-start">
+          <aside className="bg-gray-950 text-white rounded-3xl overflow-hidden shadow-xl">
+            <div className="p-8 border-b border-white/10">
+              <p className="text-sm font-black text-green-400">Registro guiado</p>
+              <h1 className="text-4xl font-black mt-3 leading-tight">Crea tu cuenta sin saturarte de campos</h1>
+              <p className="text-gray-300 mt-4 text-sm leading-6">
+                XAZIA separa tu perfil, mercado y acceso para preparar un dashboard de social listening con datos utiles desde el inicio.
+              </p>
+            </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-            {error && (
-              <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm">{error}</div>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="bg-gray-900 text-white rounded-2xl p-5 text-center relative overflow-hidden">
-                <div className="absolute inset-0 opacity-30" style={{ background: 'radial-gradient(circle at top, #374151 0%, transparent 60%)' }} />
-                <div className="relative">
-                  <div className="relative w-24 h-24 mx-auto mb-3">
-                    <img
-                      src={registerAvatarSrc}
-                      alt="Preview perfil"
-                      className="w-24 h-24 rounded-full object-cover border-4 border-white/70"
-                      onError={(e) => {
-                        e.currentTarget.src = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(`${form.name} ${form.last_name}`.trim() || form.email || 'User')}`
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full border border-white/50 bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700"
-                      title="Cambiar foto"
-                    >
-                      📷
-                    </button>
+            <div className="p-6 space-y-3">
+              {REGISTER_STEPS.map((item, index) => (
+                <div
+                  key={item.title}
+                  className={`rounded-2xl border p-4 transition-colors ${
+                    index === step
+                      ? 'border-green-400 bg-green-400/10'
+                      : index < step
+                        ? 'border-white/20 bg-white/10'
+                        : 'border-white/10 bg-white/[0.03]'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black ${
+                      index <= step ? 'bg-green-500 text-white' : 'bg-white/10 text-gray-400'
+                    }`}>
+                      {index + 1}
+                    </span>
+                    <div>
+                      <p className="font-black">{item.title}</p>
+                      <p className="text-xs text-gray-400 mt-1">{item.description}</p>
+                    </div>
                   </div>
-                  <p className="text-lg font-black">Tu foto de perfil</p>
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="mt-3 border border-white/40 rounded-full px-4 py-2 text-sm font-semibold hover:bg-white/10"
-                  >
-                    Elegir imagen
-                  </button>
-                  {profileImage && (
-                    <p className="text-xs text-gray-300 mt-2">Archivo: {profileImage.name}</p>
-                  )}
                 </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={e => setProfileImage(e.target.files?.[0] || null)}
-                  className="hidden"
-                />
-              </div>
+              ))}
+            </div>
+          </aside>
 
-              <div className="grid grid-cols-2 gap-4">
+          <section className="bg-white border border-gray-200 rounded-3xl shadow-sm overflow-hidden">
+            <div className="p-6 md:p-8 border-b border-gray-100">
+              <div className="flex items-center justify-between gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Nombre (s)</label>
-                  <input
-                    type="text" required value={form.name}
-                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                    placeholder="Tus nombres"
-                  />
+                  <p className="text-xs font-black text-green-700 uppercase tracking-wide">Paso {step + 1} de {REGISTER_STEPS.length}</p>
+                  <h2 className="text-2xl md:text-3xl font-black text-gray-900 mt-1">{activeStep.title}</h2>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Apellidos</label>
-                  <input
-                    type="text" required value={form.last_name}
-                    onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))}
-                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                    placeholder="Tus apellidos"
-                  />
+                <div className="w-28 h-2 rounded-full bg-gray-100 overflow-hidden">
+                  <div className="h-full bg-green-500 transition-all" style={{ width: `${progress}%` }} />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Edad</label>
-                  <input
-                    type="number" min="16" max="100" value={form.age}
-                    onChange={e => setForm(f => ({ ...f, age: e.target.value }))}
-                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                    placeholder="24"
-                  />
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 md:p-8">
+              {error && (
+                <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-3 text-red-700 text-sm font-medium">
+                  {error}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Inversion promedio ($)</label>
-                  <input
-                    type="number" min="0" step="100" value={form.average_investment}
-                    onChange={e => setForm(f => ({ ...f, average_investment: e.target.value }))}
-                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                    placeholder="50000"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-                <input
-                  type="email" required value={form.email}
-                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                  placeholder="tu@email.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Nichos de preferencia</label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {NICHE_OPTIONS.map((niche) => {
-                    const active = selectedNiches.includes(niche)
-                    return (
+              )}
+
+              {step === 0 && (
+                <div className="space-y-6">
+                  <div className="grid md:grid-cols-[180px_1fr] gap-6 items-center">
+                    <div className="bg-gray-900 text-white rounded-2xl p-5 text-center">
+                      <img
+                        src={registerAvatarSrc}
+                        alt="Preview perfil"
+                        className="w-28 h-28 rounded-full object-cover border-4 border-white/70 mx-auto"
+                        onError={(e) => {
+                          e.currentTarget.src = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(`${form.name} ${form.last_name}`.trim() || form.email || 'User')}`
+                        }}
+                      />
                       <button
-                        key={niche}
                         type="button"
-                        onClick={() => setSelectedNiches((prev) => active ? prev.filter((n) => n !== niche) : [...prev, niche])}
-                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                          active
-                            ? 'bg-green-600 text-white border-green-600'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-green-500 hover:text-green-700'
-                        }`}
+                        onClick={() => fileInputRef.current?.click()}
+                        className="mt-4 w-full border border-white/40 rounded-lg px-3 py-2 text-sm font-semibold hover:bg-white/10"
                       >
-                        {niche}
+                        Cambiar foto
                       </button>
-                    )
-                  })}
-                </div>
-                <input
-                  type="text"
-                  value={selectedNiches.join(', ')}
-                  readOnly
-                  className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-gray-700 text-sm"
-                  placeholder="Selecciona uno o más nichos"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Contraseña</label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'} required minLength={6} value={form.password}
-                    onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-12 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                    placeholder="Minimo 6 caracteres"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-600 hover:text-gray-900 px-2 py-1"
-                  >
-                    {showPassword ? 'Ocultar' : 'Ver'}
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirmar contraseña</label>
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'} required minLength={6} value={form.confirm_password}
-                    onChange={e => setForm(f => ({ ...f, confirm_password: e.target.value }))}
-                    className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-12 text-gray-900 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                    placeholder="Repite tu contraseña"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(v => !v)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-600 hover:text-gray-900 px-2 py-1"
-                  >
-                    {showConfirmPassword ? 'Ocultar' : 'Ver'}
-                  </button>
-                </div>
-              </div>
-              <button
-                type="submit" disabled={loading}
-                className="w-full py-3 rounded-lg font-semibold text-white text-sm transition-colors disabled:opacity-60"
-                style={{ backgroundColor: '#22c55e' }}
-              >
-                {loading ? 'Creando cuenta...' : 'Crear cuenta gratis →'}
-              </button>
-            </form>
-          </div>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) => setProfileImage(event.target.files?.[0] || null)}
+                        className="hidden"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-gray-900">Datos principales</h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Estos datos identifican al usuario dentro del dashboard y ayudan a personalizar la experiencia.
+                      </p>
+                    </div>
+                  </div>
 
-          <p className="text-center text-gray-500 mt-5 text-sm">
-            Ya tienes cuenta?{' '}
-            <Link to="/login" className="font-semibold" style={{ color: '#22c55e' }}>Iniciar sesion</Link>
-          </p>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <label className="block">
+                      <span className="block text-sm font-bold text-gray-700 mb-1.5">Nombre (s)</span>
+                      <input
+                        type="text"
+                        required
+                        value={form.name}
+                        onChange={(event) => updateField('name', event.target.value)}
+                        className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 text-sm focus:outline-none focus:border-green-500"
+                        placeholder="Tus nombres"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="block text-sm font-bold text-gray-700 mb-1.5">Apellidos</span>
+                      <input
+                        type="text"
+                        required
+                        value={form.last_name}
+                        onChange={(event) => updateField('last_name', event.target.value)}
+                        className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 text-sm focus:outline-none focus:border-green-500"
+                        placeholder="Tus apellidos"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="block max-w-xs">
+                    <span className="block text-sm font-bold text-gray-700 mb-1.5">Edad</span>
+                    <input
+                      type="number"
+                      min="16"
+                      max="100"
+                      value={form.age}
+                      onChange={(event) => updateField('age', event.target.value)}
+                      className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 text-sm focus:outline-none focus:border-green-500"
+                      placeholder="24"
+                    />
+                  </label>
+                </div>
+              )}
+
+              {step === 1 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-black text-gray-900">Mercados que quieres observar</h3>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Selecciona los sectores donde quieres detectar demanda, reputacion y oportunidades locales.
+                    </p>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {NICHE_OPTIONS.map((niche) => {
+                      const active = selectedNiches.includes(niche)
+                      return (
+                        <button
+                          key={niche}
+                          type="button"
+                          onClick={() => setSelectedNiches((prev) => active ? prev.filter((item) => item !== niche) : [...prev, niche])}
+                          className={`text-left px-4 py-4 rounded-2xl text-sm font-bold border transition-colors ${
+                            active
+                              ? 'bg-green-600 text-white border-green-600 shadow-sm'
+                              : 'bg-white text-gray-700 border-gray-200 hover:border-green-500 hover:text-green-700'
+                          }`}
+                        >
+                          {niche}
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  <label className="block max-w-sm">
+                    <span className="block text-sm font-bold text-gray-700 mb-1.5">Inversion promedio estimada</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="100"
+                      value={form.average_investment}
+                      onChange={(event) => updateField('average_investment', event.target.value)}
+                      className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 text-sm focus:outline-none focus:border-green-500"
+                      placeholder="50000"
+                    />
+                  </label>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="space-y-5">
+                  <div>
+                    <h3 className="text-lg font-black text-gray-900">Crea tus credenciales</h3>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Usa un correo real y una contraseña que no reutilices en otras plataformas.
+                    </p>
+                  </div>
+
+                  <label className="block">
+                    <span className="block text-sm font-bold text-gray-700 mb-1.5">Email</span>
+                    <input
+                      type="email"
+                      required
+                      value={form.email}
+                      onChange={(event) => updateField('email', event.target.value)}
+                      className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-gray-900 text-sm focus:outline-none focus:border-green-500"
+                      placeholder="tu@email.com"
+                    />
+                  </label>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <label className="block">
+                      <span className="block text-sm font-bold text-gray-700 mb-1.5">Contraseña</span>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          required
+                          minLength={6}
+                          value={form.password}
+                          onChange={(event) => updateField('password', event.target.value)}
+                          className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 pr-16 text-gray-900 text-sm focus:outline-none focus:border-green-500"
+                          placeholder="Minimo 6 caracteres"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((value) => !value)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-600 hover:text-gray-900"
+                        >
+                          {showPassword ? 'Ocultar' : 'Ver'}
+                        </button>
+                      </div>
+                    </label>
+                    <label className="block">
+                      <span className="block text-sm font-bold text-gray-700 mb-1.5">Confirmar contraseña</span>
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          required
+                          minLength={6}
+                          value={form.confirm_password}
+                          onChange={(event) => updateField('confirm_password', event.target.value)}
+                          className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 pr-16 text-gray-900 text-sm focus:outline-none focus:border-green-500"
+                          placeholder="Repite tu contraseña"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword((value) => !value)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-600 hover:text-gray-900"
+                        >
+                          {showConfirmPassword ? 'Ocultar' : 'Ver'}
+                        </button>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="rounded-2xl bg-gray-50 border border-gray-200 p-4 text-sm text-gray-600">
+                    Recomendacion de seguridad: combina letras, numeros y simbolos. El sistema no muestra tu contraseña despues de guardarla.
+                  </div>
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-black text-gray-900">Revisa antes de crear tu cuenta</h3>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Estos datos se usaran para preparar tu primer dashboard privado.
+                    </p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="rounded-2xl border border-gray-200 p-4">
+                      <p className="text-xs font-black text-gray-500 uppercase">Usuario</p>
+                      <p className="font-black text-gray-900 mt-2">{form.name || 'Sin nombre'} {form.last_name}</p>
+                      <p className="text-sm text-gray-500 mt-1">{form.email || 'Email pendiente'}</p>
+                    </div>
+                    <div className="rounded-2xl border border-gray-200 p-4">
+                      <p className="text-xs font-black text-gray-500 uppercase">Mercado</p>
+                      <p className="font-black text-gray-900 mt-2">{selectedNiches.length} nichos seleccionados</p>
+                      <p className="text-sm text-gray-500 mt-1">{selectedNiches.join(', ')}</p>
+                    </div>
+                    <div className="rounded-2xl border border-gray-200 p-4">
+                      <p className="text-xs font-black text-gray-500 uppercase">Inversion</p>
+                      <p className="font-black text-gray-900 mt-2">
+                        {form.average_investment ? `$${Number(form.average_investment).toLocaleString('es-MX')}` : 'No definida'}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-gray-200 p-4">
+                      <p className="text-xs font-black text-gray-500 uppercase">Privacidad</p>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Tu sesion se abre con token privado y las rutas de analisis quedan protegidas.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row gap-3 sm:justify-between">
+                <button
+                  type="button"
+                  onClick={goBack}
+                  disabled={step === 0 || loading}
+                  className="px-5 py-3 rounded-xl border border-gray-300 text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Atras
+                </button>
+
+                {step < REGISTER_STEPS.length - 1 ? (
+                  <button
+                    type="button"
+                    onClick={goNext}
+                    className="px-6 py-3 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-gray-800"
+                  >
+                    Continuar
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-6 py-3 rounded-xl bg-green-600 text-white text-sm font-bold hover:bg-green-700 disabled:opacity-60"
+                  >
+                    {loading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
+                  </button>
+                )}
+              </div>
+            </form>
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

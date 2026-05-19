@@ -1,6 +1,6 @@
 /**
  * PresentationPage — Slide ejecutivo para defensa escolar
- * Explica la arquitectura y metodología de XAIZA 2.0
+ * Explica la arquitectura y metodología de XAZIA
  */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 const SLIDES = [
   {
     id: 1,
-    title: "XAIZA 2.0",
+    title: "XAZIA",
     subtitle: "Consultora Estratégica de Inversión Hiperlocal",
     content: null,
     type: "cover",
@@ -155,8 +155,8 @@ export default function PresentationPage() {
       {/* Nav */}
       <header className="border-b border-white/10 px-6 py-3 flex items-center justify-between">
         <Link to="/" className="text-brand-green font-bold text-lg flex items-center gap-2">
-          <img src="/logo.png" alt="XAIZA" className="w-5 h-5" />
-          <span>XAIZA 2.0</span>
+          <img src="/logo.png" alt="XAZIA" className="w-5 h-5" />
+          <span>XAZIA</span>
         </Link>
         <div className="flex items-center gap-3">
           <span className="text-gray-500 text-sm">{current + 1} / {SLIDES.length}</span>

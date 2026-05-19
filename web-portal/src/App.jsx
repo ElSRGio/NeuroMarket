@@ -11,6 +11,11 @@ import UpgradePage from './pages/UpgradePage.jsx'
 import TrashPage from './pages/TrashPage.jsx'
 import AdminDashboardPage from './pages/AdminDashboardPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
+import SocialListeningPage from './pages/SocialListeningPage.jsx'
+import GeoMapsPage from './pages/GeoMapsPage.jsx'
+import NotFoundPage from './pages/NotFoundPage.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import AdminRoute from './components/AdminRoute.jsx'
 import { authService } from './services/investment.service.js'
 import { useAuthStore } from './store/auth.store.js'
 
@@ -30,14 +35,18 @@ export default function App() {
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/analysis/new" element={<NewAnalysisPage />} />
-      <Route path="/analysis/:id" element={<AnalysisResultPage />} />
-      <Route path="/presentation" element={<PresentationPage />} />
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="/analysis/new" element={<ProtectedRoute><NewAnalysisPage /></ProtectedRoute>} />
+      <Route path="/analysis/:id" element={<ProtectedRoute><AnalysisResultPage /></ProtectedRoute>} />
+      <Route path="/presentation" element={<ProtectedRoute><PresentationPage /></ProtectedRoute>} />
+      <Route path="/social-listening" element={<ProtectedRoute><SocialListeningPage /></ProtectedRoute>} />
+      <Route path="/geo-maps" element={<ProtectedRoute><GeoMapsPage /></ProtectedRoute>} />
       <Route path="/upgrade" element={<UpgradePage />} />
-      <Route path="/admin" element={<AdminDashboardPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
-      <Route path="/trash" element={<TrashPage />} />
+      <Route path="/planes" element={<UpgradePage />} />
+      <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+      <Route path="/trash" element={<ProtectedRoute><TrashPage /></ProtectedRoute>} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }

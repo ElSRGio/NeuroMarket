@@ -38,7 +38,7 @@ export default function App() {
       <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/analysis/new" element={<ProtectedRoute><NewAnalysisPage /></ProtectedRoute>} />
       <Route path="/analysis/:id" element={<ProtectedRoute><AnalysisResultPage /></ProtectedRoute>} />
-      <Route path="/presentation" element={<ProtectedRoute><PresentationPage /></ProtectedRoute>} />
+      <Route path="/presentation" element={<PresentationPage />} />
       <Route path="/social-listening" element={<ProtectedRoute><SocialListeningPage /></ProtectedRoute>} />
       <Route path="/geo-maps" element={<ProtectedRoute><GeoMapsPage /></ProtectedRoute>} />
       <Route path="/upgrade" element={<UpgradePage />} />

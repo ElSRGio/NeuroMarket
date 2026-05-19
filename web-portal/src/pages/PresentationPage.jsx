@@ -5,6 +5,39 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+const TEAM_MEMBERS = [
+  {
+    name: 'Giovanni Hernández Rivera',
+    career: 'Ing. en Sistemas Computacionales',
+    semester: '8 semestre',
+    control: '22940040',
+  },
+  {
+    name: 'Pamela Rugerio Perez',
+    career: 'Ing. en Gestión Empresarial',
+    semester: '2 semestre',
+    control: '25940213',
+  },
+  {
+    name: 'Melissa Cerón Nicolás',
+    career: 'Ing. en Gestión Empresarial',
+    semester: '8 semestre',
+    control: '22940238',
+  },
+  {
+    name: 'Giovanni Martinez Martinez',
+    career: 'Ing. en Gestión Empresarial',
+    semester: '6 semestre',
+    control: '23940174',
+  },
+  {
+    name: 'Sarahi Diaz Hernández',
+    career: 'Ing. en Sistemas Computacionales',
+    semester: '8 semestre',
+    control: '22940028',
+  },
+]
+
 const SLIDES = [
   {
     id: 1,
@@ -12,11 +45,18 @@ const SLIDES = [
     subtitle: "Consultora Estratégica de Inversión Hiperlocal",
     content: null,
     type: "cover",
-    team: ["Giovanni H.", "Pamela R.", "Ximena V."],
-    semester: "Ingeniería en Sistemas · 2026",
+    team: TEAM_MEMBERS.map((member) => member.name),
+    semester: "Sistemas Computacionales · Gestión Empresarial · 2026",
   },
   {
     id: 2,
+    title: "Equipo Actual",
+    subtitle: "Integrantes responsables del desarrollo y validación del proyecto",
+    type: "team",
+    members: TEAM_MEMBERS,
+  },
+  {
+    id: 3,
     title: "El Problema",
     subtitle: "¿Por qué fracasan los negocios en municipios como Libres?",
     type: "problem",
@@ -27,7 +67,7 @@ const SLIDES = [
     ],
   },
   {
-    id: 3,
+    id: 4,
     title: "Nuestra Solución",
     subtitle: "Motor de Análisis de Viabilidad en 3 capas",
     type: "architecture",
@@ -38,7 +78,7 @@ const SLIDES = [
     ],
   },
   {
-    id: 4,
+    id: 5,
     title: "Módulo Estrella: El IRL",
     subtitle: "Índice de Realidad Local — Innovación metodológica",
     type: "formula",
@@ -53,7 +93,7 @@ const SLIDES = [
     insight: "El IRL ajusta el análisis según qué tan confiables son los datos digitales frente a la economía informal del municipio.",
   },
   {
-    id: 5,
+    id: 6,
     title: "Módulo de Decisión: Monte Carlo",
     subtitle: "10,000 simulaciones para medir el riesgo de inversión",
     type: "montecarlo",
@@ -65,7 +105,7 @@ const SLIDES = [
     insight: "En lugar de dar un ROI único (que puede ser falso), damos una distribución de probabilidad. El inversionista conoce el rango real de resultados.",
   },
   {
-    id: 6,
+    id: 7,
     title: "Datos Reales con Apify",
     subtitle: "Scraping ético de señales sociales para el IRL",
     type: "apify",
@@ -79,7 +119,7 @@ const SLIDES = [
     result: "Resultado real para Libres/Restaurante: DD = 30.2/100 (más informal de lo estimado por INEGI)",
   },
   {
-    id: 7,
+    id: 8,
     title: "Modelo de Negocio SaaS",
     subtitle: "Sistema de planes con restricciones por middleware en Node.js",
     type: "plans",
@@ -110,7 +150,7 @@ const SLIDES = [
     insight: "El middleware plan.middleware.js en Node.js bloquea endpoints según plan_type del JWT — sin lógica en el frontend.",
   },
   {
-    id: 8,
+    id: 9,
     title: "Tecnologías Utilizadas",
     subtitle: "Stack full-stack de nivel profesional",
     type: "tech",
@@ -131,7 +171,7 @@ const SLIDES = [
     ],
   },
   {
-    id: 9,
+    id: 10,
     title: "Impacto y Escalabilidad",
     subtitle: "De Libres, Puebla → a todo México",
     type: "impact",
@@ -212,7 +252,7 @@ function SlideRenderer({ slide }) {
       </div>
       <div className="mt-6 pt-6 border-t border-white/10 flex flex-col items-center gap-2">
         <p className="text-gray-500 text-sm">Equipo de desarrollo</p>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap justify-center gap-3 max-w-3xl">
           {slide.team.map((name, i) => (
             <span key={i} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-gray-300 text-sm">{name}</span>
           ))}
@@ -220,6 +260,32 @@ function SlideRenderer({ slide }) {
         <p className="text-gray-600 text-xs mt-1">{slide.semester}</p>
       </div>
     </div>
+  )
+
+  if (slide.type === 'team') return (
+    <SlideWrapper slide={slide}>
+      <div className="grid md:grid-cols-2 gap-4">
+        {slide.members.map((member) => (
+          <article key={member.control} className="bg-white/5 border border-white/10 rounded-xl p-5">
+            <p className="text-white font-black text-lg">{member.name}</p>
+            <p className="text-brand-blue text-sm font-semibold mt-1">{member.career}</p>
+            <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <div className="rounded-lg bg-black/20 border border-white/10 p-3">
+                <p className="text-gray-500 text-xs">Semestre</p>
+                <p className="text-gray-200 font-bold mt-1">{member.semester}</p>
+              </div>
+              <div className="rounded-lg bg-black/20 border border-white/10 p-3">
+                <p className="text-gray-500 text-xs">No. Control</p>
+                <p className="text-gray-200 font-bold mt-1">{member.control}</p>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p className="text-gray-500 text-xs text-center">
+        La información sensible del equipo se mantiene fuera de esta vista pública.
+      </p>
+    </SlideWrapper>
   )
 
   if (slide.type === 'problem') return (

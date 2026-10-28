@@ -88,12 +88,11 @@ class ApifyConnector:
     def _fetch_google_maps_reviews(self, query: str) -> float:
         """Usa Apify Google Maps Scraper para medir densidad de negocios y reseñas."""
         try:
-            actor_id = "apify~google-maps-scraper"
+            actor_id = "johnvc~google-maps-places-api"
             run_input = json.dumps({
-                "searchStringsArray": [query],
-                "maxCrawledPlacesPerSearch": 20,
+                "searchTerms": [query],
+                "maxResultsPerSearch": 20,
                 "language": "es",
-                "countryCode": "mx",
             }).encode("utf-8")
 
             url = f"{APIFY_API_BASE}/acts/{actor_id}/run-sync-get-dataset-items?token={self.api_token}&timeout=60"
@@ -105,8 +104,8 @@ class ApifyConnector:
                     return 30.0
 
                 # Score basado en cantidad de negocios + promedio de reseñas
-                total_reviews = sum(p.get("reviewsCount", 0) for p in items)
-                avg_rating = sum(p.get("totalScore", 0) for p in items if p.get("totalScore")) / max(1, len(items))
+                total_reviews = sum(p.get("reviewsCount") or p.get("ratingCount") or 0 for p in items)
+                avg_rating = sum(p.get("totalScore") or p.get("rating") or 0 for p in items if p.get("totalScore") or p.get("rating")) / max(1, len(items))
                 place_count = len(items)
 
                 # Normalizar a 0-100
